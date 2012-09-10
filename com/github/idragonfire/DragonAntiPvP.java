@@ -1,4 +1,4 @@
-package com.killersmurf.antipvplogger;
+package com.github.idragonfire;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,12 +18,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.killersmurf.antipvplogger.listeners.AntiPvPLoggerListener;
+import com.github.idragonfire.listener.AntiPvPListener;
+import com.github.idragonfire.metrics.Metrics;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.HumanNPC;
 import com.topcat.npclib.entity.NPC;
 
-public class AntiPvPLogger extends JavaPlugin {
+public class DragonAntiPvP extends JavaPlugin {
     public static final Logger LOGGER = Logger.getLogger("Minecraft");
     private List<String> deadPlayers;
     private Map<String, DeSpawnTask> taskMap;
@@ -39,14 +40,20 @@ public class AntiPvPLogger extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        try {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.deadPlayers = new ArrayList<String>();
         this.taskMap = new HashMap<String, DeSpawnTask>();
         this.lang = new HashMap<String, String>();
         loadConfig();
         loadDataFile();
         loadDeadPlayers();
-        Bukkit.getPluginManager().registerEvents(
-                new AntiPvPLoggerListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new AntiPvPListener(this),
+                this);
         this.npcManager = new NPCManager(this);
         loadDataFile();
     }
@@ -120,11 +127,11 @@ public class AntiPvPLogger extends JavaPlugin {
     }
 
     public void saveDeadPlayers() {
-        AntiPvPLogger.log(Level.INFO, "Saving " + this.deadPlayers.size()
+        DragonAntiPvP.log(Level.INFO, "Saving " + this.deadPlayers.size()
                 + " Dead Players.");
         getDataFile().set("deadPlayers", this.deadPlayers);
         saveDataFile();
-        AntiPvPLogger.log(Level.INFO, "[AntiPvPLogger] Saving Complete.");
+        DragonAntiPvP.log(Level.INFO, "[AntiPvPLogger] Saving Complete.");
     }
 
     public void loadDeadPlayers() {

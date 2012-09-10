@@ -1,4 +1,4 @@
-package com.killersmurf.antipvplogger.listeners;
+package com.github.idragonfire.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,7 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.killersmurf.antipvplogger.AntiPvPLogger;
+import com.github.idragonfire.DragonAntiPvP;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -19,10 +19,10 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.topcat.npclib.entity.HumanNPC;
 
-public class AntiPvPLoggerListener implements Listener {
-    private AntiPvPLogger antiPvPLogger;
+public class AntiPvPListener implements Listener {
+    private DragonAntiPvP antiPvPLogger;
 
-    public AntiPvPLoggerListener(AntiPvPLogger antiPvPLogger) {
+    public AntiPvPListener(DragonAntiPvP antiPvPLogger) {
         this.antiPvPLogger = antiPvPLogger;
     }
 

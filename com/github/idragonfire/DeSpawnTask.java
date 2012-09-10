@@ -1,4 +1,4 @@
-package com.killersmurf.antipvplogger;
+package com.github.idragonfire;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
