@@ -32,7 +32,7 @@ public class DragonAntiPvP extends JavaPlugin {
     private NPCManager npcManager;
     private HashMap<String, String> lang;
 
-    private boolean spawnOnlyIFPlayerNearby;
+    private boolean spawnOnlyIfPlayerNearby;
     private int distance;
     private int time;
     private int additionalTimeIfUnderAttack;
@@ -67,7 +67,7 @@ public class DragonAntiPvP extends JavaPlugin {
     }
 
     public boolean playersNearby(Player player) {
-        if (!this.spawnOnlyIFPlayerNearby) {
+        if (!this.spawnOnlyIfPlayerNearby) {
             return true;
         }
         for (Entity entity : player.getNearbyEntities(this.distance,
@@ -131,20 +131,19 @@ public class DragonAntiPvP extends JavaPlugin {
                 + " Dead Players.");
         getDataFile().set("deadPlayers", this.deadPlayers);
         saveDataFile();
-        DragonAntiPvP.log(Level.INFO, "[AntiPvPLogger] Saving Complete.");
+        DragonAntiPvP.log(Level.INFO, "Saving Complete.");
     }
 
     public void loadDeadPlayers() {
         if (getDataFile().getList("deadPlayers") == null) {
-            LOGGER.log(Level.INFO,
-                    "[AntiPvPLogger] Could not load any Dead Players.");
+            DragonAntiPvP.log(Level.INFO, "Could not load any Dead Players.");
             return;
         }
         this.deadPlayers = getDataFile().getStringList("deadPlayers");
         getDataFile().set("deadPlayers", null);
         saveDataFile();
-        LOGGER.log(Level.INFO, "[AntiPvPLogger] Loaded "
-                + this.deadPlayers.size() + " Dead Players.");
+        DragonAntiPvP.log(Level.INFO, "Loaded " + this.deadPlayers.size()
+                + " Dead Players.");
     }
 
     public YamlConfiguration loadDataFile() {
@@ -153,8 +152,10 @@ public class DragonAntiPvP extends JavaPlugin {
         if (!df.exists()) {
             try {
                 df.createNewFile();
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, "Could not create the data file!", ex);
+            } catch (IOException e) {
+                DragonAntiPvP.log(Level.SEVERE,
+                        "Could not create the data file!");
+                e.printStackTrace();
             }
         }
         this.dataFile = YamlConfiguration.loadConfiguration(df);
@@ -170,8 +171,9 @@ public class DragonAntiPvP extends JavaPlugin {
                 + "data.yml");
         try {
             this.dataFile.save(df);
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Could not save the data!", ex);
+        } catch (IOException e) {
+            DragonAntiPvP.log(Level.SEVERE, "Could not save the data!");
+            e.printStackTrace();
         }
     }
 
@@ -183,7 +185,7 @@ public class DragonAntiPvP extends JavaPlugin {
 
     public void loadConfig() {
         Configuration config = getConfig();
-        this.spawnOnlyIFPlayerNearby = config
+        this.spawnOnlyIfPlayerNearby = config
                 .getBoolean("npc.spawn.onlyIfPlayerNearby");
         this.distance = config.getInt("npc.spawn.distance");
         this.time = config.getInt("npc.spawn.time");
@@ -217,7 +219,7 @@ public class DragonAntiPvP extends JavaPlugin {
     }
 
     public static void log(Level level, String message) {
-        LOGGER.log(level, "[AntiPvPLogger] " + message);
+        LOGGER.log(level, "[DragonAntiPvP] " + message);
     }
 
 }

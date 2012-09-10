@@ -20,15 +20,14 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.topcat.npclib.entity.HumanNPC;
 
 public class AntiPvPListener implements Listener {
-    private DragonAntiPvP antiPvPLogger;
+    private DragonAntiPvP antiPvP;
 
-    public AntiPvPListener(DragonAntiPvP antiPvPLogger) {
-        this.antiPvPLogger = antiPvPLogger;
+    public AntiPvPListener(DragonAntiPvP antiPvP) {
+        this.antiPvP = antiPvP;
     }
 
     public static boolean canBypass(Player player) {
-        return player.hasPermission("antipvplogger.bypass")
-                & !player.hasPermission("-antipvplogger.bypass");
+        return player.hasPermission("dragonantipvp.bypass");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -50,12 +49,12 @@ public class AntiPvPListener implements Listener {
                 return;
             }
         }
-        if (!this.antiPvPLogger.playersNearby(player)) {
+        if (!this.antiPvP.playersNearby(player)) {
             return;
         }
-        this.antiPvPLogger.spawnHumanNPC(player, player.getLocation(), name);
-        String npcSpawned = this.antiPvPLogger.getLang("npcSpawned");
-        this.antiPvPLogger.broadcastNearPlayer(player, ChatColor.RED
+        this.antiPvP.spawnHumanNPC(player, player.getLocation(), name);
+        String npcSpawned = this.antiPvP.getLang("npcSpawned");
+        this.antiPvP.broadcastNearPlayer(player, ChatColor.RED
                 + player.getName() + ChatColor.YELLOW + " " + npcSpawned);
     }
 
@@ -66,39 +65,39 @@ public class AntiPvPListener implements Listener {
             return;
         }
         final String name = player.getName();
-        this.antiPvPLogger.despawnHumanByName(name);
-        if (!this.antiPvPLogger.isDead(name)) {
+        this.antiPvP.despawnHumanByName(name);
+        if (!this.antiPvP.isDead(name)) {
             return;
         }
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
         player.sendMessage(ChatColor.RED + " "
-                + this.antiPvPLogger.getLang("yourNPCKilled"));
-        this.antiPvPLogger.removeDead(player.getName());
+                + this.antiPvP.getLang("yourNPCKilled"));
+        this.antiPvP.removeDead(player.getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (!this.antiPvPLogger.isAntiPvpNPC(event.getEntity())) {
+        if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
             return;
         }
-        HumanNPC npc = (HumanNPC) this.antiPvPLogger.getOneHumanNPCByName(event
+        HumanNPC npc = (HumanNPC) this.antiPvP.getOneHumanNPCByName(event
                 .getEntity().getName());
-        this.antiPvPLogger.addDead(npc.getName());
+        this.antiPvP.addDead(npc.getName());
         Bukkit.broadcastMessage(ChatColor.RED
                 + " "
-                + this.antiPvPLogger.getLang("NPCKilled").replace("<Player>",
+                + this.antiPvP.getLang("NPCKilled").replace("<Player>",
                         npc.getName()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
         try {
-            if (!this.antiPvPLogger.isAntiPvpNPC(event.getEntity())) {
+            if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
                 return;
             }
             Player npc = (Player) event.getEntity();
-            this.antiPvPLogger.npcFirstTimeAttacked(npc.getName());
+            this.antiPvP.npcFirstTimeAttacked(npc.getName());
         } catch (Exception e) {
             e.printStackTrace();
         }

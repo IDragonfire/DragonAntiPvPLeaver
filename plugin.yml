@@ -1,8 +1,8 @@
 name: DragonAntiPvP
 author: DylanHolmes, IDragonfire
 version: 1.0
-main: com.killersmurf.antipvplogger.AntiPvPLogger
+main: com.github.idragonfire.DragonAntiPvP
     
 permissions:
-  antipvplogger.bypass:
+  dragonantipvp.bypass:
     description: bypasses features
