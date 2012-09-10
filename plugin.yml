@@ -2,11 +2,6 @@ name: AntiPvPLogger
 author: DylanHolmes
 version: 0.1
 main: com.killersmurf.antipvplogger.AntiPvPLogger
-
-commands:
-  combat:
-    description: Use this to check if you're in combat.
-    usage: /combat
     
 permissions:
   antipvplogger.bypass:

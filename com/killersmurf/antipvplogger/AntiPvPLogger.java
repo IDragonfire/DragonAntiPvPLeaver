@@ -27,15 +27,21 @@ public class AntiPvPLogger extends JavaPlugin {
     public static final Logger LOGGER = Logger.getLogger("Minecraft");
     private List<String> deadPlayers;
     private Map<String, DeSpawnTask> taskMap;
-    private int time;
-    private int distance;
     private YamlConfiguration dataFile;
     private NPCManager npcManager;
+    private HashMap<String, String> lang;
+
+    private boolean spawnOnlyIFPlayerNearby;
+    private int distance;
+    private int time;
+    private int additionalTimeIfUnderAttack;
+    private int broadcastMessageRadius;
 
     @Override
     public void onEnable() {
         this.deadPlayers = new ArrayList<String>();
         this.taskMap = new HashMap<String, DeSpawnTask>();
+        this.lang = new HashMap<String, String>();
         loadConfig();
         loadDataFile();
         loadDeadPlayers();
@@ -47,12 +53,16 @@ public class AntiPvPLogger extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        reloadConfig();
         saveConfig();
         saveDataFile();
         saveDeadPlayers();
     }
 
     public boolean playersNearby(Player player) {
+        if (!this.spawnOnlyIFPlayerNearby) {
+            return true;
+        }
         for (Entity entity : player.getNearbyEntities(this.distance,
                 this.distance, this.distance)) {
             if ((entity instanceof Player)) {
@@ -105,7 +115,8 @@ public class AntiPvPLogger extends JavaPlugin {
     }
 
     public void npcFirstTimeAttacked(String name) {
-        this.taskMap.get(name).increaseTime(this.time * 20L);
+        this.taskMap.get(name).increaseTime(
+                this.additionalTimeIfUnderAttack * 20L);
     }
 
     public void saveDeadPlayers() {
@@ -122,7 +133,6 @@ public class AntiPvPLogger extends JavaPlugin {
                     "[AntiPvPLogger] Could not load any Dead Players.");
             return;
         }
-        // TODO: load
         this.deadPlayers = getDataFile().getStringList("deadPlayers");
         getDataFile().set("deadPlayers", null);
         saveDataFile();
@@ -133,7 +143,6 @@ public class AntiPvPLogger extends JavaPlugin {
     public YamlConfiguration loadDataFile() {
         File df = new File(getDataFolder().toString() + File.separator
                 + "data.yml");
-
         if (!df.exists()) {
             try {
                 df.createNewFile();
@@ -141,7 +150,6 @@ public class AntiPvPLogger extends JavaPlugin {
                 LOGGER.log(Level.SEVERE, "Could not create the data file!", ex);
             }
         }
-
         this.dataFile = YamlConfiguration.loadConfiguration(df);
         return this.dataFile;
     }
@@ -160,21 +168,45 @@ public class AntiPvPLogger extends JavaPlugin {
         }
     }
 
+    @Override
+    public void saveConfig() {
+        getConfig().options().copyDefaults(true);
+        super.saveConfig();
+    }
+
     public void loadConfig() {
         Configuration config = getConfig();
+        this.spawnOnlyIFPlayerNearby = config
+                .getBoolean("npc.spawn.onlyIfPlayerNearby");
+        this.distance = config.getInt("npc.spawn.distance");
+        this.time = config.getInt("npc.spawn.time");
 
-        config.addDefault("npc.spawn.distance", Integer.valueOf(10));
-        // config.set("npc.spawn.distance", Integer.valueOf(config
-        // .getInt("npc.spawn.distance")));
-        this.distance = Integer.valueOf(config.getInt("npc.spawn.distance"));
-
-        config.addDefault("npc.spawn.time", Integer.valueOf(15));
-        // config.set("npc.spawn.time", Integer.valueOf(config
-        // .getInt("npc.spawn.time")));
-        this.time = Integer.valueOf(config.getInt("npc.spawn.time"));
-
-        getConfig().options().copyDefaults(true);
+        this.additionalTimeIfUnderAttack = config
+                .getInt("npc.spawn.additionalTimeIfUnderAttack");
+        this.broadcastMessageRadius = config
+                .getInt("npc.spawn.broadcastMessageRadius");
         saveConfig();
+    }
+
+    public String getLang(String key) {
+        String text = this.lang.get(key);
+        if (text != null) {
+            return text;
+        }
+        text = getConfig().getString("language." + key);
+        this.lang.put(key, text);
+        return text;
+    }
+
+    public void broadcastNearPlayer(Player playerForRadiusBroadcast,
+            String message) {
+        List<Player> players = playerForRadiusBroadcast.getWorld().getPlayers();
+        Location loc = playerForRadiusBroadcast.getLocation();
+        for (Player player : players) {
+            if (player.getLocation().distance(loc) < this.broadcastMessageRadius) {
+                player.sendMessage(message);
+            }
+        }
     }
 
     public static void log(Level level, String message) {

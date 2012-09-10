@@ -1,0 +1,12 @@
+npc:
+  spawn:
+    onlyIfPlayerNearby: true
+    distance: 8
+    time: 10
+    additionalTimeIfUnderAttack: 15
+    broadcastMessageRadius: 32
+language:
+  npcSpawned: NPC spawned
+  npcKilled: <Player>s NPC has been killed while combat logged
+  yourNPCKilled: Your NPC has been killed while combat logged
+        

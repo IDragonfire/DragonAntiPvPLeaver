@@ -1,10 +1,7 @@
 package com.killersmurf.antipvplogger.listeners;
 
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -57,8 +54,9 @@ public class AntiPvPLoggerListener implements Listener {
             return;
         }
         this.antiPvPLogger.spawnHumanNPC(player, player.getLocation(), name);
-        AntiPvPLoggerListener.broadcastNearPlayer(player, ChatColor.RED
-                + player.getName() + ChatColor.YELLOW + " NPC spawned.");
+        String npcSpawned = this.antiPvPLogger.getLang("npcSpawned");
+        this.antiPvPLogger.broadcastNearPlayer(player, ChatColor.RED
+                + player.getName() + ChatColor.YELLOW + " " + npcSpawned);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -74,8 +72,8 @@ public class AntiPvPLoggerListener implements Listener {
         }
         player.getInventory().clear();
         player.getInventory().setArmorContents(null);
-        player.sendMessage(ChatColor.RED
-                + "Your NPC was killed while Combat Logged!");
+        player.sendMessage(ChatColor.RED + " "
+                + this.antiPvPLogger.getLang("yourNPCKilled"));
         this.antiPvPLogger.removeDead(player.getName());
     }
 
@@ -87,9 +85,10 @@ public class AntiPvPLoggerListener implements Listener {
         HumanNPC npc = (HumanNPC) this.antiPvPLogger.getOneHumanNPCByName(event
                 .getEntity().getName());
         this.antiPvPLogger.addDead(npc.getName());
-        Bukkit.broadcastMessage(ChatColor.RED + npc.getName() + "'s"
-                + ChatColor.YELLOW
-                + " NPC has been killed while combat logged!");
+        Bukkit.broadcastMessage(ChatColor.RED
+                + " "
+                + this.antiPvPLogger.getLang("NPCKilled").replace("<Player>",
+                        npc.getName()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -102,17 +101,6 @@ public class AntiPvPLoggerListener implements Listener {
             this.antiPvPLogger.npcFirstTimeAttacked(npc.getName());
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public static void broadcastNearPlayer(Player playerForRadiusBroadcast,
-            String message) {
-        List<Player> players = playerForRadiusBroadcast.getWorld().getPlayers();
-        Location loc = playerForRadiusBroadcast.getLocation();
-        for (Player player : players) {
-            if (player.getLocation().distance(loc) < 32) {
-                player.sendMessage(message);
-            }
         }
     }
 }
