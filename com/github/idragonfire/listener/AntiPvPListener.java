@@ -85,8 +85,7 @@ public class AntiPvPListener implements Listener {
                 .getEntity().getName());
         this.antiPvP.addDead(npc.getName());
         Bukkit.broadcastMessage(ChatColor.RED
-                + " "
-                + this.antiPvP.getLang("NPCKilled").replace("<Player>",
+                + this.antiPvP.getLang("npcKilled").replace("<Player>",
                         npc.getName()));
     }
 
