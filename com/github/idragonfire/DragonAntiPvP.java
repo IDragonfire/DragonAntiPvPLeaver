@@ -127,23 +127,23 @@ public class DragonAntiPvP extends JavaPlugin {
     }
 
     public void saveDeadPlayers() {
-        DragonAntiPvP.log(Level.INFO, "Saving " + this.deadPlayers.size()
-                + " Dead Players.");
+        getLogger().log(Level.INFO,
+                "Saving " + this.deadPlayers.size() + " Dead Players.");
         getDataFile().set("deadPlayers", this.deadPlayers);
         saveDataFile();
-        DragonAntiPvP.log(Level.INFO, "Saving Complete.");
+        getLogger().log(Level.INFO, "Saving Complete.");
     }
 
     public void loadDeadPlayers() {
         if (getDataFile().getList("deadPlayers") == null) {
-            DragonAntiPvP.log(Level.INFO, "Could not load any Dead Players.");
+            getLogger().log(Level.INFO, "Could not load any Dead Players.");
             return;
         }
         this.deadPlayers = getDataFile().getStringList("deadPlayers");
         getDataFile().set("deadPlayers", null);
         saveDataFile();
-        DragonAntiPvP.log(Level.INFO, "Loaded " + this.deadPlayers.size()
-                + " Dead Players.");
+        getLogger().log(Level.INFO,
+                "Loaded " + this.deadPlayers.size() + " Dead Players.");
     }
 
     public YamlConfiguration loadDataFile() {
@@ -153,8 +153,8 @@ public class DragonAntiPvP extends JavaPlugin {
             try {
                 df.createNewFile();
             } catch (IOException e) {
-                DragonAntiPvP.log(Level.SEVERE,
-                        "Could not create the data file!");
+                getLogger()
+                        .log(Level.SEVERE, "Could not create the data file!");
                 e.printStackTrace();
             }
         }
@@ -172,7 +172,7 @@ public class DragonAntiPvP extends JavaPlugin {
         try {
             this.dataFile.save(df);
         } catch (IOException e) {
-            DragonAntiPvP.log(Level.SEVERE, "Could not save the data!");
+            getLogger().log(Level.SEVERE, "Could not save the data!");
             e.printStackTrace();
         }
     }
@@ -217,9 +217,4 @@ public class DragonAntiPvP extends JavaPlugin {
             }
         }
     }
-
-    public static void log(Level level, String message) {
-        LOGGER.log(level, "[DragonAntiPvP] " + message);
-    }
-
 }
