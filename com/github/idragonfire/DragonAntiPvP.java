@@ -50,20 +50,95 @@ public class DragonAntiPvP extends JavaPlugin {
         this.taskMap = new HashMap<String, DeSpawnTask>();
         this.lang = new HashMap<String, String>();
         loadConfig();
-        loadDataFile();
         loadDeadPlayers();
         Bukkit.getPluginManager().registerEvents(new AntiPvPListener(this),
                 this);
         this.npcManager = new NPCManager(this);
-        loadDataFile();
     }
 
     @Override
     public void onDisable() {
         reloadConfig();
         saveConfig();
-        saveDataFile();
         saveDeadPlayers();
+    }
+
+    @Override
+    public void saveConfig() {
+        getConfig().options().copyDefaults(true);
+        super.saveConfig();
+    }
+
+    public void loadConfig() {
+        Configuration config = getConfig();
+        this.spawnOnlyIfPlayerNearby = config
+                .getBoolean("npc.spawn.onlyIfPlayerNearby");
+        this.distance = config.getInt("npc.spawn.distance");
+        this.time = config.getInt("npc.spawn.time");
+
+        this.additionalTimeIfUnderAttack = config
+                .getInt("npc.spawn.additionalTimeIfUnderAttack");
+        this.broadcastMessageRadius = config
+                .getInt("npc.spawn.broadcastMessageRadius");
+        saveConfig();
+    }
+
+    public void saveDeadPlayers() {
+        getLogger().log(Level.INFO,
+                "Saving " + this.deadPlayers.size() + " Dead Players.");
+        getDataFile().set("deadPlayers", this.deadPlayers);
+        saveDataFile();
+        getLogger().log(Level.INFO, "Saving Complete.");
+    }
+
+    public void saveDataFile() {
+        File f = new File(getDataFolder().toString() + File.separator
+                + "data.yml");
+        try {
+            this.dataFile.save(f);
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Could not save the data!");
+            e.printStackTrace();
+        }
+    }
+
+    public void loadDeadPlayers() {
+        loadDataFile();
+        if (getDataFile().getList("deadPlayers") == null) {
+            getLogger().log(Level.INFO, "Could not load any Dead Players.");
+            return;
+        }
+        this.deadPlayers = getDataFile().getStringList("deadPlayers");
+        getDataFile().set("deadPlayers", null);
+        saveDataFile();
+        getLogger().log(Level.INFO,
+                "Loaded " + this.deadPlayers.size() + " Dead Players.");
+    }
+
+    public YamlConfiguration loadDataFile() {
+        File df = new File(getDataFolder().toString() + File.separator
+                + "data.yml");
+        if (!df.exists()) {
+            try {
+                df.createNewFile();
+            } catch (IOException e) {
+                getLogger()
+                        .log(Level.SEVERE, "Could not create the data file!");
+                e.printStackTrace();
+            }
+        }
+        this.dataFile = YamlConfiguration.loadConfiguration(df);
+        return this.dataFile;
+    }
+
+    public String getLang(String key) {
+        String text = this.lang.get(key);
+        if (text != null) {
+            return text;
+        }
+        text = getConfig().getString("language." + key);
+        this.lang.put(key, text);
+        return text;
     }
 
     public boolean playersNearby(Player player) {
@@ -77,26 +152,6 @@ public class DragonAntiPvP extends JavaPlugin {
             }
         }
         return false;
-    }
-
-    public void addDead(String name) {
-        this.deadPlayers.add(name);
-    }
-
-    public void removeDead(String name) {
-        this.deadPlayers.remove(name);
-    }
-
-    public boolean isDead(String name) {
-        return this.deadPlayers.contains(name);
-    }
-
-    public boolean isAntiPvpNPC(Entity entity) {
-        return this.npcManager.isNPC(entity);
-    }
-
-    public void despawnHumanByName(String npcName) {
-        this.npcManager.despawnHumanByName(npcName);
     }
 
     public NPC getOneHumanNPCByName(String name) {
@@ -126,87 +181,6 @@ public class DragonAntiPvP extends JavaPlugin {
                 this.additionalTimeIfUnderAttack * 20L);
     }
 
-    public void saveDeadPlayers() {
-        getLogger().log(Level.INFO,
-                "Saving " + this.deadPlayers.size() + " Dead Players.");
-        getDataFile().set("deadPlayers", this.deadPlayers);
-        saveDataFile();
-        getLogger().log(Level.INFO, "Saving Complete.");
-    }
-
-    public void loadDeadPlayers() {
-        if (getDataFile().getList("deadPlayers") == null) {
-            getLogger().log(Level.INFO, "Could not load any Dead Players.");
-            return;
-        }
-        this.deadPlayers = getDataFile().getStringList("deadPlayers");
-        getDataFile().set("deadPlayers", null);
-        saveDataFile();
-        getLogger().log(Level.INFO,
-                "Loaded " + this.deadPlayers.size() + " Dead Players.");
-    }
-
-    public YamlConfiguration loadDataFile() {
-        File df = new File(getDataFolder().toString() + File.separator
-                + "data.yml");
-        if (!df.exists()) {
-            try {
-                df.createNewFile();
-            } catch (IOException e) {
-                getLogger()
-                        .log(Level.SEVERE, "Could not create the data file!");
-                e.printStackTrace();
-            }
-        }
-        this.dataFile = YamlConfiguration.loadConfiguration(df);
-        return this.dataFile;
-    }
-
-    public YamlConfiguration getDataFile() {
-        return this.dataFile;
-    }
-
-    public void saveDataFile() {
-        File df = new File(getDataFolder().toString() + File.separator
-                + "data.yml");
-        try {
-            this.dataFile.save(df);
-        } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Could not save the data!");
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void saveConfig() {
-        getConfig().options().copyDefaults(true);
-        super.saveConfig();
-    }
-
-    public void loadConfig() {
-        Configuration config = getConfig();
-        this.spawnOnlyIfPlayerNearby = config
-                .getBoolean("npc.spawn.onlyIfPlayerNearby");
-        this.distance = config.getInt("npc.spawn.distance");
-        this.time = config.getInt("npc.spawn.time");
-
-        this.additionalTimeIfUnderAttack = config
-                .getInt("npc.spawn.additionalTimeIfUnderAttack");
-        this.broadcastMessageRadius = config
-                .getInt("npc.spawn.broadcastMessageRadius");
-        saveConfig();
-    }
-
-    public String getLang(String key) {
-        String text = this.lang.get(key);
-        if (text != null) {
-            return text;
-        }
-        text = getConfig().getString("language." + key);
-        this.lang.put(key, text);
-        return text;
-    }
-
     public void broadcastNearPlayer(Player playerForRadiusBroadcast,
             String message) {
         List<Player> players = playerForRadiusBroadcast.getWorld().getPlayers();
@@ -216,5 +190,29 @@ public class DragonAntiPvP extends JavaPlugin {
                 player.sendMessage(message);
             }
         }
+    }
+
+    public void addDead(String name) {
+        this.deadPlayers.add(name);
+    }
+
+    public void removeDead(String name) {
+        this.deadPlayers.remove(name);
+    }
+
+    public boolean isDead(String name) {
+        return this.deadPlayers.contains(name);
+    }
+
+    public boolean isAntiPvpNPC(Entity entity) {
+        return this.npcManager.isNPC(entity);
+    }
+
+    public void despawnHumanByName(String npcName) {
+        this.npcManager.despawnHumanByName(npcName);
+    }
+
+    public YamlConfiguration getDataFile() {
+        return this.dataFile;
     }
 }
