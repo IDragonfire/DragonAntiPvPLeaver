@@ -2,6 +2,7 @@ name: DragonAntiPvPLeaver
 author: DylanHolmes, IDragonfire
 version: 1.2
 main: com.github.idragonfire.DragonAntiPvPLeaver
+soft-depend: [WorldGuard]
     
 permissions:
   dragonantipvpleaver.bypass:
