@@ -18,13 +18,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.idragonfire.listener.AntiPvPListener;
+import com.github.idragonfire.listener.DragonAntiPvPLeaverListener;
 import com.github.idragonfire.metrics.Metrics;
 import com.topcat.npclib.NPCManager;
 import com.topcat.npclib.entity.HumanNPC;
 import com.topcat.npclib.entity.NPC;
 
-public class DragonAntiPvP extends JavaPlugin {
+public class DragonAntiPvPLeaver extends JavaPlugin {
     public static final Logger LOGGER = Logger.getLogger("Minecraft");
     private List<String> deadPlayers;
     private Map<String, DeSpawnTask> taskMap;
@@ -51,7 +51,7 @@ public class DragonAntiPvP extends JavaPlugin {
         this.lang = new HashMap<String, String>();
         loadConfig();
         loadDeadPlayers();
-        Bukkit.getPluginManager().registerEvents(new AntiPvPListener(this),
+        Bukkit.getPluginManager().registerEvents(new DragonAntiPvPLeaverListener(this),
                 this);
         this.npcManager = new NPCManager(this);
     }

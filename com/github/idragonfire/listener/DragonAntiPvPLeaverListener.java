@@ -11,7 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.github.idragonfire.DragonAntiPvP;
+import com.github.idragonfire.DragonAntiPvPLeaver;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -19,15 +19,15 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.topcat.npclib.entity.HumanNPC;
 
-public class AntiPvPListener implements Listener {
-    private DragonAntiPvP antiPvP;
+public class DragonAntiPvPLeaverListener implements Listener {
+    private DragonAntiPvPLeaver antiPvP;
 
-    public AntiPvPListener(DragonAntiPvP antiPvP) {
+    public DragonAntiPvPLeaverListener(DragonAntiPvPLeaver antiPvP) {
         this.antiPvP = antiPvP;
     }
 
     public static boolean canBypass(Player player) {
-        return player.hasPermission("dragonantipvp.bypass");
+        return player.hasPermission("dragonantipvpleaver.bypass");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

@@ -1,8 +1,8 @@
-name: DragonAntiPvP
+name: DragonAntiPvPLeaver
 author: DylanHolmes, IDragonfire
-version: 1.0
-main: com.github.idragonfire.DragonAntiPvP
+version: 1.2
+main: com.github.idragonfire.DragonAntiPvPLeaver
     
 permissions:
-  dragonantipvp.bypass:
+  dragonantipvpleaver.bypass:
     description: bypasses features
