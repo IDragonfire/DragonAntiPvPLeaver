@@ -10,7 +10,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.RegisteredListener;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
 import com.sk89q.worldguard.LocalPlayer;
@@ -21,7 +20,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
 
 public class DAntiPvPLeaverListener implements Listener {
-    private DAntiPvPLeaverPlugin antiPvP;
+    protected DAntiPvPLeaverPlugin antiPvP;
 
     public DAntiPvPLeaverListener(DAntiPvPLeaverPlugin antiPvP) {
         this.antiPvP = antiPvP;
@@ -90,22 +89,12 @@ public class DAntiPvPLeaverListener implements Listener {
                         npc.getName()));
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
-        if (event.isCancelled()) {
-            Bukkit.broadcastMessage("Some plugin cancel AntiPvP");
-
-        }
-        RegisteredListener[] listener = EntityDamageEvent.getHandlerList()
-                .getRegisteredListeners();
-        for (int i = 0; i < listener.length; i++) {
-            Bukkit.broadcastMessage(listener[i].getListener().toString());
-        }
         try {
             if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
                 return;
             }
-            event.setCancelled(false);
             Player npc = (Player) event.getEntity();
             this.antiPvP.npcFirstTimeAttacked(npc.getName());
         } catch (Exception e) {

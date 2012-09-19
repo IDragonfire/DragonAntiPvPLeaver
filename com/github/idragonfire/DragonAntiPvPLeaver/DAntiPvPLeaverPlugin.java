@@ -18,23 +18,27 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DAntiPvPLeaverListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DebugListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DirtyListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics;
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
 import com.topcat.npclib.DragonAntiPvPListener.entity.NPC;
 
 public class DAntiPvPLeaverPlugin extends JavaPlugin {
-    private List<String> deadPlayers;
-    private Map<String, DeSpawnTask> taskMap;
-    private YamlConfiguration dataFile;
-    private NPCManager npcManager;
-    private HashMap<String, String> lang;
+    protected List<String> deadPlayers;
+    protected Map<String, DeSpawnTask> taskMap;
+    protected YamlConfiguration dataFile;
+    protected NPCManager npcManager;
+    protected HashMap<String, String> lang;
 
-    private boolean spawnOnlyIfPlayerNearby;
-    private int distance;
-    private int time;
-    private int additionalTimeIfUnderAttack;
-    private int broadcastMessageRadius;
+    protected boolean debugMode;
+    protected boolean overwriteAllNpcDamageListener;
+    protected boolean spawnOnlyIfPlayerNearby;
+    protected int distance;
+    protected int time;
+    protected int additionalTimeIfUnderAttack;
+    protected int broadcastMessageRadius;
 
     @Override
     public void onEnable() {
@@ -49,8 +53,16 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         this.lang = new HashMap<String, String>();
         loadConfig();
         loadDeadPlayers();
-        Bukkit.getPluginManager().registerEvents(
-                new DAntiPvPLeaverListener(this), this);
+        if (this.debugMode) {
+            Bukkit.getPluginManager().registerEvents(new DebugListener(this),
+                    this);
+        } else if (this.overwriteAllNpcDamageListener) {
+            Bukkit.getPluginManager().registerEvents(new DirtyListener(this),
+                    this);
+        } else {
+            Bukkit.getPluginManager().registerEvents(
+                    new DAntiPvPLeaverListener(this), this);
+        }
         this.npcManager = new NPCManager(this);
     }
 
@@ -69,6 +81,9 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     public void loadConfig() {
         Configuration config = getConfig();
+        this.debugMode = config.getBoolean("plugin.debug");
+        this.overwriteAllNpcDamageListener = config
+                .getBoolean("plugin.overwriteAllNpcDamageListener");
         this.spawnOnlyIfPlayerNearby = config
                 .getBoolean("npc.spawn.onlyIfPlayerNearby");
         this.distance = config.getInt("npc.spawn.distance");

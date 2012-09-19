@@ -1,3 +1,9 @@
+plugin:
+  debug: false 
+  # some plugins, like AuthMe protects the NPC
+  # if your NPC take no damage set these value to true
+  # WARNING: everybody can kill the NPC if these value is true
+  overwriteAllNpcDamageListener: false
 npc:
   spawn:
     onlyIfPlayerNearby: true
