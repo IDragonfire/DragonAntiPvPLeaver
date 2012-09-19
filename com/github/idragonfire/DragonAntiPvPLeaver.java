@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,7 +24,6 @@ import com.topcat.npclib.entity.HumanNPC;
 import com.topcat.npclib.entity.NPC;
 
 public class DragonAntiPvPLeaver extends JavaPlugin {
-    public static final Logger LOGGER = Logger.getLogger("Minecraft");
     private List<String> deadPlayers;
     private Map<String, DeSpawnTask> taskMap;
     private YamlConfiguration dataFile;
@@ -51,8 +49,8 @@ public class DragonAntiPvPLeaver extends JavaPlugin {
         this.lang = new HashMap<String, String>();
         loadConfig();
         loadDeadPlayers();
-        Bukkit.getPluginManager().registerEvents(new DragonAntiPvPLeaverListener(this),
-                this);
+        Bukkit.getPluginManager().registerEvents(
+                new DragonAntiPvPLeaverListener(this), this);
         this.npcManager = new NPCManager(this);
     }
 
