@@ -1,4 +1,4 @@
-package com.github.idragonfire.listener;
+package com.github.idragonfire.DragonAntiPvPLeaver.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,18 +11,18 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.github.idragonfire.DragonAntiPvPLeaver;
+import com.github.idragonfire.DragonAntiPvPLeaver.DragonAntiPvPLeaverPlugin;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.topcat.npclib.entity.HumanNPC;
+import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
 
 public class DragonAntiPvPLeaverListener implements Listener {
-    private DragonAntiPvPLeaver antiPvP;
+    private DragonAntiPvPLeaverPlugin antiPvP;
 
-    public DragonAntiPvPLeaverListener(DragonAntiPvPLeaver antiPvP) {
+    public DragonAntiPvPLeaverListener(DragonAntiPvPLeaverPlugin antiPvP) {
         this.antiPvP = antiPvP;
     }
 

@@ -26,7 +26,7 @@
  * either expressed or implied, of anybody else.
  */
 
-package com.github.idragonfire.metrics;
+package com.github.idragonfire.DragonAntiPvPLeaver.metrics;
 
 import java.io.BufferedReader;
 import java.io.File;

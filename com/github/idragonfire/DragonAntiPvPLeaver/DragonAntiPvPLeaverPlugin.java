@@ -1,4 +1,4 @@
-package com.github.idragonfire;
+package com.github.idragonfire.DragonAntiPvPLeaver;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,13 +17,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.idragonfire.listener.DragonAntiPvPLeaverListener;
-import com.github.idragonfire.metrics.Metrics;
-import com.topcat.npclib.NPCManager;
-import com.topcat.npclib.entity.HumanNPC;
-import com.topcat.npclib.entity.NPC;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DragonAntiPvPLeaverListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics;
+import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
+import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
+import com.topcat.npclib.DragonAntiPvPListener.entity.NPC;
 
-public class DragonAntiPvPLeaver extends JavaPlugin {
+public class DragonAntiPvPLeaverPlugin extends JavaPlugin {
     private List<String> deadPlayers;
     private Map<String, DeSpawnTask> taskMap;
     private YamlConfiguration dataFile;

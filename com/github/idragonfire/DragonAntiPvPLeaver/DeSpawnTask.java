@@ -1,9 +1,9 @@
-package com.github.idragonfire;
+package com.github.idragonfire.DragonAntiPvPLeaver;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import com.topcat.npclib.NPCManager;
+import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 
 public class DeSpawnTask implements Runnable {
     private Plugin plugin;
