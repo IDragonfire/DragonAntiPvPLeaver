@@ -91,8 +91,10 @@ public class DragonAntiPvPLeaverListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
+        Bukkit.broadcastMessage("DamageEvent triggerd");
         try {
             if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
+                Bukkit.broadcastMessage("DamageEvent abort");
                 return;
             }
             Player npc = (Player) event.getEntity();
