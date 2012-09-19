@@ -11,7 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.DragonAntiPvPLeaverPlugin;
+import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -19,10 +19,10 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
 
-public class DragonAntiPvPLeaverListener implements Listener {
-    private DragonAntiPvPLeaverPlugin antiPvP;
+public class DAntiPvPLeaverListener implements Listener {
+    private DAntiPvPLeaverPlugin antiPvP;
 
-    public DragonAntiPvPLeaverListener(DragonAntiPvPLeaverPlugin antiPvP) {
+    public DAntiPvPLeaverListener(DAntiPvPLeaverPlugin antiPvP) {
         this.antiPvP = antiPvP;
     }
 
@@ -91,12 +91,11 @@ public class DragonAntiPvPLeaverListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
-        Bukkit.broadcastMessage("DamageEvent triggerd");
         try {
             if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
-                Bukkit.broadcastMessage("DamageEvent abort");
                 return;
             }
+            Bukkit.broadcastMessage("NPC damaged");
             Player npc = (Player) event.getEntity();
             this.antiPvP.npcFirstTimeAttacked(npc.getName());
         } catch (Exception e) {

@@ -1,7 +1,7 @@
 name: DragonAntiPvPLeaver
 author: DylanHolmes, IDragonfire
 version: 1.2
-main: com.github.idragonfire.DragonAntiPvPLeaver.DragonAntiPvPLeaverPlugin
+main: com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin
 soft-depend: [WorldGuard]
     
 permissions:

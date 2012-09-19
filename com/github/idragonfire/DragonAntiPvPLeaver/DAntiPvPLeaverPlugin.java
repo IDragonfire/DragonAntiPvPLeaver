@@ -17,13 +17,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DragonAntiPvPLeaverListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DAntiPvPLeaverListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics;
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
 import com.topcat.npclib.DragonAntiPvPListener.entity.NPC;
 
-public class DragonAntiPvPLeaverPlugin extends JavaPlugin {
+public class DAntiPvPLeaverPlugin extends JavaPlugin {
     private List<String> deadPlayers;
     private Map<String, DeSpawnTask> taskMap;
     private YamlConfiguration dataFile;
@@ -50,7 +50,7 @@ public class DragonAntiPvPLeaverPlugin extends JavaPlugin {
         loadConfig();
         loadDeadPlayers();
         Bukkit.getPluginManager().registerEvents(
-                new DragonAntiPvPLeaverListener(this), this);
+                new DAntiPvPLeaverListener(this), this);
         this.npcManager = new NPCManager(this);
     }
 
