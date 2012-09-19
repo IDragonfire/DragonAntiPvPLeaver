@@ -89,8 +89,11 @@ public class DAntiPvPLeaverListener implements Listener {
                         npc.getName()));
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
+        if (event.isCancelled()) {
+            Bukkit.broadcastMessage("Some plugin cancel AntiPvP");
+        }
         try {
             if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
                 return;
