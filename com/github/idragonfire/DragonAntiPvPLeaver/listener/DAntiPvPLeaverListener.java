@@ -98,7 +98,7 @@ public class DAntiPvPLeaverListener implements Listener {
             if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
                 return;
             }
-            Bukkit.broadcastMessage("NPC damaged");
+            event.setCancelled(false);
             Player npc = (Player) event.getEntity();
             this.antiPvP.npcFirstTimeAttacked(npc.getName());
         } catch (Exception e) {
