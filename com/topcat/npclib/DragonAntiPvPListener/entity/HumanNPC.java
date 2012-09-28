@@ -18,7 +18,18 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 import com.topcat.npclib.DragonAntiPvPListener.nms.NPCEntity;
 
 public class HumanNPC extends NPC {
-
+	private int _DroppedExp = 0;
+	
+	public int getDroppedExp()
+	{
+		return _DroppedExp;
+	}
+	
+	public void setDroppedExp(int exp)
+	{
+		_DroppedExp = exp;
+	}
+	
     public HumanNPC(NPCEntity npcEntity) {
         super(npcEntity);
     }

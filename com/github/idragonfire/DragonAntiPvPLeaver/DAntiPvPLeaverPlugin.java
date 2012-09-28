@@ -182,6 +182,13 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         ItemStack[] armourContents = player.getInventory().getArmorContents();
         npc.getInventory().setContents(invContents);
         npc.getInventory().setArmorContents(armourContents);
+        
+        //Formula for calculating dropped XP
+        int XP = player.getLevel() * 7;
+        if (XP > 100)
+        	XP = 100;
+        npc.setDroppedExp(XP);
+        
         DeSpawnTask task = new DeSpawnTask(name, this.npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
                 this.time * 20L);
