@@ -53,9 +53,11 @@ public class DAntiPvPLeaverListener implements Listener {
             return;
         }
         this.antiPvP.spawnHumanNPC(player, player.getLocation(), name);
-        String npcSpawned = this.antiPvP.getLang("npcSpawned");
-        this.antiPvP.broadcastNearPlayer(player, ChatColor.RED
-                + player.getName() + ChatColor.YELLOW + " " + npcSpawned);
+        if (this.antiPvP.printMessages()) {
+            String npcSpawned = this.antiPvP.getLang("npcSpawned");
+            this.antiPvP.broadcastNearPlayer(player, ChatColor.RED
+                    + player.getName() + ChatColor.YELLOW + " " + npcSpawned);
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -74,8 +76,10 @@ public class DAntiPvPLeaverListener implements Listener {
         player.setTotalExperience(0);
         player.setLevel(0);
         player.setHealth(0);
-        player.sendMessage(ChatColor.RED + " "
-                + this.antiPvP.getLang("yourNPCKilled"));
+        if (this.antiPvP.printMessages()) {
+            player.sendMessage(ChatColor.RED + " "
+                    + this.antiPvP.getLang("yourNPCKilled"));
+        }
         this.antiPvP.removeDead(player.getName());
     }
 
@@ -86,11 +90,14 @@ public class DAntiPvPLeaverListener implements Listener {
         }
         HumanNPC npc = (HumanNPC) this.antiPvP.getOneHumanNPCByName(event
                 .getEntity().getName());
-        event.setDroppedExp(npc.getDroppedExp());
+        // TODO: use own NPC class
+        // event.setDroppedExp(npc.getDroppedExp());
         this.antiPvP.addDead(npc.getName());
-        Bukkit.broadcastMessage(ChatColor.RED
-                + this.antiPvP.getLang("npcKilled").replace("<Player>",
-                        npc.getName()));
+        if (this.antiPvP.printMessages()) {
+            Bukkit.broadcastMessage(ChatColor.RED
+                    + this.antiPvP.getLang("npcKilled").replace("<Player>",
+                            npc.getName()));
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

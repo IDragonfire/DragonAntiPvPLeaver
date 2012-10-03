@@ -39,6 +39,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
     protected int time;
     protected int additionalTimeIfUnderAttack;
     protected int broadcastMessageRadius;
+    protected boolean printMessages;
 
     @Override
     public void onEnable() {
@@ -84,6 +85,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         this.debugMode = config.getBoolean("plugin.debug");
         this.overwriteAllNpcDamageListener = config
                 .getBoolean("plugin.overwriteAllNpcDamageListener");
+        this.printMessages = config.getBoolean("plugin.noMessages");
         this.spawnOnlyIfPlayerNearby = config
                 .getBoolean("npc.spawn.onlyIfPlayerNearby");
         this.distance = config.getInt("npc.spawn.distance");
@@ -182,13 +184,14 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         ItemStack[] armourContents = player.getInventory().getArmorContents();
         npc.getInventory().setContents(invContents);
         npc.getInventory().setArmorContents(armourContents);
-        
-        //Formula for calculating dropped XP
+
+        // Formula for calculating dropped XP
         int XP = player.getLevel() * 7;
-        if (XP > 100)
-        	XP = 100;
+        if (XP > 100) {
+            XP = 100;
+        }
         npc.setDroppedExp(XP);
-        
+
         DeSpawnTask task = new DeSpawnTask(name, this.npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
                 this.time * 20L);
@@ -234,5 +237,9 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     public YamlConfiguration getDataFile() {
         return this.dataFile;
+    }
+
+    public boolean printMessages() {
+        return this.printMessages;
     }
 }
