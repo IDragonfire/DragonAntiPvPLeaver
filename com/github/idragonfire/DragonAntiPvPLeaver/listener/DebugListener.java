@@ -28,6 +28,19 @@ public class DebugListener extends DAntiPvPLeaverListener {
     @Override
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
+        if (this.antiPvP.isDead(event.getPlayer().getName())) {
+            super.antiPvP.getLogger().log(
+                    Level.WARNING,
+                    "NPC of " + event.getPlayer().getName()
+                            + " died. Plugin try to kill him.");
+            RegisteredListener[] listener = EntityDamageEvent.getHandlerList()
+                    .getRegisteredListeners();
+            for (int i = 0; i < listener.length; i++) {
+                super.antiPvP.getLogger().log(Level.WARNING,
+                        listener[i].getListener().toString());
+            }
+        }
+
         super.onPlayerJoin(event);
     }
 
@@ -57,6 +70,7 @@ public class DebugListener extends DAntiPvPLeaverListener {
             event.setCancelled(false);
             Player npc = (Player) event.getEntity();
             super.antiPvP.npcFirstTimeAttacked(npc.getName());
+            super.antiPvP.getLogger().log(Level.WARNING, "increase time");
         } catch (Exception e) {
             e.printStackTrace();
         }
