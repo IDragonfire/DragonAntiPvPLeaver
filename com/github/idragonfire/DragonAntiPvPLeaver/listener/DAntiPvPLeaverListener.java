@@ -12,6 +12,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
+import com.massivecraft.factions.Board;
+import com.massivecraft.factions.FLocation;
+import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.struct.FFlag;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -36,6 +40,16 @@ public class DAntiPvPLeaverListener implements Listener {
         if (canBypass(player) || (player.getGameMode().getValue() == 1)) {
             return;
         }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
+            Faction playerFaction = Board.getFactionAt(new FLocation(player
+                    .getLocation()));
+            if (!playerFaction.getFlag(FFlag.PVP)
+                    || playerFaction.getFlag(FFlag.PEACEFUL)) {
+                return;
+            }
+        }
+
         String name = player.getName();
         if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
             WorldGuardPlugin worldGuard = (WorldGuardPlugin) Bukkit
