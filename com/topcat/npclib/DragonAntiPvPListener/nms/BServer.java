@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jline.console.ConsoleReader;
 import net.minecraft.server.DedicatedServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PropertyManager;
@@ -16,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
 
 /**
  * Server hacks for Bukkit

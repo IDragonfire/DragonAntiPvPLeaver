@@ -72,13 +72,13 @@ public class BWorld {
     }
 
     public boolean createExplosion(double x, double y, double z, float power) {
-        return this.wServer.explode(null, x, y, z, power).wasCanceled ? false
+        return this.wServer.explode(null, x, y, z, power, false).wasCanceled ? false
                 : true;
     }
 
     public boolean createExplosion(Location l, float power) {
-        return this.wServer.explode(null, l.getX(), l.getY(), l.getZ(), power).wasCanceled ? false
-                : true;
+        return this.wServer.explode(null, l.getX(), l.getY(), l.getZ(), power,
+                false).wasCanceled ? false : true;
     }
 
     @SuppressWarnings("unchecked")
