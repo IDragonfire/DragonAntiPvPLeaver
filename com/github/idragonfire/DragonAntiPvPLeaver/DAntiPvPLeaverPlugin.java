@@ -85,7 +85,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         this.debugMode = config.getBoolean("plugin.debug");
         this.overwriteAllNpcDamageListener = config
                 .getBoolean("plugin.overwriteAllNpcDamageListener");
-        this.printMessages = config.getBoolean("plugin.noMessages");
+        this.printMessages = config.getBoolean("plugin.printMessages");
         this.spawnOnlyIfPlayerNearby = config
                 .getBoolean("npc.spawn.onlyIfPlayerNearby");
         this.distance = config.getInt("npc.spawn.distance");
