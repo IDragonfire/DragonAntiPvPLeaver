@@ -5,8 +5,12 @@ plugin:
   # WARNING: everybody can kill the NPC if these value is true
   overwriteAllNpcDamageListener: false
   printMessages: true
+  # options: automaticDownload, onlyNotify or off
+  autoupdate: notify 
 npc:
   spawn:
+    # valid colors: http://www.minecraftwiki.net/wiki/Classic_server_protocol#Color_Codes
+    nameTagColor: '&f'
     onlyIfPlayerNearby: true
     distance: 8
     time: 10
@@ -18,4 +22,8 @@ language:
   npcSpawned: NPC spawned
   npcKilled: <Player>s NPC has been killed while combat logged
   yourNPCKilled: Your NPC has been killed while combat logged
-        
+metrics:
+  # activate/deactivate metrics graphs opt-out
+  listenerMode: true
+  worldGuardUsage: true
+  factionsUsage: true

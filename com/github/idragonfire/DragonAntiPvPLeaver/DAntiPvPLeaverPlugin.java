@@ -3,12 +3,13 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.h31ix.updater.DragonAntiPvpLeaver.Updater;
+import net.h31ix.updater.DragonAntiPvpLeaver.Updater.UpdateResult;
 import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.NBTTagList;
 import net.minecraft.server.NBTTagString;
@@ -40,8 +41,6 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
     protected NPCManager npcManager;
     protected HashMap<String, String> lang;
 
-    protected boolean debugMode;
-    protected boolean overwriteAllNpcDamageListener;
     protected boolean spawnOnlyIfPlayerNearby;
     protected int distance;
     protected int time;
@@ -58,11 +57,12 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         loadDeadPlayers();
 
         String listenerMode = "normal";
-        if (this.debugMode) {
+        if (getConfig().getBoolean("plugin.debug")) {
             Bukkit.getPluginManager().registerEvents(new DebugListener(this),
                     this);
             listenerMode = "debug";
-        } else if (this.overwriteAllNpcDamageListener) {
+        } else if (getConfig().getBoolean(
+                "plugin.overwriteAllNpcDamageListener")) {
             Bukkit.getPluginManager().registerEvents(new DirtyListener(this),
                     this);
             listenerMode = "overwrite";
@@ -71,15 +71,94 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
                     new DAntiPvPLeaverListener(this), this);
         }
         this.npcManager = new NPCManager(this);
+
+        enableMetrics(listenerMode);
+        enableAutoUpdate();
+    }
+
+    protected void enableMetrics(String listenerMode) {
         try {
             Metrics metrics = new Metrics(this);
 
-            // custom graph #1 - Listener Mode
-            final Graph listenerGraph = metrics.createGraph("Listener Mode");
-            listenerGraph.addPlotter(new SimplePlotter(listenerMode));
+            if (getConfig().getBoolean("metrics.listenerMode")) {
+                // custom graph #1 - Listener Mode
+                final Graph listenerGraph = metrics
+                        .createGraph("Listener Mode");
+                listenerGraph.addPlotter(new SimplePlotter(listenerMode));
+            }
+
+            if (getConfig().getBoolean("metrics.listenerMode")) {
+                // custom graph #2 - WorldGuard Usage
+                final Graph worldGuardGraph = metrics
+                        .createGraph("WorldGuard Usage");
+                if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+                    worldGuardGraph.addPlotter(new SimplePlotter(Bukkit
+                            .getPluginManager().getPlugin("WorldGuard")
+                            .getDescription().getVersion()));
+                } else {
+                    worldGuardGraph.addPlotter(new SimplePlotter("no"));
+                }
+            }
+
+            if (getConfig().getBoolean("metrics.factionsUsage")) {
+                // custom graph #3 - Factions Usage
+                final Graph factionsGraph = metrics
+                        .createGraph("Factions Usage");
+                if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
+                    factionsGraph.addPlotter(new SimplePlotter(Bukkit
+                            .getPluginManager().getPlugin("Factions")
+                            .getDescription().getVersion()));
+                } else {
+                    factionsGraph.addPlotter(new SimplePlotter("no"));
+                }
+            }
 
             metrics.start();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void enableAutoUpdate() {
+        try {
+            String updateMode = getConfig().getString("plugin.autoupdate");
+            if (updateMode.equals("off")) {
+                return;
+            }
+            Updater.UpdateType updateType = Updater.UpdateType.NO_DOWNLOAD;
+            if (updateMode.equals("automaticDownload")) {
+                updateType = Updater.UpdateType.DEFAULT;
+            }
+            Updater updater = new Updater(this, "dragonantipvpleaver",
+                    getFile(), updateType, false);
+            UpdateResult result = updater.getResult();
+            switch (result) {
+            case UPDATE_AVAILABLE:
+                getLogger().log(Level.INFO, "#########################");
+                getLogger().log(Level.INFO, "New version available: ");
+                getLogger().log(Level.INFO, updater.getLatestVersionString());
+                getLogger().log(Level.INFO,
+                        "Your version: " + getDescription().getVersion());
+                getLogger().log(Level.INFO, "#########################");
+                break;
+            case SUCCESS:
+                getLogger().log(
+                        Level.INFO,
+                        "downloaded successfull "
+                                + updater.getLatestVersionString()
+                                + ". Updating plugin at next server restart!");
+                break;
+            case NO_UPDATE:
+                break;
+
+            default:
+                getLogger().log(Level.WARNING, " Updater has problems");
+                break;
+            }
+            if (result == UpdateResult.UPDATE_AVAILABLE) {
+
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -99,9 +178,6 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     public void loadConfig() {
         Configuration config = getConfig();
-        this.debugMode = config.getBoolean("plugin.debug");
-        this.overwriteAllNpcDamageListener = config
-                .getBoolean("plugin.overwriteAllNpcDamageListener");
         this.printMessages = config.getBoolean("plugin.printMessages");
         this.spawnOnlyIfPlayerNearby = config
                 .getBoolean("npc.spawn.onlyIfPlayerNearby");
@@ -259,37 +335,6 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     public boolean printMessages() {
         return this.printMessages;
-    }
-
-    public void logException(Exception e) {
-        StringBuffer buf = new StringBuffer();
-        buf.append("\n===== start copy Exception from ");
-        buf.append(getName());
-        buf.append("  =====");
-        StackTraceElement[] stack = e.getStackTrace();
-        for (int i = 0; i < stack.length; i++) {
-            buf.append("\n");
-            buf.append(stack[i]);
-        }
-        buf.append("\n ----------");
-        buf.append("\n plugin: ");
-        buf.append(getName());
-        buf.append("\nversion: ");
-        buf.append(getDescription().getVersion());
-        buf.append("\nPlugins loaded: ");
-        buf.append(Arrays.asList(Bukkit.getPluginManager().getPlugins()));
-        buf.append("\nCraftBukkit version: ");
-        buf.append(Bukkit.getServer().getBukkitVersion());
-        buf.append("\nJava info: ");
-        buf.append(System.getProperty("java.version"));
-        buf.append("\nOS info: ");
-        buf.append(System.getProperty("os.arch"));
-        buf.append(" ");
-        buf.append(System.getProperty("os.name"));
-        buf.append(", ");
-        buf.append(System.getProperty("os.version"));
-        buf.append("\n===== end copy =====");
-        System.out.print(buf.toString());
     }
 
     public static ItemStack setItemNameAndLore(ItemStack item, String name,
