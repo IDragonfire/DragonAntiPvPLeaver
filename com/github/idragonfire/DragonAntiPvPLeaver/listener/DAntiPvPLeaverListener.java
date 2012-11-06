@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
 import com.massivecraft.factions.Board;
@@ -42,11 +43,20 @@ public class DAntiPvPLeaverListener implements Listener {
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
-            Faction playerFaction = Board.getFactionAt(new FLocation(player
-                    .getLocation()));
-            if (!playerFaction.getFlag(FFlag.PVP)
-                    || playerFaction.getFlag(FFlag.PEACEFUL)) {
-                return;
+            Plugin factions = Bukkit.getPluginManager().getPlugin("Factions");
+            // TODO: remove old Factions support
+            if (factions.getDescription().getVersion().startsWith("1.6")) {
+                if (Board.getFactionAt(new FLocation(player.getLocation()))
+                        .isSafeZone()) {
+                    return;
+                }
+            } else {
+                Faction playerFaction = Board.getFactionAt(new FLocation(player
+                        .getLocation()));
+                if (!playerFaction.getFlag(FFlag.PVP)
+                        || playerFaction.getFlag(FFlag.PEACEFUL)) {
+                    return;
+                }
             }
         }
 
@@ -77,6 +87,11 @@ public class DAntiPvPLeaverListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        // player.setItemInHand(DAntiPvPLeaverPlugin.setItemNameAndLore(
+        // new ItemStack(Material.STICK), ChatColor.GOLD
+        // + "DragonAntiPvpLeaver", new String[] {
+        // "Your NPC was killed",
+        // ChatColor.RED + "NEVER LOG OUT IN COMBAT" }));
         if (canBypass(player)) {
             return;
         }
