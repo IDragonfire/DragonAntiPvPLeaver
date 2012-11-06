@@ -3,15 +3,21 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import net.minecraft.server.NBTTagCompound;
+import net.minecraft.server.NBTTagList;
+import net.minecraft.server.NBTTagString;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +27,8 @@ import com.github.idragonfire.DragonAntiPvPLeaver.listener.DAntiPvPLeaverListene
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DebugListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DirtyListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics;
+import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Graph;
+import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Plotter;
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
 import com.topcat.npclib.DragonAntiPvPListener.entity.NPC;
@@ -43,28 +51,37 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        try {
-            Metrics metrics = new Metrics(this);
-            metrics.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         this.deadPlayers = new ArrayList<String>();
         this.taskMap = new HashMap<String, DeSpawnTask>();
         this.lang = new HashMap<String, String>();
         loadConfig();
         loadDeadPlayers();
+
+        String listenerMode = "normal";
         if (this.debugMode) {
             Bukkit.getPluginManager().registerEvents(new DebugListener(this),
                     this);
+            listenerMode = "debug";
         } else if (this.overwriteAllNpcDamageListener) {
             Bukkit.getPluginManager().registerEvents(new DirtyListener(this),
                     this);
+            listenerMode = "overwrite";
         } else {
             Bukkit.getPluginManager().registerEvents(
                     new DAntiPvPLeaverListener(this), this);
         }
         this.npcManager = new NPCManager(this);
+        try {
+            Metrics metrics = new Metrics(this);
+
+            // custom graph #1 - Listener Mode
+            final Graph listenerGraph = metrics.createGraph("Listener Mode");
+            listenerGraph.addPlotter(new SimplePlotter(listenerMode));
+
+            metrics.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -179,6 +196,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
     }
 
     public HumanNPC spawnHumanNPC(Player player, Location loc, String name) {
+        // TODO: ChatColor for NPC name?
         HumanNPC npc = (HumanNPC) this.npcManager.spawnHumanNPC(name, loc);
         ItemStack[] invContents = player.getInventory().getContents();
         ItemStack[] armourContents = player.getInventory().getArmorContents();
@@ -241,5 +259,81 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     public boolean printMessages() {
         return this.printMessages;
+    }
+
+    public void logException(Exception e) {
+        StringBuffer buf = new StringBuffer();
+        buf.append("\n===== start copy Exception from ");
+        buf.append(getName());
+        buf.append("  =====");
+        StackTraceElement[] stack = e.getStackTrace();
+        for (int i = 0; i < stack.length; i++) {
+            buf.append("\n");
+            buf.append(stack[i]);
+        }
+        buf.append("\n ----------");
+        buf.append("\n plugin: ");
+        buf.append(getName());
+        buf.append("\nversion: ");
+        buf.append(getDescription().getVersion());
+        buf.append("\nPlugins loaded: ");
+        buf.append(Arrays.asList(Bukkit.getPluginManager().getPlugins()));
+        buf.append("\nCraftBukkit version: ");
+        buf.append(Bukkit.getServer().getBukkitVersion());
+        buf.append("\nJava info: ");
+        buf.append(System.getProperty("java.version"));
+        buf.append("\nOS info: ");
+        buf.append(System.getProperty("os.arch"));
+        buf.append(" ");
+        buf.append(System.getProperty("os.name"));
+        buf.append(", ");
+        buf.append(System.getProperty("os.version"));
+        buf.append("\n===== end copy =====");
+        System.out.print(buf.toString());
+    }
+
+    public static ItemStack setItemNameAndLore(ItemStack item, String name,
+            String[] lore) {
+        CraftItemStack craftItem;
+        if (item instanceof CraftItemStack) {
+            craftItem = (CraftItemStack) item;
+        } else {
+            craftItem = new CraftItemStack(item);
+        }
+
+        NBTTagCompound tag = craftItem.getHandle().tag;
+        if (tag == null) {
+            tag = new NBTTagCompound();
+            craftItem.getHandle().tag = tag;
+        }
+        NBTTagCompound disp = tag.getCompound("display");
+        if (disp == null) {
+            disp = new NBTTagCompound("display");
+        }
+
+        disp.setString("Name", name);
+
+        if (lore != null && lore.length > 0) {
+            NBTTagList list = new NBTTagList("Lore");
+            disp.set("Lore", list);
+            for (String l : lore) {
+                list.add(new NBTTagString("", l));
+            }
+        }
+
+        tag.setCompound("display", disp);
+
+        return craftItem;
+    }
+
+    private class SimplePlotter extends Plotter {
+        public SimplePlotter(final String name) {
+            super(name);
+        }
+
+        @Override
+        public int getValue() {
+            return 1;
+        }
     }
 }
