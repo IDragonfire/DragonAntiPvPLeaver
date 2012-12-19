@@ -120,7 +120,9 @@ public class DAntiPvPLeaverListener implements Listener {
         HumanNPC npc = (HumanNPC) this.antiPvP.getOneHumanNPCByName(event
                 .getEntity().getName());
         // TODO: use own NPC class
+        // if (this.antiPvP.hasVanillaExpDrop()) {
         // event.setDroppedExp(npc.getDroppedExp());
+        // }
         this.antiPvP.addDead(npc.getName());
         if (this.antiPvP.printMessages()) {
             Bukkit.broadcastMessage(ChatColor.RED

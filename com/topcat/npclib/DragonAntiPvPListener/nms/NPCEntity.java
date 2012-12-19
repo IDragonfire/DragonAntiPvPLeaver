@@ -1,13 +1,13 @@
 package com.topcat.npclib.DragonAntiPvPListener.nms;
 
-import net.minecraft.server.Entity;
-import net.minecraft.server.EntityHuman;
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.EnumGamemode;
-import net.minecraft.server.ItemInWorldManager;
-import net.minecraft.server.WorldServer;
+import net.minecraft.server.v1_4_5.Entity;
+import net.minecraft.server.v1_4_5.EntityHuman;
+import net.minecraft.server.v1_4_5.EntityPlayer;
+import net.minecraft.server.v1_4_5.EnumGamemode;
+import net.minecraft.server.v1_4_5.ItemInWorldManager;
+import net.minecraft.server.v1_4_5.WorldServer;
 
-import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.v1_4_5.CraftServer;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
@@ -42,18 +42,18 @@ public class NPCEntity extends EntityPlayer {
     }
 
     @Override
-    public boolean c(EntityHuman entity) {
+    public boolean a(EntityHuman entity) {
         EntityTargetEvent event = new NpcEntityTargetEvent(getBukkitEntity(),
                 entity.getBukkitEntity(),
                 NpcEntityTargetEvent.NpcTargetReason.NPC_RIGHTCLICKED);
         CraftServer server = ((WorldServer) this.world).getServer();
         server.getPluginManager().callEvent(event);
 
-        return super.c(entity);
+        return super.a(entity);
     }
 
     @Override
-    public void b_(EntityHuman entity) {
+    public void c_(EntityHuman entity) {
         if ((this.lastBounceId != entity.id || System.currentTimeMillis()
                 - this.lastBounceTick > 1000)
                 && entity.getBukkitEntity().getLocation().distanceSquared(
@@ -77,7 +77,7 @@ public class NPCEntity extends EntityPlayer {
             this.lastTargetId = entity.id;
         }
 
-        super.b_(entity);
+        super.c_(entity);
     }
 
     @Override

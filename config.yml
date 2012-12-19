@@ -8,16 +8,16 @@ plugin:
   # options: automaticDownload, onlyNotify or off
   autoupdate: notify 
 npc:
+  # valid colors: http://www.minecraftwiki.net/wiki/Classic_server_protocol#Color_Codes
+  nameTagColor: 'f'
+  # options: vanilla or none
+  expdrop: vanilla
   spawn:
-    # valid colors: http://www.minecraftwiki.net/wiki/Classic_server_protocol#Color_Codes
-    nameTagColor: '&f'
     onlyIfPlayerNearby: true
     distance: 8
     time: 10
     additionalTimeIfUnderAttack: 15
     broadcastMessageRadius: 32
-    # options: vanilla or none
-    expdrop: vanilla
 language:
   npcSpawned: NPC spawned
   npcKilled: <Player>s NPC has been killed while combat logged

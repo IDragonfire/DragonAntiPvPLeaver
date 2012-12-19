@@ -10,15 +10,11 @@ import java.util.logging.Level;
 
 import net.h31ix.updater.DragonAntiPvpLeaver.Updater;
 import net.h31ix.updater.DragonAntiPvpLeaver.Updater.UpdateResult;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -47,6 +43,8 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
     protected int additionalTimeIfUnderAttack;
     protected int broadcastMessageRadius;
     protected boolean printMessages;
+    protected boolean vanillaExpDrop;
+    protected String npcTagNameColor;
 
     @Override
     public void onEnable() {
@@ -188,7 +186,13 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
                 .getInt("npc.spawn.additionalTimeIfUnderAttack");
         this.broadcastMessageRadius = config
                 .getInt("npc.spawn.broadcastMessageRadius");
+        this.vanillaExpDrop = config.getBoolean("npc.expdrop");
+        this.npcTagNameColor = config.getString("npc.nameTagColor");
         saveConfig();
+    }
+
+    public boolean hasVanillaExpDrop() {
+        return this.vanillaExpDrop;
     }
 
     public void saveDeadPlayers() {
@@ -262,18 +266,29 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         return false;
     }
 
+    public void despawnHumanByName(String playerName) {
+        this.npcManager.despawnHumanByName(playerNameToNpcName(playerName));
+    }
+
     public NPC getOneHumanNPCByName(String name) {
         try {
-            return this.npcManager.getHumanNPCByName(name).get(0);
+            return this.npcManager.getHumanNPCByName(playerNameToNpcName(name))
+                    .get(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    public String playerNameToNpcName(String playername) {
+        return playername;
+        // return Joiner.on("").join("\u00A7", this.npcTagNameColor, playername);
+    }
+
     public HumanNPC spawnHumanNPC(Player player, Location loc, String name) {
         // TODO: ChatColor for NPC name?
-        HumanNPC npc = (HumanNPC) this.npcManager.spawnHumanNPC(name, loc);
+        HumanNPC npc = (HumanNPC) this.npcManager.spawnHumanNPC(
+                playerNameToNpcName(name), loc);
         ItemStack[] invContents = player.getInventory().getContents();
         ItemStack[] armourContents = player.getInventory().getArmorContents();
         npc.getInventory().setContents(invContents);
@@ -325,10 +340,6 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         return this.npcManager.isNPC(entity);
     }
 
-    public void despawnHumanByName(String npcName) {
-        this.npcManager.despawnHumanByName(npcName);
-    }
-
     public YamlConfiguration getDataFile() {
         return this.dataFile;
     }
@@ -339,36 +350,38 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     public static ItemStack setItemNameAndLore(ItemStack item, String name,
             String[] lore) {
-        CraftItemStack craftItem;
-        if (item instanceof CraftItemStack) {
-            craftItem = (CraftItemStack) item;
-        } else {
-            craftItem = new CraftItemStack(item);
-        }
-
-        NBTTagCompound tag = craftItem.getHandle().tag;
-        if (tag == null) {
-            tag = new NBTTagCompound();
-            craftItem.getHandle().tag = tag;
-        }
-        NBTTagCompound disp = tag.getCompound("display");
-        if (disp == null) {
-            disp = new NBTTagCompound("display");
-        }
-
-        disp.setString("Name", name);
-
-        if (lore != null && lore.length > 0) {
-            NBTTagList list = new NBTTagList("Lore");
-            disp.set("Lore", list);
-            for (String l : lore) {
-                list.add(new NBTTagString("", l));
-            }
-        }
-
-        tag.setCompound("display", disp);
-
-        return craftItem;
+        // feature
+        return null;
+        // CraftItemStack craftItem;
+        // if (item instanceof CraftItemStack) {
+        // craftItem = (CraftItemStack) item;
+        // } else {
+        // craftItem = new CraftItemStack(item);
+        // }
+        //
+        // NBTTagCompound tag = craftItem.getHandle().tag;
+        // if (tag == null) {
+        // tag = new NBTTagCompound();
+        // craftItem.getHandle().tag = tag;
+        // }
+        // NBTTagCompound disp = tag.getCompound("display");
+        // if (disp == null) {
+        // disp = new NBTTagCompound("display");
+        // }
+        //
+        // disp.setString("Name", name);
+        //
+        // if (lore != null && lore.length > 0) {
+        // NBTTagList list = new NBTTagList("Lore");
+        // disp.set("Lore", list);
+        // for (String l : lore) {
+        // list.add(new NBTTagString("", l));
+        // }
+        // }
+        //
+        // tag.setCompound("display", disp);
+        //
+        // return craftItem;
     }
 
     private class SimplePlotter extends Plotter {

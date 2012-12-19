@@ -3,11 +3,11 @@ package com.topcat.npclib.DragonAntiPvPListener.pathing;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.server.AxisAlignedBB;
+import net.minecraft.server.v1_4_5.AxisAlignedBB;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.v1_4_5.CraftWorld;
 
 public class Node { // Holds data about each block we check
 
@@ -38,7 +38,7 @@ public class Node { // Holds data about each block we check
     public void update() {
         this.notsolid = true;
         if (this.b.getType() != Material.AIR) {
-            AxisAlignedBB box = net.minecraft.server.Block.byId[this.b
+            AxisAlignedBB box = net.minecraft.server.v1_4_5.Block.byId[this.b
                     .getTypeId()].e(((CraftWorld) this.b.getWorld())
                     .getHandle(), this.b.getX(), this.b.getY(), this.b.getZ());
             if (box != null) {
