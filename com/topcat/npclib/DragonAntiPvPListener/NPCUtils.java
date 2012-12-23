@@ -1,11 +1,11 @@
 package com.topcat.npclib.DragonAntiPvPListener;
 
-import net.minecraft.server.v1_4_5.Packet;
+import net.minecraft.server.v1_4_6.Packet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,7 +26,7 @@ public class NPCUtils {
                 continue;
             }
 
-            ((CraftPlayer) p).getHandle().netServerHandler.sendPacket(packet);
+            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
         }
     }
 
