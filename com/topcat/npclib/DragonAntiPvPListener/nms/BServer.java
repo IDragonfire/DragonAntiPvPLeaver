@@ -5,17 +5,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_4_5.DedicatedServer;
-import net.minecraft.server.v1_4_5.MinecraftServer;
-import net.minecraft.server.v1_4_5.PropertyManager;
-import net.minecraft.server.v1_4_5.ServerConfigurationManager;
-import net.minecraft.server.v1_4_5.WorldServer;
+import net.minecraft.server.v1_4_6.DedicatedServer;
+import net.minecraft.server.v1_4_6.MinecraftServer;
+import net.minecraft.server.v1_4_6.PropertyManager;
+import net.minecraft.server.v1_4_6.DedicatedPlayerList;
+import net.minecraft.server.v1_4_6.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.jline.console.ConsoleReader;
-import org.bukkit.craftbukkit.v1_4_5.CraftServer;
+import org.bukkit.craftbukkit.v1_4_6.CraftServer;
 
 /**
  * Server hacks for Bukkit
@@ -48,7 +48,7 @@ public class BServer {
         this.cServer.dispatchCommand(sender, msg);
     }
 
-    public ServerConfigurationManager getHandle() {
+    public DedicatedPlayerList getHandle() {
         return this.cServer.getHandle();
     }
 
