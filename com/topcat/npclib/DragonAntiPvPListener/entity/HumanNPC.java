@@ -2,10 +2,10 @@ package com.topcat.npclib.DragonAntiPvPListener.entity;
 
 import java.util.Arrays;
 
-import net.minecraft.server.v1_4_5.EntityPlayer;
-import net.minecraft.server.v1_4_5.Packet18ArmAnimation;
-import net.minecraft.server.v1_4_5.Packet5EntityEquipment;
-import net.minecraft.server.v1_4_5.WorldServer;
+import net.minecraft.server.v1_4_6.EntityPlayer;
+import net.minecraft.server.v1_4_6.Packet18ArmAnimation;
+import net.minecraft.server.v1_4_6.Packet5EntityEquipment;
+import net.minecraft.server.v1_4_6.WorldServer;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,7 +18,7 @@ import com.topcat.npclib.DragonAntiPvPListener.NPCUtils;
 import com.topcat.npclib.DragonAntiPvPListener.nms.NPCEntity;
 
 public class HumanNPC extends NPC {
-    private net.minecraft.server.v1_4_5.ItemStack[] previousEquipment = { null,
+    private net.minecraft.server.v1_4_6.ItemStack[] previousEquipment = { null,
             null, null, null, null };
 
     // TODO: refactor to new DragonNPC class
@@ -73,14 +73,14 @@ public class HumanNPC extends NPC {
         int changes = 0;
 
         for (int i = 0; i < this.previousEquipment.length; i++) {
-            net.minecraft.server.v1_4_5.ItemStack previous = this.previousEquipment[i];
-            net.minecraft.server.v1_4_5.ItemStack current = ((EntityPlayer) getEntity())
+            net.minecraft.server.v1_4_6.ItemStack previous = this.previousEquipment[i];
+            net.minecraft.server.v1_4_6.ItemStack current = ((EntityPlayer) getEntity())
                     .getEquipment(i);
             if (current == null) {
                 continue;
             }
 
-            if (!net.minecraft.server.v1_4_5.ItemStack
+            if (!net.minecraft.server.v1_4_6.ItemStack
                     .equals(previous, current)
                     || (previous != null && !previous.equals(current))) {
                 NPCUtils.sendPacketNearby(getBukkitEntity().getLocation(),
@@ -126,6 +126,6 @@ public class HumanNPC extends NPC {
         }
         getEntity().yaw = (float) (newYaw - 90);
         getEntity().pitch = (float) newPitch;
-        ((EntityPlayer) getEntity()).bS = (float) (newYaw - 90);
+        ((EntityPlayer) getEntity()).bT = (float) (newYaw - 90);
     }
 }
