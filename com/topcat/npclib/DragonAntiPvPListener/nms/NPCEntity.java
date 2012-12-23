@@ -1,13 +1,13 @@
 package com.topcat.npclib.DragonAntiPvPListener.nms;
 
-import net.minecraft.server.v1_4_5.Entity;
-import net.minecraft.server.v1_4_5.EntityHuman;
-import net.minecraft.server.v1_4_5.EntityPlayer;
-import net.minecraft.server.v1_4_5.EnumGamemode;
-import net.minecraft.server.v1_4_5.ItemInWorldManager;
-import net.minecraft.server.v1_4_5.WorldServer;
+import net.minecraft.server.v1_4_6.Entity;
+import net.minecraft.server.v1_4_6.EntityHuman;
+import net.minecraft.server.v1_4_6.EntityPlayer;
+import net.minecraft.server.v1_4_6.EnumGamemode;
+import net.minecraft.server.v1_4_6.PlayerInteractManager;
+import net.minecraft.server.v1_4_6.WorldServer;
 
-import org.bukkit.craftbukkit.v1_4_5.CraftServer;
+import org.bukkit.craftbukkit.v1_4_6.CraftServer;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
@@ -23,13 +23,13 @@ public class NPCEntity extends EntityPlayer {
     private int lastBounceId;
 
     public NPCEntity(NPCManager npcManager, BWorld world, String s,
-            ItemInWorldManager itemInWorldManager) {
+        	PlayerInteractManager playerInteractManager) {
         super(npcManager.getServer().getMCServer(), world.getWorldServer(), s,
-                itemInWorldManager);
+        		playerInteractManager);
 
-        itemInWorldManager.b(EnumGamemode.SURVIVAL);
+        playerInteractManager.b(EnumGamemode.SURVIVAL);
 
-        this.netServerHandler = new NPCNetHandler(npcManager, this);
+        this.playerConnection = new NPCNetHandler(npcManager, this);
         this.lastTargetId = -1;
         this.lastBounceId = -1;
         this.lastBounceTick = 0;
