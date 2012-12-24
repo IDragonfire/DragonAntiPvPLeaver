@@ -22,7 +22,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
 
 public class DAntiPvPLeaverListener implements Listener {
     protected DAntiPvPLeaverPlugin antiPvP;
@@ -60,7 +59,6 @@ public class DAntiPvPLeaverListener implements Listener {
             }
         }
 
-        String name = player.getName();
         if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
             WorldGuardPlugin worldGuard = (WorldGuardPlugin) Bukkit
                     .getPluginManager().getPlugin("WorldGuard");
@@ -76,7 +74,7 @@ public class DAntiPvPLeaverListener implements Listener {
         if (!this.antiPvP.playersNearby(player)) {
             return;
         }
-        this.antiPvP.spawnHumanNPC(player, player.getLocation(), name);
+        this.antiPvP.spawnHumanNPC(player, player.getLocation());
         if (this.antiPvP.printMessages()) {
             String npcSpawned = this.antiPvP.getLang("npcSpawned");
             this.antiPvP.broadcastNearPlayer(player, ChatColor.RED
@@ -114,21 +112,22 @@ public class DAntiPvPLeaverListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
+        // TODO: get npc id
         if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
             return;
         }
-        HumanNPC npc = (HumanNPC) this.antiPvP.getOneHumanNPCByName(event
-                .getEntity().getName());
+        // HumanNPC npc = (HumanNPC) this.antiPvP.getOneHumanNPCByName(event
+        // .getEntity().getName());
         // TODO: use own NPC class
         // if (this.antiPvP.hasVanillaExpDrop()) {
         // event.setDroppedExp(npc.getDroppedExp());
         // }
-        this.antiPvP.addDead(npc.getName());
-        if (this.antiPvP.printMessages()) {
-            Bukkit.broadcastMessage(ChatColor.RED
-                    + this.antiPvP.getLang("npcKilled").replace("<Player>",
-                            npc.getName()));
-        }
+        // this.antiPvP.addDead(npc.getName());
+        // if (this.antiPvP.printMessages()) {
+        // Bukkit.broadcastMessage(ChatColor.RED
+        // + this.antiPvP.getLang("npcKilled").replace("<Player>",
+        // npc.getName()));
+        // }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

@@ -17,7 +17,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DAntiPvPLeaverListener;
@@ -26,15 +26,15 @@ import com.github.idragonfire.DragonAntiPvPLeaver.listener.DirtyListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Graph;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Plotter;
-import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
-import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
-import com.topcat.npclib.DragonAntiPvPListener.entity.NPC;
 
-public class DAntiPvPLeaverPlugin extends JavaPlugin {
+import de.kumpelblase2.remoteentities.RemoteEntities;
+import de.kumpelblase2.remoteentities.exceptions.PluginNotEnabledException;
+
+public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     protected List<String> deadPlayers;
     protected Map<String, DeSpawnTask> taskMap;
     protected YamlConfiguration dataFile;
-    protected NPCManager npcManager;
+    protected DNPCManager npcManager;
     protected HashMap<String, String> lang;
 
     protected boolean spawnOnlyIfPlayerNearby;
@@ -48,6 +48,16 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        try {
+            this.npcManager = new DNPCManager(RemoteEntities
+                    .createManager(this));
+        } catch (PluginNotEnabledException e) {
+            e.printStackTrace();
+            onDisable();
+            return;
+        }
+
         this.deadPlayers = new ArrayList<String>();
         this.taskMap = new HashMap<String, DeSpawnTask>();
         this.lang = new HashMap<String, String>();
@@ -68,10 +78,11 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(
                     new DAntiPvPLeaverListener(this), this);
         }
-        this.npcManager = new NPCManager(this);
 
         enableMetrics(listenerMode);
         enableAutoUpdate();
+
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     protected void enableMetrics(String listenerMode) {
@@ -266,47 +277,25 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         return false;
     }
 
-    public void despawnHumanByName(String playerName) {
-        this.npcManager.despawnHumanByName(playerNameToNpcName(playerName));
+    /** NPC stuff # START **/
+
+    public boolean isAntiPvpNPC(Entity entity) {
+        return this.npcManager.isDragonNPC(entity);
     }
 
-    public NPC getOneHumanNPCByName(String name) {
-        try {
-            return this.npcManager.getHumanNPCByName(playerNameToNpcName(name))
-                    .get(0);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    public void despawnHumanByName(String npcID) {
+        this.npcManager.despawnPlayerNPC(npcID);
     }
 
-    public String playerNameToNpcName(String playername) {
-        return playername;
-        // return Joiner.on("").join("\u00A7", this.npcTagNameColor, playername);
-    }
-
-    public HumanNPC spawnHumanNPC(Player player, Location loc, String name) {
-        // TODO: ChatColor for NPC name?
-        HumanNPC npc = (HumanNPC) this.npcManager.spawnHumanNPC(
-                playerNameToNpcName(name), loc);
-        ItemStack[] invContents = player.getInventory().getContents();
-        ItemStack[] armourContents = player.getInventory().getArmorContents();
-        npc.getInventory().setContents(invContents);
-        npc.getInventory().setArmorContents(armourContents);
-
-        // Formula for calculating dropped XP
-        int XP = player.getLevel() * 7;
-        if (XP > 100) {
-            XP = 100;
-        }
-        npc.setDroppedExp(XP);
-
-        DeSpawnTask task = new DeSpawnTask(name, this.npcManager, this);
+    public void spawnHumanNPC(Player player, Location loc) {
+        String npcID = this.npcManager.spawnPlayerNPC(player, loc);
+        DeSpawnTask task = new DeSpawnTask(npcID, this.npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
                 this.time * 20L);
-        this.taskMap.put(npc.getName(), task);
-        return npc;
+        this.taskMap.put(player.getName(), task);
     }
+
+    /** NPC stuff # END **/
 
     public void npcFirstTimeAttacked(String name) {
         this.taskMap.get(name).increaseTime(
@@ -336,52 +325,12 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         return this.deadPlayers.contains(name);
     }
 
-    public boolean isAntiPvpNPC(Entity entity) {
-        return this.npcManager.isNPC(entity);
-    }
-
     public YamlConfiguration getDataFile() {
         return this.dataFile;
     }
 
     public boolean printMessages() {
         return this.printMessages;
-    }
-
-    public static ItemStack setItemNameAndLore(ItemStack item, String name,
-            String[] lore) {
-        // feature
-        return null;
-        // CraftItemStack craftItem;
-        // if (item instanceof CraftItemStack) {
-        // craftItem = (CraftItemStack) item;
-        // } else {
-        // craftItem = new CraftItemStack(item);
-        // }
-        //
-        // NBTTagCompound tag = craftItem.getHandle().tag;
-        // if (tag == null) {
-        // tag = new NBTTagCompound();
-        // craftItem.getHandle().tag = tag;
-        // }
-        // NBTTagCompound disp = tag.getCompound("display");
-        // if (disp == null) {
-        // disp = new NBTTagCompound("display");
-        // }
-        //
-        // disp.setString("Name", name);
-        //
-        // if (lore != null && lore.length > 0) {
-        // NBTTagList list = new NBTTagList("Lore");
-        // disp.set("Lore", list);
-        // for (String l : lore) {
-        // list.add(new NBTTagString("", l));
-        // }
-        // }
-        //
-        // tag.setCompound("display", disp);
-        //
-        // return craftItem;
     }
 
     private class SimplePlotter extends Plotter {

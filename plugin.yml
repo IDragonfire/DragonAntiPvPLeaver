@@ -1,7 +1,8 @@
 name: DragonAntiPvPLeaver
 author: IDragonfire, DylanHolmes
-version: 1.8
+version: 2.0
 main: com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin
+depend: [RemoteEntities]
 soft-depend: [WorldGuard, Factions]
     
 permissions:
