@@ -74,7 +74,7 @@ public class DAntiPvPLeaverListener implements Listener {
         if (!this.antiPvP.playersNearby(player)) {
             return;
         }
-        this.antiPvP.spawnHumanNPC(player, player.getLocation());
+        this.antiPvP.spawnHumanNPC(player);
         if (this.antiPvP.printMessages()) {
             String npcSpawned = this.antiPvP.getLang("npcSpawned");
             this.antiPvP.broadcastNearPlayer(player, ChatColor.RED
@@ -85,6 +85,8 @@ public class DAntiPvPLeaverListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        this.antiPvP.spawnHumanNPC(player);
+        // TODO: punishment item
         // player.setItemInHand(DAntiPvPLeaverPlugin.setItemNameAndLore(
         // new ItemStack(Material.STICK), ChatColor.GOLD
         // + "DragonAntiPvpLeaver", new String[] {
@@ -116,6 +118,7 @@ public class DAntiPvPLeaverListener implements Listener {
         if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
             return;
         }
+        System.out.println("npc dead");
         // HumanNPC npc = (HumanNPC) this.antiPvP.getOneHumanNPCByName(event
         // .getEntity().getName());
         // TODO: use own NPC class

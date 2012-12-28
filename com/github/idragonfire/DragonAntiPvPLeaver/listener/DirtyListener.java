@@ -43,7 +43,7 @@ public class DirtyListener extends DAntiPvPLeaverListener {
             }
             event.setCancelled(false);
             Player npc = (Player) event.getEntity();
-            super.antiPvP.npcFirstTimeAttacked(npc.getName());
+            // super.antiPvP.npcFirstTimeAttacked(npc.getName());
         } catch (Exception e) {
             e.printStackTrace();
         }

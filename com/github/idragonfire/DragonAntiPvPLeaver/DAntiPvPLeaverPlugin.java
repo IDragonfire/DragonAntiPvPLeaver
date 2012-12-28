@@ -51,7 +51,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
 
         try {
             this.npcManager = new DNPCManager(RemoteEntities
-                    .createManager(this));
+                    .createManager(this), this);
         } catch (PluginNotEnabledException e) {
             e.printStackTrace();
             onDisable();
@@ -287,8 +287,8 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         this.npcManager.despawnPlayerNPC(npcID);
     }
 
-    public void spawnHumanNPC(Player player, Location loc) {
-        String npcID = this.npcManager.spawnPlayerNPC(player, loc);
+    public void spawnHumanNPC(Player player) {
+        String npcID = this.npcManager.spawnPlayerNPC(player);
         DeSpawnTask task = new DeSpawnTask(npcID, this.npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
                 this.time * 20L);
@@ -298,6 +298,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     /** NPC stuff # END **/
 
     public void npcFirstTimeAttacked(String name) {
+        System.out.println("increase time");
         this.taskMap.get(name).increaseTime(
                 this.additionalTimeIfUnderAttack * 20L);
     }
