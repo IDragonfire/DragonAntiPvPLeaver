@@ -51,6 +51,12 @@ public class DNPCManager {
         final String npcID = "DragonPlayerNPC_" + player.getName();
         mind.addBehaviour(new DamageBehavior(remoteEntity) {
             @Override
+            public void onRemove() {
+                System.out.println("npc dead 2");
+                super.onRemove();
+            }
+
+            @Override
             public void onDamage(EntityDamageEvent event) {
                 System.out.println("event");
                 DNPCManager.this.plugin.npcFirstTimeAttacked(npcID);

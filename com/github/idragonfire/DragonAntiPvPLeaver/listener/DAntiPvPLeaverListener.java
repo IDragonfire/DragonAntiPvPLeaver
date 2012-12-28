@@ -140,7 +140,7 @@ public class DAntiPvPLeaverListener implements Listener {
                 return;
             }
             Player npc = (Player) event.getEntity();
-            this.antiPvP.npcFirstTimeAttacked(npc.getName());
+            // this.antiPvP.npcFirstTimeAttacked(npc.getName());
         } catch (Exception e) {
             e.printStackTrace();
         }

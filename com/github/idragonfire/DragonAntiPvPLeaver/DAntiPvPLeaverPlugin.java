@@ -292,13 +292,14 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         DeSpawnTask task = new DeSpawnTask(npcID, this.npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
                 this.time * 20L);
-        this.taskMap.put(player.getName(), task);
+        this.taskMap.put(npcID, task);
     }
 
     /** NPC stuff # END **/
 
     public void npcFirstTimeAttacked(String name) {
         System.out.println("increase time");
+        System.out.println(name);
         this.taskMap.get(name).increaseTime(
                 this.additionalTimeIfUnderAttack * 20L);
     }
