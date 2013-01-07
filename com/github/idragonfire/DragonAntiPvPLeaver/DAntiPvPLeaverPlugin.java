@@ -21,6 +21,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DAntiPvPLeaverListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DPlayerDealDamage;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DPlayerTakeDamage;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DebugListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DirtyListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics;
@@ -65,19 +67,20 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         loadDeadPlayers();
 
         String listenerMode = "normal";
+        DAntiPvPLeaverListener listener = null;
         if (getConfig().getBoolean("plugin.debug")) {
-            Bukkit.getPluginManager().registerEvents(new DebugListener(this),
-                    this);
+            listener = new DebugListener(this);
             listenerMode = "debug";
         } else if (getConfig().getBoolean(
                 "plugin.overwriteAllNpcDamageListener")) {
-            Bukkit.getPluginManager().registerEvents(new DirtyListener(this),
-                    this);
+            listener = new DirtyListener(this);
             listenerMode = "overwrite";
         } else {
-            Bukkit.getPluginManager().registerEvents(
-                    new DAntiPvPLeaverListener(this), this);
+            listener = new DAntiPvPLeaverListener(this);
         }
+        listener.addListener(new DPlayerDealDamage(999999l));
+        listener.addListener(new DPlayerTakeDamage(999999l));
+        Bukkit.getPluginManager().registerEvents(listener, this);
 
         enableMetrics(listenerMode);
         enableAutoUpdate();
@@ -131,7 +134,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     protected void enableAutoUpdate() {
         try {
             String updateMode = getConfig().getString("plugin.autoupdate");
-            if (updateMode.equals("off")) {
+            if (updateMode.equals("off") || updateMode.equals("false")) {
                 return;
             }
             Updater.UpdateType updateType = Updater.UpdateType.NO_DOWNLOAD;

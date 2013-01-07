@@ -1,5 +1,7 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.listener;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -25,13 +27,19 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 
 public class DAntiPvPLeaverListener implements Listener {
     protected DAntiPvPLeaverPlugin antiPvP;
+    protected ArrayList<DListenerInjection> listeners;
 
     public DAntiPvPLeaverListener(DAntiPvPLeaverPlugin antiPvP) {
         this.antiPvP = antiPvP;
+        this.listeners = new ArrayList<DListenerInjection>();
     }
 
     public static boolean canBypass(Player player) {
         return player.hasPermission("dragonantipvpleaver.bypass");
+    }
+
+    public void addListener(DListenerInjection listener) {
+        this.listeners.add(listener);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -39,6 +47,12 @@ public class DAntiPvPLeaverListener implements Listener {
         Player player = event.getPlayer();
         if (canBypass(player) || (player.getGameMode().getValue() == 1)) {
             return;
+        }
+
+        for (DListenerInjection listener : this.listeners) {
+            if (!listener.canDragonNpcSpawn(player.getName())) {
+                return;
+            }
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
@@ -85,6 +99,7 @@ public class DAntiPvPLeaverListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        System.out.println("test");
         this.antiPvP.spawnHumanNPC(player);
         // TODO: punishment item
         // player.setItemInHand(DAntiPvPLeaverPlugin.setItemNameAndLore(
@@ -135,6 +150,9 @@ public class DAntiPvPLeaverListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
+        for (DListenerInjection listener : this.listeners) {
+            listener.onEntityDamageByEntity(event);
+        }
         try {
             if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
                 return;
