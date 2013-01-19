@@ -8,6 +8,7 @@ import net.minecraft.server.v1_4_R1.PlayerInteractManager;
 import net.minecraft.server.v1_4_R1.WorldServer;
 
 import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_4_R1.entity.CraftEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
@@ -23,7 +24,7 @@ public class NPCEntity extends EntityPlayer {
     private int lastBounceId;
 
     public NPCEntity(NPCManager npcManager, BWorld world, String s,
-        	PlayerInteractManager playerInteractManager) {
+            PlayerInteractManager playerInteractManager) {
         super(npcManager.getServer().getMCServer(), world.getWorldServer(), s,
         		playerInteractManager);
 
@@ -37,7 +38,7 @@ public class NPCEntity extends EntityPlayer {
         this.fauxSleeping = true;
     }
 
-    public void setBukkitEntity(org.bukkit.entity.Entity entity) {
+    public void setBukkitEntity(CraftEntity entity) {
         this.bukkitEntity = entity;
     }
 
