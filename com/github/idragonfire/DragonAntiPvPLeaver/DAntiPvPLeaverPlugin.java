@@ -57,7 +57,6 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-
         try {
             npcManager = new DAPL_NPCManager(
                     RemoteEntities.createManager(this), this);
@@ -225,10 +224,6 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         config.save();
     }
 
-    public boolean hasVanillaExpDrop() {
-        return config.npc_expdrop.equalsIgnoreCase("vanilla");
-    }
-
     public void saveDeadPlayers() {
         getLogger().log(Level.INFO,
                 "Saving " + deadPlayers.size() + " Dead Players.");
@@ -287,12 +282,12 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         npcManager.despawnPlayerNPC(npcID);
     }
 
-    public void spawnHumanNPC(Player player) {
+    public void spawnHumanNPC(Player player, int timeInSeconds) {
         // TODO: use different time for each case
         String npcID = npcManager.spawnPlayerNPC(player);
         DeSpawnTask task = new DeSpawnTask(npcID, npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
-                config.npc_spawn_always_time * 20L);
+                timeInSeconds * 20L);
         taskMap.put(npcID, task);
     }
 

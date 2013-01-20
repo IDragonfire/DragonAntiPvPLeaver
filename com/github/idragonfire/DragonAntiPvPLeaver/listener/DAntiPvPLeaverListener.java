@@ -33,10 +33,11 @@ public class DAntiPvPLeaverListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (!spawnModeChecker.canNpcSpawn(player)) {
+        int lifetime = spawnModeChecker.dragonNpcSpawnTime(player);
+        if (lifetime == DSpawnCheckerManager.NO_SPAWN) {
             return;
         }
-        antiPvP.spawnHumanNPC(player);
+        antiPvP.spawnHumanNPC(player, lifetime);
         if (antiPvP.printMessages()) {
             String npcSpawned = antiPvP.config.language_npcSpawned;
             antiPvP.broadcastNearPlayer(player, ChatColor.RED
@@ -48,7 +49,7 @@ public class DAntiPvPLeaverListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         System.out.println("test");
-        antiPvP.spawnHumanNPC(player);
+        antiPvP.spawnHumanNPC(player, 5);
         // TODO: punishment item
         // player.setItemInHand(DAntiPvPLeaverPlugin.setItemNameAndLore(
         // new ItemStack(Material.STICK), ChatColor.GOLD

@@ -3,14 +3,13 @@ package com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnChecker;
-
-public class DNearBy implements DSpawnChecker {
-
+public class DNearBy extends DWhitelistChecker {
     protected int distance;
     protected Class<? extends Entity> nearbyClass;
 
-    public DNearBy(int distance, Class<? extends Entity> nearbyClass) {
+    public DNearBy(int distance, Class<? extends Entity> nearbyClass,
+            int lifetime) {
+        super(lifetime);
         this.distance = distance;
         this.nearbyClass = nearbyClass;
     }
@@ -29,5 +28,4 @@ public class DNearBy implements DSpawnChecker {
     public boolean canNpcSpawn(Player player) {
         return playersNearby(player);
     }
-
 }
