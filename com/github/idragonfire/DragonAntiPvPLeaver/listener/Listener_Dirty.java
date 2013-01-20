@@ -8,15 +8,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Config;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
-
-public class DirtyListener extends DAntiPvPLeaverListener {
-
-    public DirtyListener(DAPL_Config config, DNpcManager npcManager) {
-        super(config, npcManager);
-        // TODO Auto-generated constructor stub
-    }
+public class Listener_Dirty extends JoinQuitDamageListener {
 
     @Override
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

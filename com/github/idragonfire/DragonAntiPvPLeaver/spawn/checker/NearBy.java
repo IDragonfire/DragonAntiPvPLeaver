@@ -3,11 +3,11 @@ package com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-public class DNearBy extends DWhitelistChecker {
+public class NearBy extends WhitelistChecker {
     protected int distance;
     protected Class<? extends Entity> nearbyClass;
 
-    public DNearBy(int distance, Class<? extends Entity> nearbyClass,
+    public NearBy(int distance, Class<? extends Entity> nearbyClass,
             int lifetime) {
         super(lifetime);
         this.distance = distance;

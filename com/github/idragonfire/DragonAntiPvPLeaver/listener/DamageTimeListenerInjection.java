@@ -11,10 +11,10 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin.DAMAGE_MODE;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DListenerInjection;
+import com.github.idragonfire.DragonAntiPvPLeaver.Plugin.DAMAGE_MODE;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DEntityDamageByEntityListenerInjection;
 
-public abstract class DamageTimeListenerInjection implements DListenerInjection {
+public abstract class DamageTimeListenerInjection implements DEntityDamageByEntityListenerInjection {
     protected HashMap<DAMAGE_MODE, Integer> mode;
     protected Hashtable<String, Long> timeTable;
 

@@ -12,15 +12,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredListener;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Config;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
-
-public class DebugListener extends DAntiPvPLeaverListener {
+public class Listener_Debug extends JoinQuitDamageListener {
     protected Logger logger;
 
-    public DebugListener(DAPL_Config config, DNpcManager npcManager,
-            Logger logger) {
-        super(config, npcManager);
+    public Listener_Debug(Logger logger) {
         this.logger = logger;
     }
 

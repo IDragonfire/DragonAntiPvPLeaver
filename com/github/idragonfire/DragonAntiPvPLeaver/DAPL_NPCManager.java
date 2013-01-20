@@ -23,15 +23,15 @@ import de.kumpelblase2.remoteentities.api.thinking.goals.DesireFindNearestTarget
 import de.kumpelblase2.remoteentities.entities.RemotePlayer;
 import de.kumpelblase2.remoteentities.entities.RemotePlayerEntity;
 
-public class DAPL_NPCManager implements DNpcManager {
+public class DAPL_NpcManager implements DNpcManager {
 
     private EntityManager npcManager;
     private HashMap<String, RemotePlayer> playerNPCs;
     private HashSet<Entity> bukkitEntities;
-    private DAntiPvPLeaverPlugin plugin;
+    private Plugin plugin;
     protected Map<String, DeSpawnTask> taskMap;
 
-    public DAPL_NPCManager(EntityManager npcManager, DAntiPvPLeaverPlugin plugin) {
+    public DAPL_NpcManager(EntityManager npcManager, Plugin plugin) {
         this.npcManager = npcManager;
         playerNPCs = new HashMap<String, RemotePlayer>();
         bukkitEntities = new HashSet<Entity>();

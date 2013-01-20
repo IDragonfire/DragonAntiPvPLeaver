@@ -4,11 +4,11 @@ import org.bukkit.entity.Player;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnChecker;
 
-public abstract class DWhitelistChecker implements DSpawnChecker {
+public abstract class WhitelistChecker implements DSpawnChecker {
 
     protected int lifetime;
 
-    public DWhitelistChecker(int lifetime) {
+    public WhitelistChecker(int lifetime) {
         this.lifetime = lifetime;
     }
 

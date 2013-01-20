@@ -13,21 +13,25 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Config;
-import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DListenerInjection;
+import com.github.idragonfire.DragonAntiPvPLeaver.Plugin;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DEntityDamageByEntityListenerInjection;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
 
-public class DAntiPvPLeaverListener implements Listener {
+public class JoinQuitDamageListener implements Listener {
     protected DAPL_Config config;
     protected DNpcManager npcManager;
     protected DSpawnCheckerManager spawnModeChecker;
-    protected ArrayList<DListenerInjection> listeners;
+    protected ArrayList<DEntityDamageByEntityListenerInjection> listeners;
 
-    public DAntiPvPLeaverListener(DAPL_Config config, DNpcManager npcManager) {
+    public JoinQuitDamageListener() {
+
+        listeners = new ArrayList<DEntityDamageByEntityListenerInjection>();
+    }
+
+    public void init(DAPL_Config config, DNpcManager npcManager) {
         this.config = config;
         this.npcManager = npcManager;
-        listeners = new ArrayList<DListenerInjection>();
     }
 
     public void addListener(DamageTimeListenerInjection listener) {
@@ -44,7 +48,7 @@ public class DAntiPvPLeaverListener implements Listener {
         npcManager.spawnHumanNPC(player, lifetime);
         if (config.plugin_printMessages) {
             String npcSpawned = config.language_npcSpawned;
-            DAntiPvPLeaverPlugin.broadcastNearPlayer(player, ChatColor.RED
+            Plugin.broadcastNearPlayer(player, ChatColor.RED
                     + player.getName() + ChatColor.YELLOW + " " + npcSpawned,
                     config.npc_broadcastMessageRadius);
         }
@@ -95,7 +99,7 @@ public class DAntiPvPLeaverListener implements Listener {
         // }
         npcManager.addKillStatus(name);
         if (config.plugin_printMessages) {
-            DAntiPvPLeaverPlugin.broadcastNearPlayer(event.getEntity(),
+            Plugin.broadcastNearPlayer(event.getEntity(),
                     ChatColor.RED
                             + config.language_npcKilled.replace("<Player>",
                                     name), config.npc_broadcastMessageRadius);
@@ -104,7 +108,7 @@ public class DAntiPvPLeaverListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
-        for (DListenerInjection listener : listeners) {
+        for (DEntityDamageByEntityListenerInjection listener : listeners) {
             listener.onEntityDamageByEntity(event);
         }
         try {

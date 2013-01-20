@@ -6,19 +6,19 @@ import org.bukkit.entity.Player;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnChecker;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
-import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.DWhitelistChecker;
+import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.WhitelistChecker;
 
-public class DSpawnModeCheckerManagerImplementation implements
+public class SpawnCheckerManager implements
         DSpawnCheckerManager {
 
-    protected ArrayList<DWhitelistChecker> whitelist;
+    protected ArrayList<WhitelistChecker> whitelist;
     protected ArrayList<DSpawnChecker> blacklist;
     protected DAPL_Config config;
 
-    public DSpawnModeCheckerManagerImplementation(DAPL_Config config) {
+    public SpawnCheckerManager(DAPL_Config config) {
         this.config = config;
         blacklist = new ArrayList<DSpawnChecker>();
-        whitelist = new ArrayList<DWhitelistChecker>();
+        whitelist = new ArrayList<WhitelistChecker>();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class DSpawnModeCheckerManagerImplementation implements
             }
         }
 
-        for (DWhitelistChecker checker : whitelist) {
+        for (WhitelistChecker checker : whitelist) {
             if (checker.canNpcSpawn(player)) {
                 return checker.getLifeTime(player);
             }

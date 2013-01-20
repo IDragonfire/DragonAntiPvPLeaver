@@ -20,11 +20,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DAntiPvPLeaverListener;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DDealDamage;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DTakeDamage;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DebugListener;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DirtyListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.JoinQuitDamageListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Normal;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.TakeDamageListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Dirty;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Graph;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Plotter;
@@ -32,10 +32,10 @@ import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Plotter;
 import de.kumpelblase2.remoteentities.RemoteEntities;
 import de.kumpelblase2.remoteentities.exceptions.PluginNotEnabledException;
 
-public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
+public class Plugin extends JavaPlugin implements Listener {
     protected List<String> deadPlayers;
     protected YamlConfiguration dataFile;
-    protected DAPL_NPCManager npcManager;
+    protected DAPL_NpcManager npcManager;
     public DAPL_Config config;
 
     public enum DAMAGE_MODE {
@@ -56,7 +56,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         try {
-            npcManager = new DAPL_NPCManager(
+            npcManager = new DAPL_NpcManager(
                     RemoteEntities.createManager(this), this);
         } catch (PluginNotEnabledException e) {
             e.printStackTrace();
@@ -70,18 +70,19 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
 
         // set listener mode
         String listenerMode = "normal";
-        DAntiPvPLeaverListener listener = null;
+        JoinQuitDamageListener listener = null;
         if (getConfig().getBoolean("plugin.debug")) {
-            listener = new DebugListener(config, npcManager, getLogger());
+            listener = new Listener_Debug(getLogger());
             listenerMode = "debug";
         } else if (getConfig().getBoolean(
                 "plugin.overwriteAllNpcDamageListener")) {
-            listener = new DirtyListener(config, npcManager);
+            listener = new Listener_Dirty();
             listenerMode = "overwrite";
         } else {
-            listener = new DAntiPvPLeaverListener(config, npcManager);
+            listener = new JoinQuitDamageListener();
         }
 
+        listener.init(config, npcManager);
         initSpawnModes(listener);
         Bukkit.getPluginManager().registerEvents(listener, this);
 
@@ -91,7 +92,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
-    private void initSpawnModes(DAntiPvPLeaverListener listener) {
+    private void initSpawnModes(JoinQuitDamageListener listener) {
         // Deal Damage Listener
         HashMap<DAMAGE_MODE, Integer> dealerConfig = new HashMap<DAMAGE_MODE, Integer>();
         if (config.npc_spawn_ifhitmonster_active) {
@@ -102,7 +103,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
             dealerConfig.put(DAMAGE_MODE.HUMANS,
                     config.npc_spawn_ifhitplayer_time);
         }
-        listener.addListener(new DDealDamage(dealerConfig));
+        listener.addListener(new Listener_Normal(dealerConfig));
 
         // Take Damage Listener
         HashMap<DAMAGE_MODE, Integer> takerConfig = new HashMap<DAMAGE_MODE, Integer>();
@@ -114,7 +115,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
             takerConfig.put(DAMAGE_MODE.HUMANS,
                     config.npc_spawn_underattackfromplayers_time);
         }
-        listener.addListener(new DTakeDamage(takerConfig));
+        listener.addListener(new TakeDamageListener(takerConfig));
     }
 
     protected void enableMetrics(String listenerMode) {
