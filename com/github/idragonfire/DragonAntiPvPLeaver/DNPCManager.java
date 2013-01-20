@@ -3,9 +3,12 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import net.minecraft.server.v1_4_R1.EntityHuman;
+import net.minecraft.server.v1_4_R1.EntityLiving;
+
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_4_6.inventory.CraftInventoryPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +18,7 @@ import de.kumpelblase2.remoteentities.api.DespawnReason;
 import de.kumpelblase2.remoteentities.api.RemoteEntityType;
 import de.kumpelblase2.remoteentities.api.thinking.DamageBehavior;
 import de.kumpelblase2.remoteentities.api.thinking.Mind;
+import de.kumpelblase2.remoteentities.api.thinking.goals.DesireFindNearestTarget;
 import de.kumpelblase2.remoteentities.entities.RemotePlayer;
 import de.kumpelblase2.remoteentities.entities.RemotePlayerEntity;
 
@@ -63,27 +67,12 @@ public class DNPCManager {
             }
         });
 
-        // remoteEntity.getMind().addActionDesire(new DesirePanic(remoteEntity),
-        // remoteEntity.getMind().getHighestActionPriority() + 1);
+        remoteEntity.getMind().addActionDesire(new DesireFindNearestTarget(remoteEntity, EntityHuman.class, 64f, false, 100), 1);
 
         RemotePlayerEntity remotePlayerEntity = (RemotePlayerEntity) remoteEntity
                 .getHandle();
-        Player npcPlayer = (Player) remotePlayerEntity.getRemoteEntity()
-                .getBukkitEntity();
-        // set armor
-        npcPlayer.getEquipment().setArmorContents(
-                player.getEquipment().getArmorContents());
-        // set inventory
-        npcPlayer.getInventory().setContents(
-                player.getInventory().getContents());
-
-        // TODO: use no craftbukkit code
-        // set correct item in the hand
-        int itemindex = ((CraftInventoryPlayer) player.getInventory())
-                .getInventory().itemInHandIndex;
-        ItemStack oldHand = npcPlayer.getItemInHand();
-        npcPlayer.setItemInHand(player.getItemInHand());
-        npcPlayer.getInventory().setItem(itemindex, oldHand);
+        //TODO: use kumpelblase function
+        remotePlayerEntity.setSameInventoryAs(player);
 
         this.playerNPCs.put(npcID, remoteEntity);
         this.bukkitEntities.add(remoteEntity.getBukkitEntity());

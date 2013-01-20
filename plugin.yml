@@ -1,5 +1,5 @@
 name: DragonAntiPvPLeaver
-author: IDragonfire, DylanHolmes
+author: IDragonfire
 version: 2.0
 main: com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin
 depend: [RemoteEntities]
