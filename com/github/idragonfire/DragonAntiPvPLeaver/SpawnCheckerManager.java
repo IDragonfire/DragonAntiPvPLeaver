@@ -8,8 +8,7 @@ import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnChecker;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.WhitelistChecker;
 
-public class SpawnCheckerManager implements
-        DSpawnCheckerManager {
+public class SpawnCheckerManager implements DSpawnCheckerManager {
 
     protected ArrayList<WhitelistChecker> whitelist;
     protected ArrayList<DSpawnChecker> blacklist;
@@ -19,6 +18,14 @@ public class SpawnCheckerManager implements
         this.config = config;
         blacklist = new ArrayList<DSpawnChecker>();
         whitelist = new ArrayList<WhitelistChecker>();
+    }
+
+    public void addWhiteListChecker(WhitelistChecker checker) {
+        whitelist.add(checker);
+    }
+
+    public void addBlacklistChecker(DSpawnChecker checker) {
+        blacklist.add(checker);
     }
 
     @Override

@@ -2,12 +2,12 @@ package com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker;
 
 import org.bukkit.entity.Player;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Normal;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DealDamageListener;
 
 public class IfHit extends WhitelistChecker {
-    protected Listener_Normal listener;
+    protected DealDamageListener listener;
 
-    public IfHit(Listener_Normal listener, int lifetime) {
+    public IfHit(DealDamageListener listener, int lifetime) {
         super(lifetime);
         this.listener = listener;
     }

@@ -7,22 +7,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.JoinQuitDamageListener;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Normal;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.TakeDamageListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DealDamageListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Dirty;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Normal;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.TakeDamageListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.Always;
+import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.FactionSupport;
+import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.IfHit;
+import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.NearBy;
+import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.UnderAttack;
+import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.WorldGuardSupport;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Updater;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Graph;
@@ -70,7 +76,7 @@ public class Plugin extends JavaPlugin implements Listener {
 
         // set listener mode
         String listenerMode = "normal";
-        JoinQuitDamageListener listener = null;
+        Listener_Normal listener = null;
         if (getConfig().getBoolean("plugin.debug")) {
             listener = new Listener_Debug(getLogger());
             listenerMode = "debug";
@@ -79,7 +85,7 @@ public class Plugin extends JavaPlugin implements Listener {
             listener = new Listener_Dirty();
             listenerMode = "overwrite";
         } else {
-            listener = new JoinQuitDamageListener();
+            listener = new Listener_Normal();
         }
 
         listener.init(config, npcManager);
@@ -92,7 +98,7 @@ public class Plugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
-    private void initSpawnModes(JoinQuitDamageListener listener) {
+    private void initSpawnModes(Listener_Normal listener) {
         // Deal Damage Listener
         HashMap<DAMAGE_MODE, Integer> dealerConfig = new HashMap<DAMAGE_MODE, Integer>();
         if (config.npc_spawn_ifhitmonster_active) {
@@ -103,7 +109,9 @@ public class Plugin extends JavaPlugin implements Listener {
             dealerConfig.put(DAMAGE_MODE.HUMANS,
                     config.npc_spawn_ifhitplayer_time);
         }
-        listener.addListener(new Listener_Normal(dealerConfig));
+        DealDamageListener dealDamageListener = new DealDamageListener(
+                dealerConfig);
+        listener.addListener(dealDamageListener);
 
         // Take Damage Listener
         HashMap<DAMAGE_MODE, Integer> takerConfig = new HashMap<DAMAGE_MODE, Integer>();
@@ -115,21 +123,60 @@ public class Plugin extends JavaPlugin implements Listener {
             takerConfig.put(DAMAGE_MODE.HUMANS,
                     config.npc_spawn_underattackfromplayers_time);
         }
-        listener.addListener(new TakeDamageListener(takerConfig));
+        TakeDamageListener takeDamageListener = new TakeDamageListener(
+                takerConfig);
+        listener.addListener(takeDamageListener);
+
+        // init spawn modes
+        SpawnCheckerManager manager = new SpawnCheckerManager(config);
+        if (config.npc_spawn_always_active) {
+            manager.addWhiteListChecker(new Always(config));
+            getLogger().log(Level.INFO, "spawn mode: always");
+        } else {
+            if (config.npc_spawn_playernearby_active) {
+                manager.addWhiteListChecker(new NearBy(
+                        config.npc_spawn_playernearby_distance,
+                        HumanEntity.class, config.npc_spawn_playernearby_time));
+            }
+            if (config.npc_spawn_monsternearby_active) {
+                manager.addWhiteListChecker(new NearBy(
+                        config.npc_spawn_monsternearby_distance, Monster.class,
+                        config.npc_spawn_monsternearby_time));
+            }
+            // TODO: add lifetime to config and rename time to timeuntilreset
+            if (config.npc_spawn_underattackfromMonsters_active
+                    || config.npc_spawn_underattackfromplayers_active) {
+                manager.addWhiteListChecker(new UnderAttack(takeDamageListener,
+                        20));
+            }
+            // TODO: add lifetime to config and rename time to timeuntilreset
+            if (config.npc_spawn_ifhitmonster_active
+                    || config.npc_spawn_ifhitplayer_active) {
+                manager.addWhiteListChecker(new IfHit(dealDamageListener, 20));
+            }
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
+            manager.addBlacklistChecker(new FactionSupport());
+            getLogger().log(Level.INFO, "Factions support enabled.");
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+            manager.addBlacklistChecker(new WorldGuardSupport());
+            getLogger().log(Level.INFO, "WorldGuard support enabled.");
+        }
     }
 
     protected void enableMetrics(String listenerMode) {
         try {
             Metrics metrics = new Metrics(this);
 
-            if (getConfig().getBoolean("metrics.listenerMode")) {
+            if (config.metrics_listenerMode) {
                 // custom graph #1 - Listener Mode
                 final Graph listenerGraph = metrics
                         .createGraph("Listener Mode");
                 listenerGraph.addPlotter(new SimplePlotter(listenerMode));
             }
 
-            if (getConfig().getBoolean("metrics.listenerMode")) {
+            if (config.metrics_worldGuardUsage) {
                 // custom graph #2 - WorldGuard Usage
                 final Graph worldGuardGraph = metrics
                         .createGraph("WorldGuard Usage");
@@ -142,7 +189,7 @@ public class Plugin extends JavaPlugin implements Listener {
                 }
             }
 
-            if (getConfig().getBoolean("metrics.factionsUsage")) {
+            if (config.metrics_factionsUsage) {
                 // custom graph #3 - Factions Usage
                 final Graph factionsGraph = metrics
                         .createGraph("Factions Usage");
@@ -163,12 +210,13 @@ public class Plugin extends JavaPlugin implements Listener {
 
     protected void enableAutoUpdate() {
         try {
-            String updateMode = getConfig().getString("plugin.autoupdate");
-            if (updateMode.equals("off") || updateMode.equals("false")) {
+            String updateMode = config.plugin_autoupdate;
+            if (updateMode.equals(config.plugin_update_none)
+                    || updateMode.equals("false")) {
                 return;
             }
             Updater.UpdateType updateType = Updater.UpdateType.NO_DOWNLOAD;
-            if (updateMode.equals("automaticDownload")) {
+            if (updateMode.equals(config.plugin_update_automatic)) {
                 updateType = Updater.UpdateType.DEFAULT;
             }
             Updater updater = new Updater(this, "dragonantipvpleaver",
@@ -224,10 +272,10 @@ public class Plugin extends JavaPlugin implements Listener {
 
     public void saveDeadPlayers() {
         getLogger().log(Level.INFO,
-                "Saving " + deadPlayers.size() + " Dead Players.");
-        getDataFile().set("deadPlayers", deadPlayers);
+                "Saving " + deadPlayers.size() + " dead players.");
+        dataFile.set("deadPlayers", deadPlayers);
         saveDataFile();
-        getLogger().log(Level.INFO, "Saving Complete.");
+        getLogger().log(Level.INFO, "Saving dead players complete.");
     }
 
     public void saveDataFile() {
@@ -236,22 +284,22 @@ public class Plugin extends JavaPlugin implements Listener {
         try {
             dataFile.save(f);
         } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Could not save the data!");
+            getLogger().log(Level.SEVERE, "Could not save the dead players!");
             e.printStackTrace();
         }
     }
 
     public void loadDeadPlayers() {
         loadDataFile();
-        if (getDataFile().getList("deadPlayers") == null) {
-            getLogger().log(Level.INFO, "Could not load any Dead Players.");
+        if (dataFile.getList("deadPlayers") == null) {
+            getLogger().log(Level.INFO, "Could not load any dead player.");
             return;
         }
-        deadPlayers = getDataFile().getStringList("deadPlayers");
-        getDataFile().set("deadPlayers", null);
+        deadPlayers = dataFile.getStringList("deadPlayers");
+        dataFile.set("deadPlayers", null);
         saveDataFile();
         getLogger().log(Level.INFO,
-                "Loaded " + deadPlayers.size() + " Dead Players.");
+                "Loaded " + deadPlayers.size() + " dead players.");
     }
 
     public YamlConfiguration loadDataFile() {
@@ -279,14 +327,6 @@ public class Plugin extends JavaPlugin implements Listener {
                 player.sendMessage(message);
             }
         }
-    }
-
-    public YamlConfiguration getDataFile() {
-        return dataFile;
-    }
-
-    public boolean printMessages() {
-        return config.plugin_printMessages;
     }
 
     private class SimplePlotter extends Plotter {

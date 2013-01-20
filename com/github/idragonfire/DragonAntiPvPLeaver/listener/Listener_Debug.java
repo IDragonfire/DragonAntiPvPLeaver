@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredListener;
 
-public class Listener_Debug extends JoinQuitDamageListener {
+public class Listener_Debug extends Listener_Normal {
     protected Logger logger;
 
     public Listener_Debug(Logger logger) {

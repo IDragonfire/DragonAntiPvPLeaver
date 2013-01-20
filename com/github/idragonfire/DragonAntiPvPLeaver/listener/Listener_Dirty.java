@@ -8,7 +8,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public class Listener_Dirty extends JoinQuitDamageListener {
+public class Listener_Dirty extends Listener_Normal {
 
     @Override
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -29,7 +29,7 @@ public class Listener_Dirty extends JoinQuitDamageListener {
     }
 
     @Override
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
         try {
             if (!npcManager.isMyNpc(event.getEntity())) {
