@@ -4,22 +4,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import net.minecraft.server.v1_4_R1.EntityHuman;
-
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
 
 import de.kumpelblase2.remoteentities.EntityManager;
 import de.kumpelblase2.remoteentities.api.DespawnReason;
 import de.kumpelblase2.remoteentities.api.RemoteEntityType;
-import de.kumpelblase2.remoteentities.api.thinking.DamageBehavior;
-import de.kumpelblase2.remoteentities.api.thinking.Mind;
-import de.kumpelblase2.remoteentities.api.thinking.goals.DesireFindNearestTarget;
 import de.kumpelblase2.remoteentities.entities.RemotePlayer;
 import de.kumpelblase2.remoteentities.entities.RemotePlayerEntity;
 
@@ -56,31 +49,14 @@ public class DAPL_NpcManager implements DNpcManager {
         // TODO: ChatColor for NPC name?
         RemotePlayer remoteEntity = (RemotePlayer) npcManager
                 .createNamedEntity(RemoteEntityType.Human,
-                        player.getLocation(), ChatColor.RED + player.getName());
-        Mind mind = remoteEntity.getMind();
-        final String npcID = "DragonPlayerNPC_" + player.getName();
-        mind.addBehaviour(new DamageBehavior(remoteEntity) {
-            @Override
-            public void onRemove() {
-                System.out.println("npc dead 2");
-                super.onRemove();
-            }
-
-            @Override
-            public void onDamage(EntityDamageEvent event) {
-                System.out.println("event");
-                npcAttackEvent(npcID);
-            }
-        });
-
-        remoteEntity.getMind().addActionDesire(
-                new DesireFindNearestTarget(remoteEntity, EntityHuman.class,
-                        64f, false, 100), 1);
+                        player.getLocation(), /* ChatColor.RED + (need mapping) */
+                        player.getName());
+        final String npcID = remoteEntity.getName();
 
         RemotePlayerEntity remotePlayerEntity = (RemotePlayerEntity) remoteEntity
                 .getHandle();
         // TODO: use kumpelblase function
-        // remotePlayerEntity.setSameInventoryAs(player);
+        remotePlayerEntity.setSameInventoryAs(player);
 
         playerNPCs.put(npcID, remoteEntity);
         bukkitEntities.add(remoteEntity.getBukkitEntity());
@@ -92,8 +68,6 @@ public class DAPL_NpcManager implements DNpcManager {
     }
 
     public void npcAttackEvent(String name) {
-        System.out.println("increase time");
-        System.out.println(name);
         taskMap.get(name).increaseTime(
                 plugin.config.npc_additionalTimeIfUnderAttack * 20L);
     }

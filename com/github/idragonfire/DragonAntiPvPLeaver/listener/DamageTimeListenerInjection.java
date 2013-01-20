@@ -14,23 +14,27 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.github.idragonfire.DragonAntiPvPLeaver.Plugin.DAMAGE_MODE;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DEntityDamageByEntityListenerInjection;
 
-public abstract class DamageTimeListenerInjection implements DEntityDamageByEntityListenerInjection {
+public abstract class DamageTimeListenerInjection implements
+        DEntityDamageByEntityListenerInjection {
     protected HashMap<DAMAGE_MODE, Integer> mode;
     protected Hashtable<String, Long> timeTable;
 
     public DamageTimeListenerInjection(HashMap<DAMAGE_MODE, Integer> mode) {
         this.mode = mode;
-        this.timeTable = new Hashtable<String, Long>();
+        timeTable = new Hashtable<String, Long>();
     }
 
     public abstract void onEntityDamageByEntity(LivingEntity attacker,
             Entity victim);
 
-    public boolean canDragonNpcSpawn(String name) {
-        if (this.timeTable.containsKey(name)) {
-            return System.currentTimeMillis() > this.timeTable.get(name);
+    public boolean mustDragonNpcSpawn(String name) {
+        if (timeTable.containsKey(name)) {
+            System.out.println(System.currentTimeMillis() + ":"
+                    + timeTable.get(name) + "@"
+                    + (System.currentTimeMillis() < timeTable.get(name)));
+            return System.currentTimeMillis() < timeTable.get(name);
         }
-        return true;
+        return false;
     }
 
     public void onEntityDamageByEntity(EntityDamageEvent event) {

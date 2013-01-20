@@ -34,6 +34,10 @@ public class Listener_Normal implements Listener {
         this.npcManager = npcManager;
     }
 
+    public void setSpawnChecker(DSpawnCheckerManager spawnModeChecker) {
+        this.spawnModeChecker = spawnModeChecker;
+    }
+
     public void addListener(DamageTimeListenerInjection listener) {
         listeners.add(listener);
     }
@@ -48,8 +52,8 @@ public class Listener_Normal implements Listener {
         npcManager.spawnHumanNPC(player, lifetime);
         if (config.plugin_printMessages) {
             String npcSpawned = config.language_npcSpawned;
-            Plugin.broadcastNearPlayer(player, ChatColor.RED
-                    + player.getName() + ChatColor.YELLOW + " " + npcSpawned,
+            Plugin.broadcastNearPlayer(player, ChatColor.RED + player.getName()
+                    + ChatColor.YELLOW + " " + npcSpawned,
                     config.npc_broadcastMessageRadius);
         }
     }
@@ -99,10 +103,9 @@ public class Listener_Normal implements Listener {
         // }
         npcManager.addKillStatus(name);
         if (config.plugin_printMessages) {
-            Plugin.broadcastNearPlayer(event.getEntity(),
-                    ChatColor.RED
-                            + config.language_npcKilled.replace("<Player>",
-                                    name), config.npc_broadcastMessageRadius);
+            Plugin.broadcastNearPlayer(event.getEntity(), ChatColor.RED
+                    + config.language_npcKilled.replace("<Player>", name),
+                    config.npc_broadcastMessageRadius);
         }
     }
 

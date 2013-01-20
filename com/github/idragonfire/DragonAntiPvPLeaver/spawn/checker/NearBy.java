@@ -17,7 +17,7 @@ public class NearBy extends WhitelistChecker {
     public boolean playersNearby(Player player) {
         for (Entity entity : player.getNearbyEntities(distance, distance,
                 distance)) {
-            if ((entity.getClass().isAssignableFrom(nearbyClass))) {
+            if ((nearbyClass.isAssignableFrom(entity.getClass()))) {
                 return true;
             }
         }

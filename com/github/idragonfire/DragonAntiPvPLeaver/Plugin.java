@@ -10,7 +10,6 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Monster;
@@ -50,11 +49,17 @@ public class Plugin extends JavaPlugin implements Listener {
 
     public static long checkEntityType(Entity e,
             HashMap<DAMAGE_MODE, Integer> mode) {
-        if (mode.containsKey(DAMAGE_MODE.CREATURE) && e instanceof Creature) {
-            return System.currentTimeMillis() + mode.get(DAMAGE_MODE.CREATURE);
+        if (mode.containsKey(DAMAGE_MODE.CREATURE) && e instanceof Monster) {
+            System.out.println(System.currentTimeMillis()
+                    + mode.get(DAMAGE_MODE.CREATURE));
+            return System.currentTimeMillis() + mode.get(DAMAGE_MODE.CREATURE)
+                    * 1000;
         }
         if (mode.containsKey(DAMAGE_MODE.HUMANS) && e instanceof HumanEntity) {
-            return System.currentTimeMillis() + mode.get(DAMAGE_MODE.HUMANS);
+            System.out.println(System.currentTimeMillis()
+                    + mode.get(DAMAGE_MODE.HUMANS));
+            return System.currentTimeMillis() + mode.get(DAMAGE_MODE.HUMANS)
+                    * 1000;
         }
         return -1;
     }
@@ -163,6 +168,7 @@ public class Plugin extends JavaPlugin implements Listener {
             manager.addBlacklistChecker(new WorldGuardSupport());
             getLogger().log(Level.INFO, "WorldGuard support enabled.");
         }
+        listener.setSpawnChecker(manager);
     }
 
     protected void enableMetrics(String listenerMode) {

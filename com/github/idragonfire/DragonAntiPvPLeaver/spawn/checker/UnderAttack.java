@@ -14,6 +14,6 @@ public class UnderAttack extends WhitelistChecker {
 
     @Override
     public boolean canNpcSpawn(Player player) {
-        return listener.canDragonNpcSpawn(player.getName());
+        return listener.mustDragonNpcSpawn(player.getName());
     }
 }
