@@ -6,14 +6,14 @@ import org.bukkit.plugin.Plugin;
 public class DeSpawnTask implements Runnable {
     private Plugin plugin;
     private String npcID;
-    private DNPCManager nm;
+    private DAPL_NPCManager nm;
     private long increase;
 
     public void increaseTime(long time) {
         this.increase = time;
     }
 
-    public DeSpawnTask(String npcID, DNPCManager nm, Plugin plugin) {
+    public DeSpawnTask(String npcID, DAPL_NPCManager nm, Plugin plugin) {
         this.plugin = plugin;
         this.npcID = npcID;
         this.nm = nm;

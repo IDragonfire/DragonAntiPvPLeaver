@@ -2,7 +2,7 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 
 import org.bukkit.plugin.Plugin;
 
-public class DAPLConfig extends Config {
+public class DAPL_Config extends Config {
 
     public boolean plugin_debug = false;
     public boolean plugin_overwriteAllNpcDamageListener = false;
@@ -60,7 +60,7 @@ public class DAPLConfig extends Config {
     public boolean metrics_worldGuardUsage = true;
     public boolean metrics_factionsUsage = true;
 
-    public DAPLConfig(Plugin plugin) {
+    public DAPL_Config(Plugin plugin) {
         this.setFile(plugin);
     }
 }

@@ -14,14 +14,16 @@ import net.h31ix.updater.DragonAntiPvpLeaver.Updater.UpdateResult;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DAntiPvPLeaverListener;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DPlayerDealDamage;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DPlayerTakeDamage;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DDealDamage;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DTakeDamage;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DebugListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DirtyListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics;
@@ -35,14 +37,29 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     protected List<String> deadPlayers;
     protected Map<String, DeSpawnTask> taskMap;
     protected YamlConfiguration dataFile;
-    protected DNPCManager npcManager;
-    public DAPLConfig config;
+    protected DAPL_NPCManager npcManager;
+    public DAPL_Config config;
+
+    public enum DAMAGE_MODE {
+        CREATURE, HUMANS
+    }
+
+    public static long checkEntityType(Entity e,
+            HashMap<DAMAGE_MODE, Integer> mode) {
+        if (mode.containsKey(DAMAGE_MODE.CREATURE) && e instanceof Creature) {
+            return System.currentTimeMillis() + mode.get(DAMAGE_MODE.CREATURE);
+        }
+        if (mode.containsKey(DAMAGE_MODE.HUMANS) && e instanceof HumanEntity) {
+            return System.currentTimeMillis() + mode.get(DAMAGE_MODE.HUMANS);
+        }
+        return -1;
+    }
 
     @Override
     public void onEnable() {
 
         try {
-            this.npcManager = new DNPCManager(RemoteEntities
+            this.npcManager = new DAPL_NPCManager(RemoteEntities
                     .createManager(this), this);
         } catch (PluginNotEnabledException e) {
             e.printStackTrace();
@@ -55,6 +72,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         loadConfig();
         loadDeadPlayers();
 
+        // set listener mode
         String listenerMode = "normal";
         DAntiPvPLeaverListener listener = null;
         if (getConfig().getBoolean("plugin.debug")) {
@@ -67,14 +85,40 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         } else {
             listener = new DAntiPvPLeaverListener(this);
         }
-        listener.addListener(new DPlayerDealDamage(999999l));
-        listener.addListener(new DPlayerTakeDamage(999999l));
+
+        initSpawnModes(listener);
         Bukkit.getPluginManager().registerEvents(listener, this);
 
         enableMetrics(listenerMode);
         enableAutoUpdate();
 
         Bukkit.getPluginManager().registerEvents(this, this);
+    }
+
+    private void initSpawnModes(DAntiPvPLeaverListener listener) {
+        // Deal Damage Listener
+        HashMap<DAMAGE_MODE, Integer> dealerConfig = new HashMap<DAMAGE_MODE, Integer>();
+        if (this.config.npc_spawn_ifhitmonster_active) {
+            dealerConfig.put(DAMAGE_MODE.CREATURE,
+                    this.config.npc_spawn_ifhitplayer_time);
+        }
+        if (this.config.npc_spawn_ifhitplayer_active) {
+            dealerConfig.put(DAMAGE_MODE.HUMANS,
+                    this.config.npc_spawn_ifhitplayer_time);
+        }
+        listener.addListener(new DDealDamage(dealerConfig));
+
+        // Take Damage Listener
+        HashMap<DAMAGE_MODE, Integer> takerConfig = new HashMap<DAMAGE_MODE, Integer>();
+        if (this.config.npc_spawn_underattackfromMonsters_active) {
+            takerConfig.put(DAMAGE_MODE.CREATURE,
+                    this.config.npc_spawn_underattackfromMonsters_time);
+        }
+        if (this.config.npc_spawn_underattackfromplayers_active) {
+            takerConfig.put(DAMAGE_MODE.HUMANS,
+                    this.config.npc_spawn_underattackfromplayers_time);
+        }
+        listener.addListener(new DTakeDamage(takerConfig));
     }
 
     protected void enableMetrics(String listenerMode) {
@@ -172,11 +216,11 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void saveConfig() {
-       this.config.save();
+        this.config.save();
     }
 
     public void loadConfig() {
-        this.config = new DAPLConfig(this);
+        this.config = new DAPL_Config(this);
         this.config.load();
         this.config.save();
     }
@@ -237,8 +281,10 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         if (!this.config.npc_spawn_playernearby_active) {
             return true;
         }
-        for (Entity entity : player.getNearbyEntities(this.config.npc_spawn_playernearby_distance,
-                this.config.npc_spawn_playernearby_distance, this.config.npc_spawn_playernearby_distance)) {
+        for (Entity entity : player.getNearbyEntities(
+                this.config.npc_spawn_playernearby_distance,
+                this.config.npc_spawn_playernearby_distance,
+                this.config.npc_spawn_playernearby_distance)) {
             if ((entity instanceof Player)) {
                 return true;
             }
@@ -257,7 +303,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     }
 
     public void spawnHumanNPC(Player player) {
-        //TODO: use different time for each case
+        // TODO: use different time for each case
         String npcID = this.npcManager.spawnPlayerNPC(player);
         DeSpawnTask task = new DeSpawnTask(npcID, this.npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,

@@ -18,14 +18,14 @@ import de.kumpelblase2.remoteentities.api.thinking.goals.DesireFindNearestTarget
 import de.kumpelblase2.remoteentities.entities.RemotePlayer;
 import de.kumpelblase2.remoteentities.entities.RemotePlayerEntity;
 
-public class DNPCManager {
+public class DAPL_NPCManager {
 
     private EntityManager npcManager;
     private HashMap<String, RemotePlayer> playerNPCs;
     private HashSet<Entity> bukkitEntities;
     private DAntiPvPLeaverPlugin plugin;
 
-    public DNPCManager(EntityManager npcManager, DAntiPvPLeaverPlugin plugin) {
+    public DAPL_NPCManager(EntityManager npcManager, DAntiPvPLeaverPlugin plugin) {
         this.npcManager = npcManager;
         this.playerNPCs = new HashMap<String, RemotePlayer>();
         this.bukkitEntities = new HashSet<Entity>();
@@ -59,7 +59,7 @@ public class DNPCManager {
             @Override
             public void onDamage(EntityDamageEvent event) {
                 System.out.println("event");
-                DNPCManager.this.plugin.npcFirstTimeAttacked(npcID);
+                DAPL_NPCManager.this.plugin.npcFirstTimeAttacked(npcID);
             }
         });
 

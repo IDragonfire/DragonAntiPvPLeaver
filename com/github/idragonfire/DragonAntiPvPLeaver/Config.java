@@ -3,7 +3,6 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,13 +50,13 @@ public abstract class Config {
                     .printStackTrace();
         } else if (input instanceof File) {
             // the file, directly
-            file = (File) input;
+            this.file = (File) input;
         } else if (input instanceof Plugin) {
             // the config.yml of the plugin
-            file = getFile((Plugin) input);
+            this.file = getFile((Plugin) input);
         } else if (input instanceof String) {
             // the literal file from the string
-            file = new File((String) input);
+            this.file = new File((String) input);
         }
         return this;
     }
@@ -67,9 +65,9 @@ public abstract class Config {
      * Lazy load
      */
     public void load() {
-        if (file != null) {
+        if (this.file != null) {
             try {
-                onLoad(file);
+                onLoad(this.file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -83,9 +81,9 @@ public abstract class Config {
      * Lazy save
      */
     public void save() {
-        if (file != null) {
+        if (this.file != null) {
             try {
-                onSave(file);
+                onSave(this.file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -103,24 +101,25 @@ public abstract class Config {
      */
     private void onLoad(File file) throws Exception {
         if (!file.exists()) {
-            if (file.getParentFile() != null)
+            if (file.getParentFile() != null) {
                 file.getParentFile().mkdirs();
+            }
             file.createNewFile();
         }
-        conf.load(file);
+        this.conf.load(file);
         for (Field field : getClass().getDeclaredFields()) {
             String path = field.getName().replaceAll("_", ".");
             if (doSkip(field)) {
                 // don't touch it
                 continue;
             }
-            if (conf.isSet(path)) {
-                field.set(this, toBukkit(conf.get(path), field, path));
+            if (this.conf.isSet(path)) {
+                field.set(this, toBukkit(this.conf.get(path), field, path));
             } else {
-                conf.set(path, toConfig(field.get(this), field, path));
+                this.conf.set(path, toConfig(field.get(this), field, path));
             }
         }
-        conf.save(file);
+        this.conf.save(file);
     }
 
     /**
@@ -132,8 +131,9 @@ public abstract class Config {
     private void onSave(File file) throws Exception {
         HashMap<String, String[]> annos = new HashMap<String, String[]>();
         if (!file.exists()) {
-            if (file.getParentFile() != null)
+            if (file.getParentFile() != null) {
                 file.getParentFile().mkdirs();
+            }
             file.createNewFile();
         }
         for (Field field : getClass().getDeclaredFields()) {
@@ -143,10 +143,10 @@ public abstract class Config {
                 continue;
             } else {
                 onComment(annos, path, field);
-                conf.set(path, toConfig(field.get(this), field, path));
+                this.conf.set(path, toConfig(field.get(this), field, path));
             }
         }
-        conf.save(file);
+        this.conf.save(file);
         try {
             commentPostProcess(file, annos);
         } catch (Exception e) {
@@ -196,7 +196,7 @@ public abstract class Config {
         String[] comment;
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         for (int i = 0; i < buffer.size(); i++) {
-            if(buffer.get(i).charAt(0) == '#') {
+            if (buffer.get(i).charAt(0) == '#') {
                 continue;
             }
             newKey = buffer.get(i).split(":")[0];
@@ -307,7 +307,7 @@ public abstract class Config {
     @SuppressWarnings( { "unchecked" })
     private ConfigurationSection getMap(Map data, Field field, String path)
             throws Exception {
-        ConfigurationSection cs = conf.createSection(path);
+        ConfigurationSection cs = this.conf.createSection(path);
         Set<String> keys = data.keySet();
         if (keys != null && keys.size() > 0) {
             for (String key : keys) {
