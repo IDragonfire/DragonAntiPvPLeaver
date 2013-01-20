@@ -240,6 +240,8 @@ public abstract class Config {
             return getMap((ConfigurationSection) in, field, path);
         } else if (isJSON(in)) {
             return getLocation((String) in);
+        } else if(in instanceof ArrayList<?>){
+            return ((ArrayList<?>) in).toArray(new String[0]);
         } else {
             return in;
         }
