@@ -47,7 +47,7 @@ public class DAPL_Config extends Config {
     public int npc_spawn_ifhitplayer_time = 20;
 
     public boolean npc_spawn_ifhitmonster_active = true;
-    public int npc_spawn_ifhitplayer_monster = 30;
+    public int npc_spawn_ifhitmonster_monster = 30;
 
     // languages
     public String language_npcSpawned = "NPC spawned";
@@ -61,6 +61,6 @@ public class DAPL_Config extends Config {
     public boolean metrics_factionsUsage = true;
 
     public DAPL_Config(Plugin plugin) {
-        this.setFile(plugin);
+        setFile(plugin);
     }
 }
