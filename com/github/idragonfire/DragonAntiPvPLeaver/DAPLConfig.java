@@ -14,6 +14,7 @@ public class DAPLConfig extends Config {
     public String plugin_autoupdate = "notify";
 
     public String npc_expdrop = "vanilla";
+    @MultiComment({"alpha", "beta"})
     public int npc_broadcastMessageRadius = 32;
     public String npc_spawnmode = "always";
     public int npc_additionalTimeIfUnderAttack = 15;

@@ -155,13 +155,12 @@ public abstract class Config {
     private void onComment(HashMap<String, String[]> annos, String path,
             Field field) {
         if (field.getAnnotation(Comment.class) != null) {
-            annos.put(path, new String[] { field.getAnnotation(
-                    Comment.class).value() });
+            annos.put(path, new String[] { field.getAnnotation(Comment.class)
+                    .value() });
             return;
         }
         if (field.getAnnotation(MultiComment.class) != null) {
-            annos.put(path, field.getAnnotation(
-                    MultiComment.class).value());
+            annos.put(path, field.getAnnotation(MultiComment.class).value());
         }
 
     }
@@ -195,6 +194,9 @@ public abstract class Config {
         String[] comment;
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         for (int i = 0; i < buffer.size(); i++) {
+            if(buffer.get(i).charAt(0) == '#') {
+                continue;
+            }
             newKey = buffer.get(i).split(":")[0];
             level = level(newKey);
             newKey = newKey.trim();
@@ -211,9 +213,8 @@ public abstract class Config {
                 }
                 tmpKey = StringUtils.join(key, ".");
                 tmpKey += "." + newKey;
-                
-                if(annos.containsKey(tmpKey)) {
-                    System.out.println(tmpKey);
+
+                if (annos.containsKey(tmpKey)) {
                     comment = annos.get(tmpKey);
                     for (int j = 0; j < comment.length; j++) {
                         writer.write("# " + comment[j]);
@@ -221,7 +222,6 @@ public abstract class Config {
                     }
                 }
             }
-           
             writer.write(buffer.get(i));
             writer.newLine();
         }
