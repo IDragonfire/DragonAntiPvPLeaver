@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.h31ix.updater.DragonAntiPvpLeaver.Updater;
-import net.h31ix.updater.DragonAntiPvpLeaver.Updater.UpdateResult;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,9 +23,11 @@ import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Normal;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.TakeDamageListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Dirty;
-import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics;
-import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Graph;
-import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Plotter;
+import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics;
+import com.github.idragonfire.DragonAntiPvPLeaver.util.Updater;
+import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Graph;
+import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Plotter;
+import com.github.idragonfire.DragonAntiPvPLeaver.util.Updater.UpdateResult;
 
 import de.kumpelblase2.remoteentities.RemoteEntities;
 import de.kumpelblase2.remoteentities.exceptions.PluginNotEnabledException;

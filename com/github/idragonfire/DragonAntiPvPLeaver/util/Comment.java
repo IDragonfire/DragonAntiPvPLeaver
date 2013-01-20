@@ -1,4 +1,4 @@
-package com.github.idragonfire.DragonAntiPvPLeaver;
+package com.github.idragonfire.DragonAntiPvPLeaver.util;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

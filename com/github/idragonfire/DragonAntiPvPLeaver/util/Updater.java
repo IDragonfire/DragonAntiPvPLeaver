@@ -4,7 +4,7 @@
  * This class provides the means to safetly and easily update a plugin, or check to see if it is updated using dev.bukkit.org
  */
 
-package net.h31ix.updater.DragonAntiPvpLeaver;
+package com.github.idragonfire.DragonAntiPvPLeaver.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

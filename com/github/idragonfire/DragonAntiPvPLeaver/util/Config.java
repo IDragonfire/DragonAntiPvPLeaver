@@ -1,4 +1,4 @@
-package com.github.idragonfire.DragonAntiPvPLeaver;
+package com.github.idragonfire.DragonAntiPvPLeaver.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -23,6 +23,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
 
 /**
  * Inspired by md_5

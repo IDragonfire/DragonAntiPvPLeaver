@@ -1,6 +1,11 @@
 package com.github.idragonfire.DragonAntiPvPLeaver;
 
+
 import org.bukkit.plugin.Plugin;
+
+import com.github.idragonfire.DragonAntiPvPLeaver.util.Comment;
+import com.github.idragonfire.DragonAntiPvPLeaver.util.Config;
+import com.github.idragonfire.DragonAntiPvPLeaver.util.MultiComment;
 
 public class DAPL_Config extends Config {
 
