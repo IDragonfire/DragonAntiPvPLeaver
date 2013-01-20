@@ -1,12 +1,21 @@
 package com.github.idragonfire.DragonAntiPvPLeaver;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -120,6 +129,7 @@ public abstract class Config {
      * @throws Exception
      */
     private void onSave(File file) throws Exception {
+        HashMap<String, String[]> annos = new HashMap<String, String[]>();
         if (!file.exists()) {
             if (file.getParentFile() != null)
                 file.getParentFile().mkdirs();
@@ -130,10 +140,92 @@ public abstract class Config {
             if (doSkip(field)) {
                 // don't touch it
             } else {
+                onComment(annos, path, field);
                 conf.set(path, toConfig(field.get(this), field, path));
             }
         }
         conf.save(file);
+        try {
+            commentPostProcess(file, annos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void onComment(HashMap<String, String[]> annos, String path,
+            Field field) {
+        if (field.getAnnotation(Comment.class) != null) {
+            annos.put(path, new String[] { field.getAnnotation(
+                    Comment.class).value() });
+            return;
+        }
+        if (field.getAnnotation(MultiComment.class) != null) {
+            annos.put(path, field.getAnnotation(
+                    MultiComment.class).value());
+        }
+
+    }
+
+    private int level(String path) {
+        int count = 0;
+        for (int i = 0; i < path.length(); i++) {
+            if (path.charAt(i) != ' ') {
+                break;
+            }
+            count++;
+        }
+        return count / 2;
+    }
+
+    private void commentPostProcess(File file, HashMap<String, String[]> annos)
+            throws IOException {
+        ArrayList<String> buffer = new ArrayList<String>();
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            buffer.add(line);
+        }
+        reader.close();
+        ArrayList<String> key = new ArrayList<String>();
+        int level;
+        String newKey;
+        String tmpKey;
+        int diff;
+        String[] comment;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        for (int i = 0; i < buffer.size(); i++) {
+            newKey = buffer.get(i).split(":")[0];
+            level = level(newKey);
+            newKey = newKey.trim();
+            if (level == 0) {
+                key.clear();
+                key.add(newKey);
+            } else if (key.size() < level) {
+                key.add(newKey);
+
+            } else {
+                diff = key.size() - level;
+                for (int j = 0; j < diff; j++) {
+                    key.remove(key.size() - 1);
+                }
+                tmpKey = StringUtils.join(key, ".");
+                tmpKey += "." + newKey;
+                
+                if(annos.containsKey(tmpKey)) {
+                    System.out.println(tmpKey);
+                    comment = annos.get(tmpKey);
+                    for (int j = 0; j < comment.length; j++) {
+                        writer.write("# " + comment[j]);
+                        writer.newLine();
+                    }
+                }
+            }
+           
+            writer.write(buffer.get(i));
+            writer.newLine();
+        }
+        writer.close();
     }
 
     /*
@@ -151,7 +243,7 @@ public abstract class Config {
         }
     }
 
-    @SuppressWarnings({"unchecked" })
+    @SuppressWarnings( { "unchecked" })
     private Object toConfig(Object out, Field field, String path)
             throws Exception {
         if (isMap(out)) {
