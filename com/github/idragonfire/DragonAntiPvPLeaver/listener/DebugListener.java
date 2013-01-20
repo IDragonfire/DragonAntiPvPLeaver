@@ -1,6 +1,7 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.listener;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,12 +12,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredListener;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
+import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Config;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
 
 public class DebugListener extends DAntiPvPLeaverListener {
+    protected Logger logger;
 
-    public DebugListener(DAntiPvPLeaverPlugin antiPvP) {
-        super(antiPvP);
+    public DebugListener(DAPL_Config config, DNpcManager npcManager,
+            Logger logger) {
+        super(config, npcManager);
+        this.logger = logger;
     }
 
     @Override
@@ -28,16 +33,13 @@ public class DebugListener extends DAntiPvPLeaverListener {
     @Override
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (this.antiPvP.isDead(event.getPlayer().getName())) {
-            super.antiPvP.getLogger().log(
-                    Level.WARNING,
-                    "NPC of " + event.getPlayer().getName()
-                            + " died. Plugin try to kill him.");
+        if (npcManager.wasKilled(event.getPlayer().getName())) {
+            logger.log(Level.WARNING, "NPC of " + event.getPlayer().getName()
+                    + " died. Plugin try to kill him.");
             RegisteredListener[] listener = EntityDamageEvent.getHandlerList()
                     .getRegisteredListeners();
             for (int i = 0; i < listener.length; i++) {
-                super.antiPvP.getLogger().log(Level.WARNING,
-                        listener[i].getListener().toString());
+                logger.log(Level.WARNING, listener[i].getListener().toString());
             }
         }
 
@@ -54,26 +56,24 @@ public class DebugListener extends DAntiPvPLeaverListener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
         try {
-            if (!super.antiPvP.isAntiPvpNPC(event.getEntity())) {
+            if (!npcManager.isMyNpc(event.getEntity())) {
                 return;
             }
             if (event.isCancelled()) {
-                super.antiPvP.getLogger().log(Level.WARNING,
-                        "Some plugin cancel NPC damage:");
+                logger.log(Level.WARNING, "Some plugin cancel NPC damage:");
                 RegisteredListener[] listener = EntityDamageEvent
                         .getHandlerList().getRegisteredListeners();
                 for (int i = 0; i < listener.length; i++) {
-                    super.antiPvP.getLogger().log(Level.WARNING,
-                            listener[i].getListener().toString());
+                    logger.log(Level.WARNING, listener[i].getListener()
+                            .toString());
                 }
             }
             event.setCancelled(false);
             Player npc = (Player) event.getEntity();
-            // super.antiPvP.npcFirstTimeAttacked(npc.getName());
-            super.antiPvP.getLogger().log(Level.WARNING, "increase time");
+            npcManager.npcAttackEvent(npc.getName());
+            logger.log(Level.WARNING, "increase time");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

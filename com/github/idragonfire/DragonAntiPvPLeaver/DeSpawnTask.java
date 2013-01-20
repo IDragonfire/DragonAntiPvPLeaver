@@ -3,30 +3,31 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
+
 public class DeSpawnTask implements Runnable {
     private Plugin plugin;
     private String npcID;
-    private DAPL_NPCManager nm;
+    private DNpcManager nm;
     private long increase;
 
     public void increaseTime(long time) {
-        this.increase = time;
+        increase = time;
     }
 
-    public DeSpawnTask(String npcID, DAPL_NPCManager nm, Plugin plugin) {
+    public DeSpawnTask(String npcID, DNpcManager nm, Plugin plugin) {
         this.plugin = plugin;
         this.npcID = npcID;
         this.nm = nm;
-        this.increase = 0;
+        increase = 0;
     }
 
     public void run() {
-        if (this.increase > 0) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin,
-                    new DeSpawnTask(this.npcID, this.nm, this.plugin),
-                    this.increase);
+        if (increase > 0) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
+                    new DeSpawnTask(npcID, nm, plugin), increase);
         } else {
-            this.nm.despawnPlayerNPC(this.npcID);
+            nm.despawnHumanByName(npcID);
         }
     }
 }

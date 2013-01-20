@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 
 import net.h31ix.updater.DragonAntiPvpLeaver.Updater;
@@ -35,7 +34,6 @@ import de.kumpelblase2.remoteentities.exceptions.PluginNotEnabledException;
 
 public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     protected List<String> deadPlayers;
-    protected Map<String, DeSpawnTask> taskMap;
     protected YamlConfiguration dataFile;
     protected DAPL_NPCManager npcManager;
     public DAPL_Config config;
@@ -67,7 +65,6 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         }
 
         deadPlayers = new ArrayList<String>();
-        taskMap = new HashMap<String, DeSpawnTask>();
         loadConfig();
         loadDeadPlayers();
 
@@ -75,14 +72,14 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         String listenerMode = "normal";
         DAntiPvPLeaverListener listener = null;
         if (getConfig().getBoolean("plugin.debug")) {
-            listener = new DebugListener(this);
+            listener = new DebugListener(config, npcManager, getLogger());
             listenerMode = "debug";
         } else if (getConfig().getBoolean(
                 "plugin.overwriteAllNpcDamageListener")) {
-            listener = new DirtyListener(this);
+            listener = new DirtyListener(config, npcManager);
             listenerMode = "overwrite";
         } else {
-            listener = new DAntiPvPLeaverListener(this);
+            listener = new DAntiPvPLeaverListener(config, npcManager);
         }
 
         initSpawnModes(listener);
@@ -272,55 +269,15 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         return dataFile;
     }
 
-    /** NPC stuff # START **/
-
-    public boolean isAntiPvpNPC(Entity entity) {
-        return npcManager.isDragonNPC(entity);
-    }
-
-    public void despawnHumanByName(String npcID) {
-        npcManager.despawnPlayerNPC(npcID);
-    }
-
-    public void spawnHumanNPC(Player player, int timeInSeconds) {
-        // TODO: use different time for each case
-        String npcID = npcManager.spawnPlayerNPC(player);
-        DeSpawnTask task = new DeSpawnTask(npcID, npcManager, this);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
-                timeInSeconds * 20L);
-        taskMap.put(npcID, task);
-    }
-
-    /** NPC stuff # END **/
-
-    public void npcFirstTimeAttacked(String name) {
-        System.out.println("increase time");
-        System.out.println(name);
-        taskMap.get(name).increaseTime(
-                config.npc_additionalTimeIfUnderAttack * 20L);
-    }
-
-    public void broadcastNearPlayer(Player playerForRadiusBroadcast,
-            String message) {
+    public static void broadcastNearPlayer(Player playerForRadiusBroadcast,
+            String message, int radius) {
         List<Player> players = playerForRadiusBroadcast.getWorld().getPlayers();
         Location loc = playerForRadiusBroadcast.getLocation();
         for (Player player : players) {
-            if (player.getLocation().distance(loc) < config.npc_broadcastMessageRadius) {
+            if (player.getLocation().distance(loc) < radius) {
                 player.sendMessage(message);
             }
         }
-    }
-
-    public void addDead(String name) {
-        deadPlayers.add(name);
-    }
-
-    public void removeDead(String name) {
-        deadPlayers.remove(name);
-    }
-
-    public boolean isDead(String name) {
-        return deadPlayers.contains(name);
     }
 
     public YamlConfiguration getDataFile() {

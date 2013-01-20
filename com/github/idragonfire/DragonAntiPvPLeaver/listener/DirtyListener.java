@@ -8,12 +8,14 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
+import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Config;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
 
 public class DirtyListener extends DAntiPvPLeaverListener {
 
-    public DirtyListener(DAntiPvPLeaverPlugin antiPvP) {
-        super(antiPvP);
+    public DirtyListener(DAPL_Config config, DNpcManager npcManager) {
+        super(config, npcManager);
+        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -38,12 +40,12 @@ public class DirtyListener extends DAntiPvPLeaverListener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
         try {
-            if (!super.antiPvP.isAntiPvpNPC(event.getEntity())) {
+            if (!npcManager.isMyNpc(event.getEntity())) {
                 return;
             }
             event.setCancelled(false);
             Player npc = (Player) event.getEntity();
-            // super.antiPvP.npcFirstTimeAttacked(npc.getName());
+            npcManager.npcAttackEvent(npc.getName());
         } catch (Exception e) {
             e.printStackTrace();
         }

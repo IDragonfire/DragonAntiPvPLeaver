@@ -2,12 +2,17 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import net.minecraft.server.v1_4_R1.EntityHuman;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
 
 import de.kumpelblase2.remoteentities.EntityManager;
 import de.kumpelblase2.remoteentities.api.DespawnReason;
@@ -18,33 +23,38 @@ import de.kumpelblase2.remoteentities.api.thinking.goals.DesireFindNearestTarget
 import de.kumpelblase2.remoteentities.entities.RemotePlayer;
 import de.kumpelblase2.remoteentities.entities.RemotePlayerEntity;
 
-public class DAPL_NPCManager {
+public class DAPL_NPCManager implements DNpcManager {
 
     private EntityManager npcManager;
     private HashMap<String, RemotePlayer> playerNPCs;
     private HashSet<Entity> bukkitEntities;
     private DAntiPvPLeaverPlugin plugin;
+    protected Map<String, DeSpawnTask> taskMap;
 
     public DAPL_NPCManager(EntityManager npcManager, DAntiPvPLeaverPlugin plugin) {
         this.npcManager = npcManager;
-        this.playerNPCs = new HashMap<String, RemotePlayer>();
-        this.bukkitEntities = new HashSet<Entity>();
+        playerNPCs = new HashMap<String, RemotePlayer>();
+        bukkitEntities = new HashSet<Entity>();
         this.plugin = plugin;
+        taskMap = new HashMap<String, DeSpawnTask>();
     }
 
-    public boolean isDragonNPC(Entity entity) {
-        return this.bukkitEntities.contains(entity);
+    @Override
+    public boolean isMyNpc(Entity entity) {
+        return bukkitEntities.contains(entity);
     }
 
-    public void despawnPlayerNPC(String npcID) {
-        if (this.playerNPCs.containsKey(npcID)) {
-            this.playerNPCs.get(npcID).despawn(DespawnReason.CUSTOM);
+    @Override
+    public void despawnHumanByName(String npcID) {
+        if (playerNPCs.containsKey(npcID)) {
+            playerNPCs.get(npcID).despawn(DespawnReason.CUSTOM);
         }
     }
 
-    public String spawnPlayerNPC(Player player) {
+    @Override
+    public void spawnHumanNPC(Player player, int lifetime) {
         // TODO: ChatColor for NPC name?
-        RemotePlayer remoteEntity = (RemotePlayer) this.npcManager
+        RemotePlayer remoteEntity = (RemotePlayer) npcManager
                 .createNamedEntity(RemoteEntityType.Human,
                         player.getLocation(), ChatColor.RED + player.getName());
         Mind mind = remoteEntity.getMind();
@@ -59,7 +69,7 @@ public class DAPL_NPCManager {
             @Override
             public void onDamage(EntityDamageEvent event) {
                 System.out.println("event");
-                DAPL_NPCManager.this.plugin.npcFirstTimeAttacked(npcID);
+                npcAttackEvent(npcID);
             }
         });
 
@@ -70,11 +80,36 @@ public class DAPL_NPCManager {
         RemotePlayerEntity remotePlayerEntity = (RemotePlayerEntity) remoteEntity
                 .getHandle();
         // TODO: use kumpelblase function
-//        remotePlayerEntity.setSameInventoryAs(player);
+        // remotePlayerEntity.setSameInventoryAs(player);
 
-        this.playerNPCs.put(npcID, remoteEntity);
-        this.bukkitEntities.add(remoteEntity.getBukkitEntity());
+        playerNPCs.put(npcID, remoteEntity);
+        bukkitEntities.add(remoteEntity.getBukkitEntity());
 
-        return npcID;
+        DeSpawnTask task = new DeSpawnTask(npcID, this, plugin);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, task,
+                lifetime * 20L);
+        taskMap.put(npcID, task);
+    }
+
+    public void npcAttackEvent(String name) {
+        System.out.println("increase time");
+        System.out.println(name);
+        taskMap.get(name).increaseTime(
+                plugin.config.npc_additionalTimeIfUnderAttack * 20L);
+    }
+
+    @Override
+    public void addKillStatus(String name) {
+        plugin.deadPlayers.add(name);
+    }
+
+    @Override
+    public void removeKilledStatus(String name) {
+        plugin.deadPlayers.remove(name);
+    }
+
+    @Override
+    public boolean wasKilled(String name) {
+        return plugin.deadPlayers.contains(name);
     }
 }
