@@ -13,7 +13,6 @@ import net.h31ix.updater.DragonAntiPvpLeaver.Updater.UpdateResult;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -37,16 +36,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     protected Map<String, DeSpawnTask> taskMap;
     protected YamlConfiguration dataFile;
     protected DNPCManager npcManager;
-    protected HashMap<String, String> lang;
-
-    protected boolean spawnOnlyIfPlayerNearby;
-    protected int distance;
-    protected int time;
-    protected int additionalTimeIfUnderAttack;
-    protected int broadcastMessageRadius;
-    protected boolean printMessages;
-    protected boolean vanillaExpDrop;
-    protected String npcTagNameColor;
+    public DAPLConfig config;
 
     @Override
     public void onEnable() {
@@ -62,7 +52,6 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
 
         this.deadPlayers = new ArrayList<String>();
         this.taskMap = new HashMap<String, DeSpawnTask>();
-        this.lang = new HashMap<String, String>();
         loadConfig();
         loadDeadPlayers();
 
@@ -177,36 +166,23 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        reloadConfig();
         saveConfig();
         saveDeadPlayers();
     }
 
     @Override
     public void saveConfig() {
-        getConfig().options().copyDefaults(true);
-        super.saveConfig();
+       this.config.save();
     }
 
     public void loadConfig() {
-        Configuration config = getConfig();
-        this.printMessages = config.getBoolean("plugin.printMessages");
-        this.spawnOnlyIfPlayerNearby = config
-                .getBoolean("npc.spawn.onlyIfPlayerNearby");
-        this.distance = config.getInt("npc.spawn.distance");
-        this.time = config.getInt("npc.spawn.time");
-
-        this.additionalTimeIfUnderAttack = config
-                .getInt("npc.spawn.additionalTimeIfUnderAttack");
-        this.broadcastMessageRadius = config
-                .getInt("npc.spawn.broadcastMessageRadius");
-        this.vanillaExpDrop = config.getBoolean("npc.expdrop");
-        this.npcTagNameColor = config.getString("npc.nameTagColor");
-        saveConfig();
+        this.config = new DAPLConfig(this);
+        this.config.load();
+        this.config.save();
     }
 
     public boolean hasVanillaExpDrop() {
-        return this.vanillaExpDrop;
+        return this.config.npc_expdrop.equalsIgnoreCase("vanilla");
     }
 
     public void saveDeadPlayers() {
@@ -257,22 +233,12 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         return this.dataFile;
     }
 
-    public String getLang(String key) {
-        String text = this.lang.get(key);
-        if (text != null) {
-            return text;
-        }
-        text = getConfig().getString("language." + key);
-        this.lang.put(key, text);
-        return text;
-    }
-
     public boolean playersNearby(Player player) {
-        if (!this.spawnOnlyIfPlayerNearby) {
+        if (!this.config.npc_spawn_playernearby_active) {
             return true;
         }
-        for (Entity entity : player.getNearbyEntities(this.distance,
-                this.distance, this.distance)) {
+        for (Entity entity : player.getNearbyEntities(this.config.npc_spawn_playernearby_distance,
+                this.config.npc_spawn_playernearby_distance, this.config.npc_spawn_playernearby_distance)) {
             if ((entity instanceof Player)) {
                 return true;
             }
@@ -291,10 +257,11 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     }
 
     public void spawnHumanNPC(Player player) {
+        //TODO: use different time for each case
         String npcID = this.npcManager.spawnPlayerNPC(player);
         DeSpawnTask task = new DeSpawnTask(npcID, this.npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
-                this.time * 20L);
+                this.config.npc_spawn_always_time * 20L);
         this.taskMap.put(npcID, task);
     }
 
@@ -304,7 +271,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         System.out.println("increase time");
         System.out.println(name);
         this.taskMap.get(name).increaseTime(
-                this.additionalTimeIfUnderAttack * 20L);
+                this.config.npc_additionalTimeIfUnderAttack * 20L);
     }
 
     public void broadcastNearPlayer(Player playerForRadiusBroadcast,
@@ -312,7 +279,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         List<Player> players = playerForRadiusBroadcast.getWorld().getPlayers();
         Location loc = playerForRadiusBroadcast.getLocation();
         for (Player player : players) {
-            if (player.getLocation().distance(loc) < this.broadcastMessageRadius) {
+            if (player.getLocation().distance(loc) < this.config.npc_broadcastMessageRadius) {
                 player.sendMessage(message);
             }
         }
@@ -335,7 +302,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     }
 
     public boolean printMessages() {
-        return this.printMessages;
+        return this.config.plugin_printMessages;
     }
 
     private class SimplePlotter extends Plotter {

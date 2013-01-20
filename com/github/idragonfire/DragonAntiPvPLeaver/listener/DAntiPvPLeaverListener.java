@@ -90,7 +90,7 @@ public class DAntiPvPLeaverListener implements Listener {
         }
         this.antiPvP.spawnHumanNPC(player);
         if (this.antiPvP.printMessages()) {
-            String npcSpawned = this.antiPvP.getLang("npcSpawned");
+            String npcSpawned = this.antiPvP.config.language_npcSpawned;
             this.antiPvP.broadcastNearPlayer(player, ChatColor.RED
                     + player.getName() + ChatColor.YELLOW + " " + npcSpawned);
         }
@@ -122,7 +122,7 @@ public class DAntiPvPLeaverListener implements Listener {
         player.setHealth(0);
         if (this.antiPvP.printMessages()) {
             player.sendMessage(ChatColor.RED + " "
-                    + this.antiPvP.getLang("yourNPCKilled"));
+                    + this.antiPvP.config.language_yourNpcKilled);
         }
         this.antiPvP.removeDead(player.getName());
     }

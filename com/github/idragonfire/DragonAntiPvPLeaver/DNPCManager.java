@@ -4,14 +4,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import net.minecraft.server.v1_4_R1.EntityHuman;
-import net.minecraft.server.v1_4_R1.EntityLiving;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
 
 import de.kumpelblase2.remoteentities.EntityManager;
 import de.kumpelblase2.remoteentities.api.DespawnReason;
@@ -67,11 +63,13 @@ public class DNPCManager {
             }
         });
 
-        remoteEntity.getMind().addActionDesire(new DesireFindNearestTarget(remoteEntity, EntityHuman.class, 64f, false, 100), 1);
+        remoteEntity.getMind().addActionDesire(
+                new DesireFindNearestTarget(remoteEntity, EntityHuman.class,
+                        64f, false, 100), 1);
 
         RemotePlayerEntity remotePlayerEntity = (RemotePlayerEntity) remoteEntity
                 .getHandle();
-        //TODO: use kumpelblase function
+        // TODO: use kumpelblase function
         remotePlayerEntity.setSameInventoryAs(player);
 
         this.playerNPCs.put(npcID, remoteEntity);

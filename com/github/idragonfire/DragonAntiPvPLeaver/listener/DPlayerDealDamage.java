@@ -24,7 +24,7 @@ public class DPlayerDealDamage implements DListenerInjection {
     public void onEntityDamageByEntity(EntityDamageEvent event) {
         Entity e = getAttacker(event);
         if (e == null) {
-            System.out.println("DPlayerDealDamage null");
+//            System.out.println("DPlayerDealDamage null");
             return;
         }
         if (e instanceof HumanEntity) {
