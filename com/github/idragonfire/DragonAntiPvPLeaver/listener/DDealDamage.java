@@ -9,7 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
 import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin.DAMAGE_MODE;
 
-public class DDealDamage extends DListenerInjection {
+public class DDealDamage extends DamageTimeListenerInjection {
 
     public DDealDamage(HashMap<DAMAGE_MODE, Integer> mode) {
         super(mode);

@@ -70,7 +70,7 @@ public class DAPL_NPCManager {
         RemotePlayerEntity remotePlayerEntity = (RemotePlayerEntity) remoteEntity
                 .getHandle();
         // TODO: use kumpelblase function
-        remotePlayerEntity.setSameInventoryAs(player);
+//        remotePlayerEntity.setSameInventoryAs(player);
 
         this.playerNPCs.put(npcID, remoteEntity);
         this.bukkitEntities.add(remoteEntity.getBukkitEntity());

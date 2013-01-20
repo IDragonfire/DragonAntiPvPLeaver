@@ -59,16 +59,16 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
 
         try {
-            this.npcManager = new DAPL_NPCManager(RemoteEntities
-                    .createManager(this), this);
+            npcManager = new DAPL_NPCManager(
+                    RemoteEntities.createManager(this), this);
         } catch (PluginNotEnabledException e) {
             e.printStackTrace();
             onDisable();
             return;
         }
 
-        this.deadPlayers = new ArrayList<String>();
-        this.taskMap = new HashMap<String, DeSpawnTask>();
+        deadPlayers = new ArrayList<String>();
+        taskMap = new HashMap<String, DeSpawnTask>();
         loadConfig();
         loadDeadPlayers();
 
@@ -98,25 +98,25 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     private void initSpawnModes(DAntiPvPLeaverListener listener) {
         // Deal Damage Listener
         HashMap<DAMAGE_MODE, Integer> dealerConfig = new HashMap<DAMAGE_MODE, Integer>();
-        if (this.config.npc_spawn_ifhitmonster_active) {
+        if (config.npc_spawn_ifhitmonster_active) {
             dealerConfig.put(DAMAGE_MODE.CREATURE,
-                    this.config.npc_spawn_ifhitplayer_time);
+                    config.npc_spawn_ifhitplayer_time);
         }
-        if (this.config.npc_spawn_ifhitplayer_active) {
+        if (config.npc_spawn_ifhitplayer_active) {
             dealerConfig.put(DAMAGE_MODE.HUMANS,
-                    this.config.npc_spawn_ifhitplayer_time);
+                    config.npc_spawn_ifhitplayer_time);
         }
         listener.addListener(new DDealDamage(dealerConfig));
 
         // Take Damage Listener
         HashMap<DAMAGE_MODE, Integer> takerConfig = new HashMap<DAMAGE_MODE, Integer>();
-        if (this.config.npc_spawn_underattackfromMonsters_active) {
+        if (config.npc_spawn_underattackfromMonsters_active) {
             takerConfig.put(DAMAGE_MODE.CREATURE,
-                    this.config.npc_spawn_underattackfromMonsters_time);
+                    config.npc_spawn_underattackfromMonsters_time);
         }
-        if (this.config.npc_spawn_underattackfromplayers_active) {
+        if (config.npc_spawn_underattackfromplayers_active) {
             takerConfig.put(DAMAGE_MODE.HUMANS,
-                    this.config.npc_spawn_underattackfromplayers_time);
+                    config.npc_spawn_underattackfromplayers_time);
         }
         listener.addListener(new DTakeDamage(takerConfig));
     }
@@ -216,23 +216,23 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void saveConfig() {
-        this.config.save();
+        config.save();
     }
 
     public void loadConfig() {
-        this.config = new DAPL_Config(this);
-        this.config.load();
-        this.config.save();
+        config = new DAPL_Config(this);
+        config.load();
+        config.save();
     }
 
     public boolean hasVanillaExpDrop() {
-        return this.config.npc_expdrop.equalsIgnoreCase("vanilla");
+        return config.npc_expdrop.equalsIgnoreCase("vanilla");
     }
 
     public void saveDeadPlayers() {
         getLogger().log(Level.INFO,
-                "Saving " + this.deadPlayers.size() + " Dead Players.");
-        getDataFile().set("deadPlayers", this.deadPlayers);
+                "Saving " + deadPlayers.size() + " Dead Players.");
+        getDataFile().set("deadPlayers", deadPlayers);
         saveDataFile();
         getLogger().log(Level.INFO, "Saving Complete.");
     }
@@ -241,7 +241,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         File f = new File(getDataFolder().toString() + File.separator
                 + "data.yml");
         try {
-            this.dataFile.save(f);
+            dataFile.save(f);
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Could not save the data!");
             e.printStackTrace();
@@ -254,11 +254,11 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
             getLogger().log(Level.INFO, "Could not load any Dead Players.");
             return;
         }
-        this.deadPlayers = getDataFile().getStringList("deadPlayers");
+        deadPlayers = getDataFile().getStringList("deadPlayers");
         getDataFile().set("deadPlayers", null);
         saveDataFile();
         getLogger().log(Level.INFO,
-                "Loaded " + this.deadPlayers.size() + " Dead Players.");
+                "Loaded " + deadPlayers.size() + " Dead Players.");
     }
 
     public YamlConfiguration loadDataFile() {
@@ -273,42 +273,27 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
                 e.printStackTrace();
             }
         }
-        this.dataFile = YamlConfiguration.loadConfiguration(df);
-        return this.dataFile;
-    }
-
-    public boolean playersNearby(Player player) {
-        if (!this.config.npc_spawn_playernearby_active) {
-            return true;
-        }
-        for (Entity entity : player.getNearbyEntities(
-                this.config.npc_spawn_playernearby_distance,
-                this.config.npc_spawn_playernearby_distance,
-                this.config.npc_spawn_playernearby_distance)) {
-            if ((entity instanceof Player)) {
-                return true;
-            }
-        }
-        return false;
+        dataFile = YamlConfiguration.loadConfiguration(df);
+        return dataFile;
     }
 
     /** NPC stuff # START **/
 
     public boolean isAntiPvpNPC(Entity entity) {
-        return this.npcManager.isDragonNPC(entity);
+        return npcManager.isDragonNPC(entity);
     }
 
     public void despawnHumanByName(String npcID) {
-        this.npcManager.despawnPlayerNPC(npcID);
+        npcManager.despawnPlayerNPC(npcID);
     }
 
     public void spawnHumanNPC(Player player) {
         // TODO: use different time for each case
-        String npcID = this.npcManager.spawnPlayerNPC(player);
-        DeSpawnTask task = new DeSpawnTask(npcID, this.npcManager, this);
+        String npcID = npcManager.spawnPlayerNPC(player);
+        DeSpawnTask task = new DeSpawnTask(npcID, npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
-                this.config.npc_spawn_always_time * 20L);
-        this.taskMap.put(npcID, task);
+                config.npc_spawn_always_time * 20L);
+        taskMap.put(npcID, task);
     }
 
     /** NPC stuff # END **/
@@ -316,8 +301,8 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
     public void npcFirstTimeAttacked(String name) {
         System.out.println("increase time");
         System.out.println(name);
-        this.taskMap.get(name).increaseTime(
-                this.config.npc_additionalTimeIfUnderAttack * 20L);
+        taskMap.get(name).increaseTime(
+                config.npc_additionalTimeIfUnderAttack * 20L);
     }
 
     public void broadcastNearPlayer(Player playerForRadiusBroadcast,
@@ -325,30 +310,30 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin implements Listener {
         List<Player> players = playerForRadiusBroadcast.getWorld().getPlayers();
         Location loc = playerForRadiusBroadcast.getLocation();
         for (Player player : players) {
-            if (player.getLocation().distance(loc) < this.config.npc_broadcastMessageRadius) {
+            if (player.getLocation().distance(loc) < config.npc_broadcastMessageRadius) {
                 player.sendMessage(message);
             }
         }
     }
 
     public void addDead(String name) {
-        this.deadPlayers.add(name);
+        deadPlayers.add(name);
     }
 
     public void removeDead(String name) {
-        this.deadPlayers.remove(name);
+        deadPlayers.remove(name);
     }
 
     public boolean isDead(String name) {
-        return this.deadPlayers.contains(name);
+        return deadPlayers.contains(name);
     }
 
     public YamlConfiguration getDataFile() {
-        return this.dataFile;
+        return dataFile;
     }
 
     public boolean printMessages() {
-        return this.config.plugin_printMessages;
+        return config.plugin_printMessages;
     }
 
     private class SimplePlotter extends Plotter {

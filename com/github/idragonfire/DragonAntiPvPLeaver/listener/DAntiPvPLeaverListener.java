@@ -2,9 +2,7 @@ package com.github.idragonfire.DragonAntiPvPLeaver.listener;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,86 +11,35 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
-import com.massivecraft.factions.Board;
-import com.massivecraft.factions.FLocation;
-import com.massivecraft.factions.Faction;
-import com.massivecraft.factions.struct.FFlag;
-import com.sk89q.worldguard.LocalPlayer;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DListenerInjection;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
 
 public class DAntiPvPLeaverListener implements Listener {
     protected DAntiPvPLeaverPlugin antiPvP;
+    protected DSpawnCheckerManager spawnModeChecker;
     protected ArrayList<DListenerInjection> listeners;
 
     public DAntiPvPLeaverListener(DAntiPvPLeaverPlugin antiPvP) {
         this.antiPvP = antiPvP;
-        this.listeners = new ArrayList<DListenerInjection>();
+        listeners = new ArrayList<DListenerInjection>();
     }
 
-    public static boolean canBypass(Player player) {
-        return player.hasPermission("dragonantipvpleaver.bypass");
-    }
-
-    public void addListener(DListenerInjection listener) {
-        this.listeners.add(listener);
+    public void addListener(DamageTimeListenerInjection listener) {
+        listeners.add(listener);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (canBypass(player) || (player.getGameMode().getValue() == 1)) {
+        if (!spawnModeChecker.canNpcSpawn(player)) {
             return;
         }
-
-        for (DListenerInjection listener : this.listeners) {
-            if (!listener.canDragonNpcSpawn(player.getName())) {
-                return;
-            }
-        }
-
-        if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
-            Plugin factions = Bukkit.getPluginManager().getPlugin("Factions");
-            // TODO: remove old Factions support
-            if (factions.getDescription().getVersion().startsWith("1.6")) {
-                if (Board.getFactionAt(new FLocation(player.getLocation()))
-                        .isSafeZone()) {
-                    return;
-                }
-            } else {
-                Faction playerFaction = Board.getFactionAt(new FLocation(player
-                        .getLocation()));
-                if (!playerFaction.getFlag(FFlag.PVP)
-                        || playerFaction.getFlag(FFlag.PEACEFUL)) {
-                    return;
-                }
-            }
-        }
-
-        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-            WorldGuardPlugin worldGuard = (WorldGuardPlugin) Bukkit
-                    .getPluginManager().getPlugin("WorldGuard");
-            LocalPlayer localPlayer = worldGuard.wrapPlayer(player);
-            RegionManager regionManager = worldGuard.getRegionManager(player
-                    .getWorld());
-            ApplicableRegionSet set = regionManager.getApplicableRegions(player
-                    .getLocation());
-            if (!set.allows(DefaultFlag.PVP, localPlayer)) {
-                return;
-            }
-        }
-        if (!this.antiPvP.playersNearby(player)) {
-            return;
-        }
-        this.antiPvP.spawnHumanNPC(player);
-        if (this.antiPvP.printMessages()) {
-            String npcSpawned = this.antiPvP.config.language_npcSpawned;
-            this.antiPvP.broadcastNearPlayer(player, ChatColor.RED
+        antiPvP.spawnHumanNPC(player);
+        if (antiPvP.printMessages()) {
+            String npcSpawned = antiPvP.config.language_npcSpawned;
+            antiPvP.broadcastNearPlayer(player, ChatColor.RED
                     + player.getName() + ChatColor.YELLOW + " " + npcSpawned);
         }
     }
@@ -101,19 +48,19 @@ public class DAntiPvPLeaverListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         System.out.println("test");
-        this.antiPvP.spawnHumanNPC(player);
+        antiPvP.spawnHumanNPC(player);
         // TODO: punishment item
         // player.setItemInHand(DAntiPvPLeaverPlugin.setItemNameAndLore(
         // new ItemStack(Material.STICK), ChatColor.GOLD
         // + "DragonAntiPvpLeaver", new String[] {
         // "Your NPC was killed",
         // ChatColor.RED + "NEVER LOG OUT IN COMBAT" }));
-        if (canBypass(player)) {
+        if (spawnModeChecker.canBypass(player)) {
             return;
         }
         final String name = player.getName();
-        this.antiPvP.despawnHumanByName(name);
-        if (!this.antiPvP.isDead(name)) {
+        antiPvP.despawnHumanByName(name);
+        if (!antiPvP.isDead(name)) {
             return;
         }
         player.getInventory().clear();
@@ -121,17 +68,17 @@ public class DAntiPvPLeaverListener implements Listener {
         player.setTotalExperience(0);
         player.setLevel(0);
         player.setHealth(0);
-        if (this.antiPvP.printMessages()) {
+        if (antiPvP.printMessages()) {
             player.sendMessage(ChatColor.RED + " "
-                    + this.antiPvP.config.language_yourNpcKilled);
+                    + antiPvP.config.language_yourNpcKilled);
         }
-        this.antiPvP.removeDead(player.getName());
+        antiPvP.removeDead(player.getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
         // TODO: get npc id
-        if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
+        if (!antiPvP.isAntiPvpNPC(event.getEntity())) {
             return;
         }
         System.out.println("npc dead");
@@ -151,11 +98,11 @@ public class DAntiPvPLeaverListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
-        for (DListenerInjection listener : this.listeners) {
+        for (DListenerInjection listener : listeners) {
             listener.onEntityDamageByEntity(event);
         }
         try {
-            if (!this.antiPvP.isAntiPvpNPC(event.getEntity())) {
+            if (!antiPvP.isAntiPvpNPC(event.getEntity())) {
                 return;
             }
             Player npc = (Player) event.getEntity();

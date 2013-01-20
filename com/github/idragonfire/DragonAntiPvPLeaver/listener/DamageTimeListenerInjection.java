@@ -12,12 +12,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin.DAMAGE_MODE;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DListenerInjection;
 
-public abstract class DListenerInjection {
+public abstract class DamageTimeListenerInjection implements DListenerInjection {
     protected HashMap<DAMAGE_MODE, Integer> mode;
     protected Hashtable<String, Long> timeTable;
 
-    public DListenerInjection(HashMap<DAMAGE_MODE, Integer> mode) {
+    public DamageTimeListenerInjection(HashMap<DAMAGE_MODE, Integer> mode) {
         this.mode = mode;
         this.timeTable = new Hashtable<String, Long>();
     }
