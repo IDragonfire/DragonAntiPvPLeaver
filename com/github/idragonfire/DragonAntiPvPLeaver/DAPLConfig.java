@@ -3,18 +3,24 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 import org.bukkit.plugin.Plugin;
 
 public class DAPLConfig extends Config {
-    @Comment("da1da")
+
     public boolean plugin_debug = false;
     public boolean plugin_overwriteAllNpcDamageListener = false;
+    @MultiComment( { "some plugins, like AuthMe protects the NPC",
+            "if your NPC take no damage set these value to true",
+            "WARNING: everybody can kill the NPC if these value is true" })
     public boolean plugin_printMessages = true;
-//    public final String plugin_update_notify = "notify";
-//    public final String plugin_update_automatic = "automaticDownload";
-//    public final String plugin_update_none = "off";
-    @Comment("dadadad")
-    public String plugin_autoupdate = "notify";
+    public final String plugin_update_notify = "notify";
+    public final String plugin_update_automatic = "automaticDownload";
+    public final String plugin_update_none = "off";
+    @Comment("options: " + plugin_update_notify + "," + plugin_update_automatic
+            + "," + plugin_update_none)
+    public String plugin_autoupdate = plugin_update_notify;
 
+    public final String npc_expdrop_vanilla = "vanilla";
+    public final String npc_expdrop_none = "off";
+    @Comment("options: " + npc_expdrop_vanilla + "," + npc_expdrop_none)
     public String npc_expdrop = "vanilla";
-    @MultiComment({"alpha", "beta"})
     public int npc_broadcastMessageRadius = 32;
     public String npc_spawnmode = "always";
     public int npc_additionalTimeIfUnderAttack = 15;
@@ -49,6 +55,7 @@ public class DAPLConfig extends Config {
     public String language_yourNpcKilled = "Your NPc has beend killed while combat logged";
 
     // metric settings
+    @Comment("activate/deactivate metrics graphs opt-out")
     public boolean metrics_listenerMode = true;
     public boolean metrics_worldGuardUsage = true;
     public boolean metrics_factionsUsage = true;

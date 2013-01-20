@@ -112,6 +112,7 @@ public abstract class Config {
             String path = field.getName().replaceAll("_", ".");
             if (doSkip(field)) {
                 // don't touch it
+                continue;
             }
             if (conf.isSet(path)) {
                 field.set(this, toBukkit(conf.get(path), field, path));
@@ -139,6 +140,7 @@ public abstract class Config {
             String path = field.getName().replaceAll("_", ".");
             if (doSkip(field)) {
                 // don't touch it
+                continue;
             } else {
                 onComment(annos, path, field);
                 conf.set(path, toConfig(field.get(this), field, path));
