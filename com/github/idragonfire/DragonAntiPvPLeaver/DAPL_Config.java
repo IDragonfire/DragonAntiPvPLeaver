@@ -10,6 +10,7 @@ public class DAPL_Config extends Config {
 
     // internal const
     public final String npc_spawn_bypass = "dragonantipvpleaver.bypass";
+    public final String pvp_blockcommands_bypass = "dragonantipvpleaver.blockcommands.bypass";
 
     public final String plugin_update_notify = "notify";
     public final String plugin_update_automatic = "automaticDownload";
@@ -85,19 +86,20 @@ public class DAPL_Config extends Config {
 
     // Command blocker
     public boolean pvp_blockcommands_active = true;
-    public int pvp_blockcommands_cooldownafterattack = 20;
-    public int pvp_blockcommands_cooldownaftergethurt = 20;
+    public int pvp_blockcommands_cooldown_underattack = 20;
+    public int pvp_blockcommands_cooldown_ifhit = 20;
     @Comment("Allows only commands in whitelist, you MUST set blacklist.active = false")
     public boolean pvp_blockcommands_whitelist_active = true;
     public String[] pvp_blockcommands_whitelist_cmds = new String[] { "help" };
     @Comment("Allows all commands expect in the blacklist, you MUST set whitelist.active = false")
-    public boolean pvp_blockcommands_blacklist_active = true;
+    public boolean pvp_blockcommands_blacklist_active = false;
     public String[] pvp_blockcommands_blacklist_cmds = new String[] { "set home" };
 
     // languages
     public String language_npcSpawned = "NPC spawned";
     public String language_npcKilled = "<Player>s NPC has been killed while combat logged";
-    public String language_yourNpcKilled = "Your NPc has beend killed while combat logged";
+    public String language_yourNpcKilled = "Your NPC has beend killed while combat logged";
+    public String language_commandBlocked = "DAPL: These command has been blocked.";
 
     // metric settings
     @Comment("activate/deactivate metrics graphs opt-out")

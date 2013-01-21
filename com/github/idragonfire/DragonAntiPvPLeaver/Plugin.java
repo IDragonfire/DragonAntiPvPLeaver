@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.CommandDamageListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DamageListenerHandler;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Dirty;
@@ -152,6 +153,12 @@ public class Plugin extends JavaPlugin implements Listener {
             getLogger().log(Level.INFO, "WorldGuard support enabled.");
         }
         // set block commands listener
+        if (config.pvp_blockcommands_active) {
+            CommandDamageListener cmdBlockListener = new CommandDamageListener(
+                    config, getLogger());
+            listenerHandler.addAttackVictionListener(cmdBlockListener);
+            Bukkit.getPluginManager().registerEvents(cmdBlockListener, this);
+        }
 
         // set injection if nessecary
         if (listenerHandler.hasRegisteredListeners()) {
