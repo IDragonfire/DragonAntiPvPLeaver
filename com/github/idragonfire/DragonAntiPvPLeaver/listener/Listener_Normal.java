@@ -1,7 +1,5 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.listener;
 
-import java.util.ArrayList;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +12,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Config;
 import com.github.idragonfire.DragonAntiPvPLeaver.Plugin;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DEntityDamageByEntityListenerInjection;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
 
@@ -22,12 +19,7 @@ public class Listener_Normal implements Listener {
     protected DAPL_Config config;
     protected DNpcManager npcManager;
     protected DSpawnCheckerManager spawnModeChecker;
-    protected ArrayList<DEntityDamageByEntityListenerInjection> listeners;
-
-    public Listener_Normal() {
-
-        listeners = new ArrayList<DEntityDamageByEntityListenerInjection>();
-    }
+    protected DamageListenerHandler listenerInjectionHandler;
 
     public void init(DAPL_Config config, DNpcManager npcManager) {
         this.config = config;
@@ -38,8 +30,8 @@ public class Listener_Normal implements Listener {
         this.spawnModeChecker = spawnModeChecker;
     }
 
-    public void addListener(TimeListenerInjection listener) {
-        listeners.add(listener);
+    public void setListenerInjection(DamageListenerHandler listener) {
+        listenerInjectionHandler = listener;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -111,8 +103,8 @@ public class Listener_Normal implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageEvent event) {
-        for (DEntityDamageByEntityListenerInjection listener : listeners) {
-            listener.onEntityDamageByEntity(event);
+        if (listenerInjectionHandler != null) {
+            listenerInjectionHandler.onEntityDamageByEntity(event);
         }
         try {
             if (!npcManager.isMyNpc(event.getEntity())) {

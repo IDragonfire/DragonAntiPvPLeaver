@@ -10,18 +10,16 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DealDamageListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DamageListenerHandler;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Dirty;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Normal;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.TakeDamageListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.Always;
 import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.FactionSupport;
 import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.IfHit;
@@ -45,19 +43,6 @@ public class Plugin extends JavaPlugin implements Listener {
 
     public enum DAMAGE_MODE {
         MONSTER, HUMANS
-    }
-
-    public static long checkEntityType(Entity e,
-            HashMap<DAMAGE_MODE, DamageTrackerConfig> mode) {
-        if (mode.containsKey(DAMAGE_MODE.MONSTER) && e instanceof Monster) {
-            return System.currentTimeMillis()
-                    + mode.get(DAMAGE_MODE.MONSTER).cooldown * 1000;
-        }
-        if (mode.containsKey(DAMAGE_MODE.HUMANS) && e instanceof HumanEntity) {
-            return System.currentTimeMillis()
-                    + mode.get(DAMAGE_MODE.HUMANS).cooldown * 1000;
-        }
-        return -1;
     }
 
     @Override
@@ -90,7 +75,7 @@ public class Plugin extends JavaPlugin implements Listener {
         }
 
         listener.init(config, npcManager);
-        initSpawnModes(listener);
+        initListener(listener);
         Bukkit.getPluginManager().registerEvents(listener, this);
 
         enableMetrics(listenerMode);
@@ -99,7 +84,7 @@ public class Plugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
-    private void initSpawnModes(Listener_Normal listener) {
+    private void initListener(Listener_Normal listener) {
         // Deal Damage Listener
         HashMap<DAMAGE_MODE, DamageTrackerConfig> dealerConfig = new HashMap<DAMAGE_MODE, DamageTrackerConfig>();
         if (config.npc_spawn_ifhitMonster_active) {
@@ -112,9 +97,6 @@ public class Plugin extends JavaPlugin implements Listener {
                     config.npc_spawn_ifhitPlayer_lifetime,
                     config.npc_spawn_ifhitPlayer_cooldown));
         }
-        DealDamageListener dealDamageListener = new DealDamageListener(
-                dealerConfig);
-        listener.addListener(dealDamageListener);
 
         // Take Damage Listener
         HashMap<DAMAGE_MODE, DamageTrackerConfig> takerConfig = new HashMap<DAMAGE_MODE, DamageTrackerConfig>();
@@ -128,10 +110,7 @@ public class Plugin extends JavaPlugin implements Listener {
                     config.npc_spawn_underattackfromPlayers_lifetime,
                     config.npc_spawn_underattackfromPlayers_cooldown));
         }
-        TakeDamageListener takeDamageListener = new TakeDamageListener(
-                takerConfig);
-        listener.addListener(takeDamageListener);
-
+        DamageListenerHandler listenerHandler = new DamageListenerHandler();
         // init spawn modes
         SpawnCheckerManager manager = new SpawnCheckerManager(config);
         if (config.npc_spawn_always_active) {
@@ -152,13 +131,16 @@ public class Plugin extends JavaPlugin implements Listener {
 
             if (config.npc_spawn_underattackfromMonsters_active
                     || config.npc_spawn_underattackfromPlayers_active) {
-                manager
-                        .addWhiteListChecker(new UnderAttack(takeDamageListener));
+                UnderAttack underAttackListener = new UnderAttack(takerConfig);
+                manager.addWhiteListChecker(underAttackListener);
+                listenerHandler.addAttackVictionListener(underAttackListener);
             }
 
             if (config.npc_spawn_ifhitMonster_active
                     || config.npc_spawn_ifhitPlayer_active) {
-                manager.addWhiteListChecker(new IfHit(dealDamageListener));
+                IfHit ifHitListener = new IfHit(dealerConfig);
+                manager.addWhiteListChecker(ifHitListener);
+                listenerHandler.addAttackVictionListener(ifHitListener);
             }
         }
         if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
@@ -169,6 +151,13 @@ public class Plugin extends JavaPlugin implements Listener {
             manager.addBlacklistChecker(new WorldGuardSupport());
             getLogger().log(Level.INFO, "WorldGuard support enabled.");
         }
+        // set block commands listener
+
+        // set injection if nessecary
+        if (listenerHandler.hasRegisteredListeners()) {
+            listener.setListenerInjection(listenerHandler);
+        }
+
         listener.setSpawnChecker(manager);
     }
 

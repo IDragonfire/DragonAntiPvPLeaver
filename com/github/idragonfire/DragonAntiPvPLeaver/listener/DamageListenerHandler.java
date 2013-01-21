@@ -1,7 +1,6 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.listener;
 
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.ArrayList;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -11,28 +10,22 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.DamageTrackerConfig;
-import com.github.idragonfire.DragonAntiPvPLeaver.Plugin.DAMAGE_MODE;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DEntityDamageByEntityListenerInjection;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DAttackerVictimEventListener;
 
-public abstract class TimeListenerInjection implements
-        DEntityDamageByEntityListenerInjection {
-    protected HashMap<DAMAGE_MODE, DamageTrackerConfig> mode;
-    protected Hashtable<String, Long> timeTable;
+public class DamageListenerHandler {
 
-    public TimeListenerInjection(HashMap<DAMAGE_MODE, DamageTrackerConfig> mode) {
-        this.mode = mode;
-        timeTable = new Hashtable<String, Long>();
+    protected ArrayList<DAttackerVictimEventListener> listeners;
+
+    public DamageListenerHandler() {
+        listeners = new ArrayList<DAttackerVictimEventListener>();
     }
 
-    public abstract void onEntityDamageByEntity(LivingEntity attacker,
-            Entity victim);
+    public void addAttackVictionListener(DAttackerVictimEventListener listener) {
+        listeners.add(listener);
+    }
 
-    public boolean activeCooldown(String name) {
-        if (timeTable.containsKey(name)) {
-            return System.currentTimeMillis() < timeTable.get(name);
-        }
-        return false;
+    public boolean hasRegisteredListeners() {
+        return listeners.size() > 0;
     }
 
     public void onEntityDamageByEntity(EntityDamageEvent event) {
@@ -40,7 +33,9 @@ public abstract class TimeListenerInjection implements
         if (attacker == null || event.getEntity() == null) {
             return;
         }
-        onEntityDamageByEntity(attacker, event.getEntity());
+        for (DAttackerVictimEventListener listener : listeners) {
+            listener.onEntityDamageByEntity(attacker, event.getEntity());
+        }
     }
 
     private LivingEntity getAttacker(EntityDamageEvent event) {

@@ -1,8 +1,8 @@
 package com.github.idragonfire.DragonAntiPvPLeaver;
 
 public class DamageTrackerConfig {
-    int lifetime;
-    int cooldown;
+    public int lifetime;
+    public int cooldown;
 
     public DamageTrackerConfig(int lifetime, int cooldown) {
         super();

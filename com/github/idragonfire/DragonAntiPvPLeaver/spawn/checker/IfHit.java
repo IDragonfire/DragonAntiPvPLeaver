@@ -1,25 +1,24 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker;
 
-import org.bukkit.entity.Player;
+import java.util.HashMap;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DWhitelistChecker;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.DealDamageListener;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.LivingEntity;
 
-public class IfHit implements DWhitelistChecker {
-    protected DealDamageListener listener;
+import com.github.idragonfire.DragonAntiPvPLeaver.DamageTrackerConfig;
+import com.github.idragonfire.DragonAntiPvPLeaver.Plugin.DAMAGE_MODE;
+import com.github.idragonfire.DragonAntiPvPLeaver.listener.DamageCooldownListenerTemplate;
 
-    public IfHit(DealDamageListener listener) {
-        this.listener = listener;
+public class IfHit extends DamageCooldownListenerTemplate {
+    public IfHit(HashMap<DAMAGE_MODE, DamageTrackerConfig> mode) {
+        super(mode);
     }
 
     @Override
-    public boolean canNpcSpawn(Player player) {
-        return listener.activeCooldown(player.getName());
-    }
-
-    @Override
-    public int getLifeTime(Player player) {
-        // TODO Auto-generated method stub
-        return 0;
+    public void onEntityDamageByEntity(LivingEntity attacker, Entity victim) {
+        if (attacker instanceof HumanEntity) {
+            checkEntityType(victim, ((HumanEntity) attacker).getName());
+        }
     }
 }
