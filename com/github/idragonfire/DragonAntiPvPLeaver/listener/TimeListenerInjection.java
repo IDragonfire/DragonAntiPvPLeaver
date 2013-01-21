@@ -11,15 +11,16 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import com.github.idragonfire.DragonAntiPvPLeaver.DamageTrackerConfig;
 import com.github.idragonfire.DragonAntiPvPLeaver.Plugin.DAMAGE_MODE;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DEntityDamageByEntityListenerInjection;
 
-public abstract class DamageTimeListenerInjection implements
+public abstract class TimeListenerInjection implements
         DEntityDamageByEntityListenerInjection {
-    protected HashMap<DAMAGE_MODE, Integer> mode;
+    protected HashMap<DAMAGE_MODE, DamageTrackerConfig> mode;
     protected Hashtable<String, Long> timeTable;
 
-    public DamageTimeListenerInjection(HashMap<DAMAGE_MODE, Integer> mode) {
+    public TimeListenerInjection(HashMap<DAMAGE_MODE, DamageTrackerConfig> mode) {
         this.mode = mode;
         timeTable = new Hashtable<String, Long>();
     }
@@ -27,11 +28,8 @@ public abstract class DamageTimeListenerInjection implements
     public abstract void onEntityDamageByEntity(LivingEntity attacker,
             Entity victim);
 
-    public boolean mustDragonNpcSpawn(String name) {
+    public boolean activeCooldown(String name) {
         if (timeTable.containsKey(name)) {
-            System.out.println(System.currentTimeMillis() + ":"
-                    + timeTable.get(name) + "@"
-                    + (System.currentTimeMillis() < timeTable.get(name)));
             return System.currentTimeMillis() < timeTable.get(name);
         }
         return false;

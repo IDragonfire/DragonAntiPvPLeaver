@@ -44,22 +44,18 @@ public class Plugin extends JavaPlugin implements Listener {
     public DAPL_Config config;
 
     public enum DAMAGE_MODE {
-        CREATURE, HUMANS
+        MONSTER, HUMANS
     }
 
     public static long checkEntityType(Entity e,
-            HashMap<DAMAGE_MODE, Integer> mode) {
-        if (mode.containsKey(DAMAGE_MODE.CREATURE) && e instanceof Monster) {
-            System.out.println(System.currentTimeMillis()
-                    + mode.get(DAMAGE_MODE.CREATURE));
-            return System.currentTimeMillis() + mode.get(DAMAGE_MODE.CREATURE)
-                    * 1000;
+            HashMap<DAMAGE_MODE, DamageTrackerConfig> mode) {
+        if (mode.containsKey(DAMAGE_MODE.MONSTER) && e instanceof Monster) {
+            return System.currentTimeMillis()
+                    + mode.get(DAMAGE_MODE.MONSTER).cooldown * 1000;
         }
         if (mode.containsKey(DAMAGE_MODE.HUMANS) && e instanceof HumanEntity) {
-            System.out.println(System.currentTimeMillis()
-                    + mode.get(DAMAGE_MODE.HUMANS));
-            return System.currentTimeMillis() + mode.get(DAMAGE_MODE.HUMANS)
-                    * 1000;
+            return System.currentTimeMillis()
+                    + mode.get(DAMAGE_MODE.HUMANS).cooldown * 1000;
         }
         return -1;
     }
@@ -105,28 +101,32 @@ public class Plugin extends JavaPlugin implements Listener {
 
     private void initSpawnModes(Listener_Normal listener) {
         // Deal Damage Listener
-        HashMap<DAMAGE_MODE, Integer> dealerConfig = new HashMap<DAMAGE_MODE, Integer>();
-        if (config.npc_spawn_ifhitmonster_active) {
-            dealerConfig.put(DAMAGE_MODE.CREATURE,
-                    config.npc_spawn_ifhitplayer_time);
+        HashMap<DAMAGE_MODE, DamageTrackerConfig> dealerConfig = new HashMap<DAMAGE_MODE, DamageTrackerConfig>();
+        if (config.npc_spawn_ifhitMonster_active) {
+            dealerConfig.put(DAMAGE_MODE.MONSTER, new DamageTrackerConfig(
+                    config.npc_spawn_ifhitMonster_lifetime,
+                    config.npc_spawn_ifhitMonster_cooldown));
         }
-        if (config.npc_spawn_ifhitplayer_active) {
-            dealerConfig.put(DAMAGE_MODE.HUMANS,
-                    config.npc_spawn_ifhitplayer_time);
+        if (config.npc_spawn_ifhitPlayer_active) {
+            dealerConfig.put(DAMAGE_MODE.HUMANS, new DamageTrackerConfig(
+                    config.npc_spawn_ifhitPlayer_lifetime,
+                    config.npc_spawn_ifhitPlayer_cooldown));
         }
         DealDamageListener dealDamageListener = new DealDamageListener(
                 dealerConfig);
         listener.addListener(dealDamageListener);
 
         // Take Damage Listener
-        HashMap<DAMAGE_MODE, Integer> takerConfig = new HashMap<DAMAGE_MODE, Integer>();
+        HashMap<DAMAGE_MODE, DamageTrackerConfig> takerConfig = new HashMap<DAMAGE_MODE, DamageTrackerConfig>();
         if (config.npc_spawn_underattackfromMonsters_active) {
-            takerConfig.put(DAMAGE_MODE.CREATURE,
-                    config.npc_spawn_underattackfromMonsters_time);
+            takerConfig.put(DAMAGE_MODE.MONSTER, new DamageTrackerConfig(
+                    config.npc_spawn_underattackfromMonsters_lifetime,
+                    config.npc_spawn_underattackfromMonsters_cooldown));
         }
-        if (config.npc_spawn_underattackfromplayers_active) {
-            takerConfig.put(DAMAGE_MODE.HUMANS,
-                    config.npc_spawn_underattackfromplayers_time);
+        if (config.npc_spawn_underattackfromPlayers_active) {
+            takerConfig.put(DAMAGE_MODE.HUMANS, new DamageTrackerConfig(
+                    config.npc_spawn_underattackfromPlayers_lifetime,
+                    config.npc_spawn_underattackfromPlayers_cooldown));
         }
         TakeDamageListener takeDamageListener = new TakeDamageListener(
                 takerConfig);
@@ -141,23 +141,24 @@ public class Plugin extends JavaPlugin implements Listener {
             if (config.npc_spawn_playernearby_active) {
                 manager.addWhiteListChecker(new NearBy(
                         config.npc_spawn_playernearby_distance,
-                        HumanEntity.class, config.npc_spawn_playernearby_time));
+                        HumanEntity.class,
+                        config.npc_spawn_playernearby_lifetime));
             }
             if (config.npc_spawn_monsternearby_active) {
                 manager.addWhiteListChecker(new NearBy(
                         config.npc_spawn_monsternearby_distance, Monster.class,
-                        config.npc_spawn_monsternearby_time));
+                        config.npc_spawn_monsternearby_lifetime));
             }
-            // TODO: add lifetime to config and rename time to timeuntilreset
+
             if (config.npc_spawn_underattackfromMonsters_active
-                    || config.npc_spawn_underattackfromplayers_active) {
-                manager.addWhiteListChecker(new UnderAttack(takeDamageListener,
-                        20));
+                    || config.npc_spawn_underattackfromPlayers_active) {
+                manager
+                        .addWhiteListChecker(new UnderAttack(takeDamageListener));
             }
-            // TODO: add lifetime to config and rename time to timeuntilreset
-            if (config.npc_spawn_ifhitmonster_active
-                    || config.npc_spawn_ifhitplayer_active) {
-                manager.addWhiteListChecker(new IfHit(dealDamageListener, 20));
+
+            if (config.npc_spawn_ifhitMonster_active
+                    || config.npc_spawn_ifhitPlayer_active) {
+                manager.addWhiteListChecker(new IfHit(dealDamageListener));
             }
         }
         if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {

@@ -2,18 +2,24 @@ package com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker;
 
 import org.bukkit.entity.Player;
 
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DWhitelistChecker;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DealDamageListener;
 
-public class IfHit extends WhitelistChecker {
+public class IfHit implements DWhitelistChecker {
     protected DealDamageListener listener;
 
-    public IfHit(DealDamageListener listener, int lifetime) {
-        super(lifetime);
+    public IfHit(DealDamageListener listener) {
         this.listener = listener;
     }
 
     @Override
     public boolean canNpcSpawn(Player player) {
-        return listener.mustDragonNpcSpawn(player.getName());
+        return listener.activeCooldown(player.getName());
+    }
+
+    @Override
+    public int getLifeTime(Player player) {
+        // TODO Auto-generated method stub
+        return 0;
     }
 }

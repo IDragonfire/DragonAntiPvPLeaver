@@ -38,7 +38,7 @@ public class Listener_Normal implements Listener {
         this.spawnModeChecker = spawnModeChecker;
     }
 
-    public void addListener(DamageTimeListenerInjection listener) {
+    public void addListener(TimeListenerInjection listener) {
         listeners.add(listener);
     }
 

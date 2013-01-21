@@ -65,6 +65,25 @@ public class DAPL_NpcManager implements DNpcManager {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, task,
                 lifetime * 20L);
         taskMap.put(npcID, task);
+
+        // for (Entity entity : player.getNearbyEntities(20, 20, 20)) {
+        // if (entity instanceof Creature && entity instanceof LivingEntity) {
+        // LivingEntity le = (LivingEntity) entity;
+        // try {
+        // RemoteZombie rm = (RemoteZombie) npcManager.createEntity(
+        // RemoteEntityType.Zombie, entity.getLocation());
+        // RemoteZombieEntity rme = (RemoteZombieEntity) rm
+        // .getHandle();
+        // rm.attack(remoteEntity.getBukkitEntity());
+        // } catch (NoNameException e) {
+        // e.printStackTrace();
+        // }
+        // le.remove();
+        //
+        // // System.out.println(entity);
+        // // ((Creature) entity).setTarget(remoteEntity.getBukkitEntity());
+        // }
+        // }
     }
 
     public void npcAttackEvent(String name) {

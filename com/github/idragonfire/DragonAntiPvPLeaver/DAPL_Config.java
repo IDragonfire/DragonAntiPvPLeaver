@@ -1,6 +1,5 @@
 package com.github.idragonfire.DragonAntiPvPLeaver;
 
-
 import org.bukkit.plugin.Plugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Comment;
@@ -35,7 +34,6 @@ public class DAPL_Config extends Config {
     public String npc_expdrop = "vanilla";
     public boolean npc_weararmor = true;
     public int npc_broadcastMessageRadius = 32;
-    public String npc_spawnmode = "always";
     public int npc_additionalTimeIfUnderAttack = 15;
 
     // spawn modes
@@ -44,23 +42,28 @@ public class DAPL_Config extends Config {
 
     public boolean npc_spawn_playernearby_active = true;
     public int npc_spawn_playernearby_distance = 8;
-    public int npc_spawn_playernearby_time = 10;
+    public int npc_spawn_playernearby_lifetime = 10;
 
     public boolean npc_spawn_monsternearby_active = true;
     public int npc_spawn_monsternearby_distance = 8;
-    public int npc_spawn_monsternearby_time = 10;
+    public int npc_spawn_monsternearby_lifetime = 10;
+    public int npc_spawn_monsternearby_cooldown = 20;
 
     public boolean npc_spawn_underattackfromMonsters_active = true;
-    public int npc_spawn_underattackfromMonsters_time = 10;
+    public int npc_spawn_underattackfromMonsters_lifetime = 10;
+    public int npc_spawn_underattackfromMonsters_cooldown = 20;
 
-    public boolean npc_spawn_underattackfromplayers_active = true;
-    public int npc_spawn_underattackfromplayers_time = 10;
+    public boolean npc_spawn_underattackfromPlayers_active = true;
+    public int npc_spawn_underattackfromPlayers_lifetime = 10;
+    public int npc_spawn_underattackfromPlayers_cooldown = 10;
 
-    public boolean npc_spawn_ifhitplayer_active = true;
-    public int npc_spawn_ifhitplayer_time = 20;
+    public boolean npc_spawn_ifhitPlayer_active = true;
+    public int npc_spawn_ifhitPlayer_lifetime = 20;
+    public int npc_spawn_ifhitPlayer_cooldown = 20;
 
-    public boolean npc_spawn_ifhitmonster_active = true;
-    public int npc_spawn_ifhitmonster_time = 30;
+    public boolean npc_spawn_ifhitMonster_active = true;
+    public int npc_spawn_ifhitMonster_lifetime = 30;
+    public int npc_spawn_ifhitMonster_cooldown = 30;
 
     // money options
     public boolean lossmoney_active = false;
@@ -82,8 +85,12 @@ public class DAPL_Config extends Config {
 
     // Command blocker
     public boolean pvp_blockcommands_active = true;
+    public int pvp_blockcommands_cooldownafterattack = 20;
+    public int pvp_blockcommands_cooldownaftergethurt = 20;
+    @Comment("Allows only commands in whitelist, you MUST set blacklist.active = false")
     public boolean pvp_blockcommands_whitelist_active = true;
     public String[] pvp_blockcommands_whitelist_cmds = new String[] { "help" };
+    @Comment("Allows all commands expect in the blacklist, you MUST set whitelist.active = false")
     public boolean pvp_blockcommands_blacklist_active = true;
     public String[] pvp_blockcommands_blacklist_cmds = new String[] { "set home" };
 
