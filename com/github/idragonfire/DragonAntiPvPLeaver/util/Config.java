@@ -24,7 +24,6 @@ import org.bukkit.plugin.Plugin;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-
 /**
  * Inspired by md_5
  * 
@@ -51,13 +50,13 @@ public abstract class Config {
                     .printStackTrace();
         } else if (input instanceof File) {
             // the file, directly
-            this.file = (File) input;
+            file = (File) input;
         } else if (input instanceof Plugin) {
             // the config.yml of the plugin
-            this.file = getFile((Plugin) input);
+            file = getFile((Plugin) input);
         } else if (input instanceof String) {
             // the literal file from the string
-            this.file = new File((String) input);
+            file = new File((String) input);
         }
         return this;
     }
@@ -66,9 +65,9 @@ public abstract class Config {
      * Lazy load
      */
     public void load() {
-        if (this.file != null) {
+        if (file != null) {
             try {
-                onLoad(this.file);
+                onLoad(file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -82,9 +81,9 @@ public abstract class Config {
      * Lazy save
      */
     public void save() {
-        if (this.file != null) {
+        if (file != null) {
             try {
-                onSave(this.file);
+                onSave(file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -107,20 +106,20 @@ public abstract class Config {
             }
             file.createNewFile();
         }
-        this.conf.load(file);
+        conf.load(file);
         for (Field field : getClass().getDeclaredFields()) {
             String path = field.getName().replaceAll("_", ".");
             if (doSkip(field)) {
                 // don't touch it
                 continue;
             }
-            if (this.conf.isSet(path)) {
-                field.set(this, toBukkit(this.conf.get(path), field, path));
+            if (conf.isSet(path)) {
+                field.set(this, toBukkit(conf.get(path), field, path));
             } else {
-                this.conf.set(path, toConfig(field.get(this), field, path));
+                conf.set(path, toConfig(field.get(this), field, path));
             }
         }
-        this.conf.save(file);
+        conf.save(file);
     }
 
     /**
@@ -144,10 +143,10 @@ public abstract class Config {
                 continue;
             } else {
                 onComment(annos, path, field);
-                this.conf.set(path, toConfig(field.get(this), field, path));
+                conf.set(path, toConfig(field.get(this), field, path));
             }
         }
-        this.conf.save(file);
+        conf.save(file);
         try {
             commentPostProcess(file, annos);
         } catch (Exception e) {
@@ -205,10 +204,6 @@ public abstract class Config {
             newKey = newKey.trim();
             if (level == 0) {
                 key.clear();
-                key.add(newKey);
-            } else if (key.size() < level) {
-                key.add(newKey);
-
             } else {
                 diff = key.size() - level;
                 for (int j = 0; j < diff; j++) {
@@ -225,6 +220,7 @@ public abstract class Config {
                     }
                 }
             }
+            key.add(newKey);
             writer.write(buffer.get(i));
             writer.newLine();
         }
@@ -241,7 +237,7 @@ public abstract class Config {
             return getMap((ConfigurationSection) in, field, path);
         } else if (isJSON(in)) {
             return getLocation((String) in);
-        } else if(in instanceof ArrayList<?>){
+        } else if (in instanceof ArrayList<?>) {
             return ((ArrayList<?>) in).toArray(new String[0]);
         } else {
             return in;
@@ -310,7 +306,7 @@ public abstract class Config {
     @SuppressWarnings( { "unchecked" })
     private ConfigurationSection getMap(Map data, Field field, String path)
             throws Exception {
-        ConfigurationSection cs = this.conf.createSection(path);
+        ConfigurationSection cs = conf.createSection(path);
         Set<String> keys = data.keySet();
         if (keys != null && keys.size() > 0) {
             for (String key : keys) {
