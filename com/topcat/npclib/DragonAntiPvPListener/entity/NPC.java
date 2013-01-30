@@ -8,6 +8,7 @@ import net.minecraft.server.v1_4_R1.EntityPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_4_R1.entity.CraftEntity;
 
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 import com.topcat.npclib.DragonAntiPvPListener.pathing.NPCPath;
@@ -41,7 +42,7 @@ public class NPC {
         }
     }
 
-    public org.bukkit.entity.Entity getBukkitEntity() {
+    public CraftEntity getBukkitEntity() {
         return this.entity.getBukkitEntity();
     }
 
