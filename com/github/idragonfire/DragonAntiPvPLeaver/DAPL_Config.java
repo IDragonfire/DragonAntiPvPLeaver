@@ -14,10 +14,10 @@ public class DAPL_Config extends Config {
 
     public final String plugin_update_notify = "notify";
     public final String plugin_update_automatic = "automaticDownload";
-    public final String plugin_update_none = "off";
+    public final String plugin_update_none = "none";
 
     public final String npc_expdrop_vanilla = "vanilla";
-    public final String npc_expdrop_none = "off";
+    public final String npc_expdrop_none = "none";
 
     // plugin section
     public boolean plugin_debug = false;
