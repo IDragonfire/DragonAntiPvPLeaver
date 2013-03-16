@@ -1,14 +1,14 @@
 package com.topcat.npclib.DragonAntiPvPListener.nms;
 
-import net.minecraft.server.v1_4_R1.Entity;
-import net.minecraft.server.v1_4_R1.EntityHuman;
-import net.minecraft.server.v1_4_R1.EntityPlayer;
-import net.minecraft.server.v1_4_R1.EnumGamemode;
-import net.minecraft.server.v1_4_R1.PlayerInteractManager;
-import net.minecraft.server.v1_4_R1.WorldServer;
+import net.minecraft.server.v1_5_R1.Entity;
+import net.minecraft.server.v1_5_R1.EntityHuman;
+import net.minecraft.server.v1_5_R1.EntityPlayer;
+import net.minecraft.server.v1_5_R1.EnumGamemode;
+import net.minecraft.server.v1_5_R1.PlayerInteractManager;
+import net.minecraft.server.v1_5_R1.WorldServer;
 
-import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_5_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
@@ -26,7 +26,7 @@ public class NPCEntity extends EntityPlayer {
     public NPCEntity(NPCManager npcManager, BWorld world, String s,
             PlayerInteractManager playerInteractManager) {
         super(npcManager.getServer().getMCServer(), world.getWorldServer(), s,
-        		playerInteractManager);
+                        playerInteractManager);
 
         playerInteractManager.b(EnumGamemode.SURVIVAL);
 
@@ -53,8 +53,7 @@ public class NPCEntity extends EntityPlayer {
         return super.a(entity);
     }
 
-    @Override
-    public void c_(EntityHuman entity) {
+    public void i(EntityHuman entity) {
         if ((this.lastBounceId != entity.id || System.currentTimeMillis()
                 - this.lastBounceTick > 1000)
                 && entity.getBukkitEntity().getLocation().distanceSquared(
@@ -78,7 +77,7 @@ public class NPCEntity extends EntityPlayer {
             this.lastTargetId = entity.id;
         }
 
-        super.c_(entity);
+        super.i(entity);
     }
 
     @Override

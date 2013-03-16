@@ -3,12 +3,12 @@ package com.topcat.npclib.DragonAntiPvPListener.entity;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import net.minecraft.server.v1_4_R1.Entity;
-import net.minecraft.server.v1_4_R1.EntityPlayer;
+import net.minecraft.server.v1_5_R1.Entity;
+import net.minecraft.server.v1_5_R1.EntityPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftEntity;
 
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 import com.topcat.npclib.DragonAntiPvPListener.pathing.NPCPath;
@@ -132,7 +132,7 @@ public class NPC {
                     }
                     getEntity().setPositionRotation(n.b.getX() + 0.5,
                             n.b.getY(), n.b.getZ() + 0.5, angle, look);
-                    ((EntityPlayer) getEntity()).bT = angle;
+                    ((EntityPlayer) getEntity()).bU = angle;
                 } else {
                     this.onFail.run();
                 }
@@ -145,7 +145,7 @@ public class NPC {
                     this.runningPath.getEnd().getYaw(),
                     this.runningPath.getEnd().getPitch());
 
-            ((EntityPlayer) getEntity()).bT = this.runningPath.getEnd()
+            ((EntityPlayer) getEntity()).bU = this.runningPath.getEnd()
                     .getYaw();
             Bukkit.getServer().getScheduler().cancelTask(this.taskid);
             this.taskid = 0;
