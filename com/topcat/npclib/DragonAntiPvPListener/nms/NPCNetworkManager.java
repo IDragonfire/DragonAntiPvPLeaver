@@ -22,7 +22,7 @@ public class NPCNetworkManager extends NetworkManager {
             }
         }, null);
         try {
-            Field f = NetworkManager.class.getDeclaredField("N");
+            Field f = NetworkManager.class.getDeclaredField("n");
             f.setAccessible(true);
             f.set(this, false);
         } catch (Exception e) {
