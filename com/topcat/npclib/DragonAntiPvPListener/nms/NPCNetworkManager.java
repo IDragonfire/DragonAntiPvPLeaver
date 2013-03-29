@@ -3,10 +3,10 @@ package com.topcat.npclib.DragonAntiPvPListener.nms;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import net.minecraft.server.v1_5_R1.Connection;
-import net.minecraft.server.v1_5_R1.ConsoleLogManager;
-import net.minecraft.server.v1_5_R1.NetworkManager;
-import net.minecraft.server.v1_5_R1.Packet;
+import net.minecraft.server.v1_5_R2.Connection;
+import net.minecraft.server.v1_5_R2.MinecraftServer;
+import net.minecraft.server.v1_5_R2.NetworkManager;
+import net.minecraft.server.v1_5_R2.Packet;
 
 /**
  * 
@@ -15,7 +15,8 @@ import net.minecraft.server.v1_5_R1.Packet;
 public class NPCNetworkManager extends NetworkManager {
 
     public NPCNetworkManager() throws IOException {
-        super(new ConsoleLogManager("NPC Manager", (String) null, (String) null),new NullSocket(), "NPC Manager", new Connection() {
+        super(MinecraftServer.getServer().getLogger(), new NullSocket(), "NPC Manager", new Connection() {
+
             @Override
             public boolean a() {
                 return true;
