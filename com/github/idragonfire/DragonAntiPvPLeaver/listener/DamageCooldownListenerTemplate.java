@@ -9,7 +9,7 @@ import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DamageTrackerConfig;
-import com.github.idragonfire.DragonAntiPvPLeaver.Plugin.DAMAGE_MODE;
+import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Plugin.DAMAGE_MODE;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DAttackerVictimEventListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DWhitelistChecker;

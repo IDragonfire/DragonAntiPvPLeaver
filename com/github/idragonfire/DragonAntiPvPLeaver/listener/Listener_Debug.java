@@ -9,7 +9,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredListener;
 
 public class Listener_Debug extends Listener_Normal {
@@ -17,12 +16,6 @@ public class Listener_Debug extends Listener_Normal {
 
     public Listener_Debug(Logger logger) {
         this.logger = logger;
-    }
-
-    @Override
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        super.onPlayerQuit(event);
     }
 
     @Override

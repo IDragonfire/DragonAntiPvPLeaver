@@ -6,15 +6,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-
 public class Listener_Dirty extends Listener_Normal {
 
-    @Override
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        super.onPlayerQuit(event);
-    }
 
     @Override
     @EventHandler(priority = EventPriority.LOWEST)
