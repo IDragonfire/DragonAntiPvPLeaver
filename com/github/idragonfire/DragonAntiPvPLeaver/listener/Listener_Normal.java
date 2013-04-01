@@ -39,12 +39,12 @@ public class Listener_Normal implements Listener, DAPL_Disconnection_Listener {
      * @param player
      * @return true if player can disconnect, false if not
      */
-    public boolean onPlayerNmsDisconnect(Player player) {
+    public boolean onPlayerNmsDisconnect(Player player, Object playerConnection) {
         int lifetime = spawnModeChecker.dragonNpcSpawnTime(player);
         if (lifetime == DSpawnCheckerManager.NO_SPAWN) {
             return true;
         }
-        this.npcManager.spawnHumanNPC(player, lifetime);
+        this.npcManager.spawnHumanNPC(player, lifetime, playerConnection);
         if (config.plugin_printMessages) {
             String npcSpawned = config.language_npcSpawned;
             DAPL_Plugin.broadcastNearPlayer(player, ChatColor.RED + player.getName()
@@ -81,7 +81,7 @@ public class Listener_Normal implements Listener, DAPL_Disconnection_Listener {
             return;
         }
         String name = event.getEntity().getName();
-        System.out.println("npc dead");
+        System.out.println("npc dead #2");
         // HumanNPC npc = (HumanNPC) this.antiPvP.getOneHumanNPCByName(event
         // .getEntity().getName());
         // TODO: use own NPC class

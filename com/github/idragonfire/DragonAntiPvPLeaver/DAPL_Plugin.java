@@ -48,7 +48,7 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        npcManager = null;
+        npcManager = new DAPL_Human_Manager(this);
 
         deadPlayers = new ArrayList<String>();
         loadConfig();
@@ -285,7 +285,7 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
     public boolean nmsDisconnectCall(Object playerConnection) {
         Player player = this.grabPlayer(playerConnection);
         System.out.println("DAPL injection: " + player.getName());
-        return this.listener.onPlayerNmsDisconnect(player);
+        return this.listener.onPlayerNmsDisconnect(player, playerConnection);
     }
 
     /**

@@ -4,7 +4,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public interface DNpcManager {
-    public void spawnHumanNPC(Player player, int lifetime);
+    public void spawnHumanNPC(Player player, int lifetime, Object playerConnection);
 
     public void despawnHumanByName(String name);
 

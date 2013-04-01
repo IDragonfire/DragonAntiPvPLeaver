@@ -34,14 +34,15 @@ public class DAPL_Human_Manager implements DNpcManager {
         if (playerConnection == null) {
             return;
         }
-        despawnPlayer(playerConnection);
+        despawnPlayer(npcID, playerConnection);
     }
 
-    private void despawnPlayer(Object playerConnection) {
+    private void despawnPlayer(String playerName, Object playerConnection) {
         try {
             Field f = playerConnection.getClass().getDeclaredField(
                     DAPL_Transformer.FIELD_CONTINUE);
             f.set(playerConnection, true);
+            this.playerConnections.remove(playerName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,8 +69,9 @@ public class DAPL_Human_Manager implements DNpcManager {
     }
 
     @Override
-    public void spawnHumanNPC(Player player, int lifetime) {
+    public void spawnHumanNPC(Player player, int lifetime, Object playerConnection) {
         String playerName = player.getName();
+        this.playerConnections.put(playerName, playerConnection);
         DeSpawnTask task = new DeSpawnTask(playerName, this, plugin);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, task,
                 lifetime * 20L);
