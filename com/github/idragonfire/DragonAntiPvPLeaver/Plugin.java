@@ -2,6 +2,7 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.CommandDamageListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DamageListenerHandler;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
@@ -33,13 +35,10 @@ import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Graph;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Plotter;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Updater.UpdateResult;
 
-import de.kumpelblase2.remoteentities.RemoteEntities;
-import de.kumpelblase2.remoteentities.exceptions.PluginNotEnabledException;
-
 public class Plugin extends JavaPlugin implements Listener {
     protected List<String> deadPlayers;
     protected YamlConfiguration dataFile;
-    protected DAPL_NpcManager npcManager;
+    protected DNpcManager npcManager;
     public DAPL_Config config;
 
     public enum DAMAGE_MODE {
@@ -48,14 +47,7 @@ public class Plugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        try {
-            npcManager = new DAPL_NpcManager(
-                    RemoteEntities.createManager(this), this);
-        } catch (PluginNotEnabledException e) {
-            e.printStackTrace();
-            onDisable();
-            return;
-        }
+        npcManager = null;
 
         deadPlayers = new ArrayList<String>();
         loadConfig();
@@ -214,6 +206,7 @@ public class Plugin extends JavaPlugin implements Listener {
     protected void enableAutoUpdate() {
         try {
             String updateMode = config.plugin_autoupdate;
+            System.out.println(":" + updateMode + ":");
             if (updateMode.equals(config.plugin_update_none)
                     || updateMode.equals("false")) {
                 return;
@@ -279,6 +272,32 @@ public class Plugin extends JavaPlugin implements Listener {
         dataFile.set("deadPlayers", deadPlayers);
         saveDataFile();
         getLogger().log(Level.INFO, "Saving dead players complete.");
+    }
+    
+    /**
+     * If time expires, set DAPL_Transformer.FIELD_CONTINUE to true
+     * @param playerConnection
+     * @return true if player can normaly disconnect
+     */
+    public boolean nmsDisconnectCall(Object playerConnection) {
+        System.out.println(playerConnection + " ICH WAR ES");
+//        try {
+//            Field f = playerConnection.getClass().getDeclaredField(DAPL_Transformer.FIELD_CONTINUE);
+//            f.set(playerConnection, true);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        return false;
+    }
+    
+    private void despawnPlayer(Object playerConnection) {
+        try {
+            Field f = playerConnection.getClass().getDeclaredField(
+                    DAPL_Transformer.FIELD_CONTINUE);
+            f.set(playerConnection, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void saveDataFile() {

@@ -59,6 +59,8 @@ public class Listener_Normal implements Listener {
         // + "DragonAntiPvpLeaver", new String[] {
         // "Your NPC was killed",
         // ChatColor.RED + "NEVER LOG OUT IN COMBAT" }));
+        npcManager.spawnHumanNPC(event.getPlayer(), 5*60*60);
+        System.out.println("spawn");
         if (spawnModeChecker.canBypass(player)) {
             return;
         }
