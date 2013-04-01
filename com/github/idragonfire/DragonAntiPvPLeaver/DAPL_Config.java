@@ -4,7 +4,6 @@ import org.bukkit.plugin.Plugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Comment;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Config;
-import com.github.idragonfire.DragonAntiPvPLeaver.util.MultiComment;
 
 public class DAPL_Config extends Config {
 
@@ -21,10 +20,6 @@ public class DAPL_Config extends Config {
 
     // plugin section
     public boolean plugin_debug = false;
-    public boolean plugin_overwriteAllNpcDamageListener = false;
-    @MultiComment( { "some plugins, like AuthMe protects the NPC",
-            "if your NPC take no damage set these value to true",
-            "WARNING: everybody can kill the NPC if these value is true" })
     public boolean plugin_printMessages = true;
 
     @Comment("options: " + plugin_update_notify + "," + plugin_update_automatic

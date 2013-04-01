@@ -20,6 +20,5 @@ public class UnderAttack extends DamageCooldownListenerTemplate {
         if (victim instanceof HumanEntity) {
             checkEntityType(attacker, ((HumanEntity) victim).getName());
         }
-
     }
 }

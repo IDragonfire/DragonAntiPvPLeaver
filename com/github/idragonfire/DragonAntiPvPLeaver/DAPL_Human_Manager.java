@@ -7,17 +7,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_FakePlayer_Manager;
 
-public class DAPL_Human_Manager implements DNpcManager {
+public class DAPL_Human_Manager implements DAPL_FakePlayer_Manager {
     protected DAPL_Plugin plugin;
     protected HashMap<String, Object> playerConnections;
     protected HashMap<String, DeSpawnTask> taskMap;
 
     public DAPL_Human_Manager(DAPL_Plugin plugin) {
         this.plugin = plugin;
-        this.playerConnections = new HashMap<String, Object>();
-        this.taskMap = new HashMap<String, DeSpawnTask>();
+        playerConnections = new HashMap<String, Object>();
+        taskMap = new HashMap<String, DeSpawnTask>();
     }
 
     @Override
@@ -29,12 +29,12 @@ public class DAPL_Human_Manager implements DNpcManager {
     }
 
     @Override
-    public void despawnHumanByName(String npcID) {
-        Object playerConnection = playerConnections.get(npcID);
+    public void despawnHumanByName(String playerName) {
+        Object playerConnection = playerConnections.get(playerName);
         if (playerConnection == null) {
             return;
         }
-        despawnPlayer(npcID, playerConnection);
+        despawnPlayer(playerName, playerConnection);
     }
 
     private void despawnPlayer(String playerName, Object playerConnection) {
@@ -42,7 +42,7 @@ public class DAPL_Human_Manager implements DNpcManager {
             Field f = playerConnection.getClass().getDeclaredField(
                     DAPL_Transformer.FIELD_CONTINUE);
             f.set(playerConnection, true);
-            this.playerConnections.remove(playerName);
+            playerConnections.remove(playerName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,13 +69,13 @@ public class DAPL_Human_Manager implements DNpcManager {
     }
 
     @Override
-    public void spawnHumanNPC(Player player, int lifetime, Object playerConnection) {
+    public void spawnHumanNPC(Player player, int lifetime,
+            Object playerConnection) {
         String playerName = player.getName();
-        this.playerConnections.put(playerName, playerConnection);
+        playerConnections.put(playerName, playerConnection);
         DeSpawnTask task = new DeSpawnTask(playerName, this, plugin);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, task,
                 lifetime * 20L);
         taskMap.put(playerName, task);
     }
-
 }

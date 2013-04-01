@@ -13,7 +13,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DAttackerVictimEventListener;
 
 public class DamageListenerHandler {
-
     protected ArrayList<DAttackerVictimEventListener> listeners;
 
     public DamageListenerHandler() {

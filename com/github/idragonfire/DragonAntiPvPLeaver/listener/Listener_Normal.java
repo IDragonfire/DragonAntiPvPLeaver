@@ -12,16 +12,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Config;
 import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Plugin;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_Disconnection_Listener;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_FakePlayer_Manager;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
 
 public class Listener_Normal implements Listener, DAPL_Disconnection_Listener {
     protected DAPL_Config config;
-    protected DNpcManager npcManager;
+    protected DAPL_FakePlayer_Manager npcManager;
     protected DSpawnCheckerManager spawnModeChecker;
     protected DamageListenerHandler listenerInjectionHandler;
 
-    public void init(DAPL_Config config, DNpcManager npcManager) {
+    public void init(DAPL_Config config, DAPL_FakePlayer_Manager npcManager) {
         this.config = config;
         this.npcManager = npcManager;
     }
@@ -35,8 +35,6 @@ public class Listener_Normal implements Listener, DAPL_Disconnection_Listener {
     }
 
     /**
-     * 
-     * @param player
      * @return true if player can disconnect, false if not
      */
     public boolean onPlayerNmsDisconnect(Player player, Object playerConnection) {
@@ -44,11 +42,11 @@ public class Listener_Normal implements Listener, DAPL_Disconnection_Listener {
         if (lifetime == DSpawnCheckerManager.NO_SPAWN) {
             return true;
         }
-        this.npcManager.spawnHumanNPC(player, lifetime, playerConnection);
+        npcManager.spawnHumanNPC(player, lifetime, playerConnection);
         if (config.plugin_printMessages) {
             String npcSpawned = config.language_npcSpawned;
-            DAPL_Plugin.broadcastNearPlayer(player, ChatColor.RED + player.getName()
-                    + ChatColor.YELLOW + " " + npcSpawned,
+            DAPL_Plugin.broadcastNearPlayer(player, ChatColor.RED
+                    + player.getName() + ChatColor.YELLOW + " " + npcSpawned,
                     config.npc_broadcastMessageRadius);
         }
         return false;
@@ -81,13 +79,7 @@ public class Listener_Normal implements Listener, DAPL_Disconnection_Listener {
             return;
         }
         String name = event.getEntity().getName();
-        System.out.println("npc dead #2");
-        // HumanNPC npc = (HumanNPC) this.antiPvP.getOneHumanNPCByName(event
-        // .getEntity().getName());
-        // TODO: use own NPC class
-        // if (this.antiPvP.hasVanillaExpDrop()) {
-        // event.setDroppedExp(npc.getDroppedExp());
-        // }
+        // TODO: change exp drop?
         npcManager.addKillStatus(name);
         if (config.plugin_printMessages) {
             DAPL_Plugin.broadcastNearPlayer(event.getEntity(), ChatColor.RED

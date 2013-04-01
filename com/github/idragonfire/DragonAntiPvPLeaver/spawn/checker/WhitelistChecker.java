@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DWhitelistChecker;
 
 public abstract class WhitelistChecker implements DWhitelistChecker {
-
     protected int lifetime;
 
     public WhitelistChecker(int lifetime) {
@@ -15,5 +14,4 @@ public abstract class WhitelistChecker implements DWhitelistChecker {
     public int getLifeTime(Player player) {
         return lifetime;
     }
-
 }

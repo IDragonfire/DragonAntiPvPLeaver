@@ -14,8 +14,8 @@ public class WorldGuardSupport implements DSpawnChecker {
     protected WorldGuardPlugin worldGuard;
 
     public WorldGuardSupport() {
-        this.worldGuard = (WorldGuardPlugin) Bukkit.getPluginManager()
-                .getPlugin("WorldGuard");
+        worldGuard = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin(
+                "WorldGuard");
     }
 
     @Override
@@ -27,5 +27,4 @@ public class WorldGuardSupport implements DSpawnChecker {
                 .getLocation());
         return set.allows(DefaultFlag.PVP, localPlayer);
     }
-
 }

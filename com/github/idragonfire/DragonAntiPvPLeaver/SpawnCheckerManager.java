@@ -52,5 +52,4 @@ public class SpawnCheckerManager implements DSpawnCheckerManager {
         }
         return NO_SPAWN;
     }
-
 }

@@ -17,11 +17,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_Disconnection_Listener;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DNpcManager;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_FakePlayer_Manager;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.CommandDamageListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DamageListenerHandler;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
-import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Dirty;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Normal;
 import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.Always;
 import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.FactionSupport;
@@ -38,7 +37,7 @@ import com.github.idragonfire.DragonAntiPvPLeaver.util.Updater.UpdateResult;
 public class DAPL_Plugin extends JavaPlugin implements Listener {
     protected List<String> deadPlayers;
     protected YamlConfiguration dataFile;
-    protected DNpcManager npcManager;
+    protected DAPL_FakePlayer_Manager npcManager;
     protected DAPL_Disconnection_Listener listener;
     public DAPL_Config config;
 
@@ -60,10 +59,6 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
         if (getConfig().getBoolean("plugin.debug")) {
             listener = new Listener_Debug(getLogger());
             listenerMode = "debug";
-        } else if (getConfig().getBoolean(
-                "plugin.overwriteAllNpcDamageListener")) {
-            listener = new Listener_Dirty();
-            listenerMode = "overwrite";
         } else {
             listener = new Listener_Normal();
         }
@@ -283,21 +278,22 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
      * @return true if player can normaly disconnect
      */
     public boolean nmsDisconnectCall(Object playerConnection) {
-        Player player = this.grabPlayer(playerConnection);
+        Player player = grabPlayer(playerConnection);
         System.out.println("DAPL injection: " + player.getName());
-        return this.listener.onPlayerNmsDisconnect(player, playerConnection);
+        return listener.onPlayerNmsDisconnect(player, playerConnection);
     }
 
     /**
      * Grab Bukkit Player object over reflection to prevent nms code
+     * 
      * @param playerConnection
      * @return
      */
     private Player grabPlayer(Object playerConnection) {
         Player player = null;
         try {
-            Object entityPlayer = playerConnection
-                    .getClass().getField("player").get(playerConnection);
+            Object entityPlayer = playerConnection.getClass()
+                    .getField("player").get(playerConnection);
             player = (Player) entityPlayer.getClass().getDeclaredMethod(
                     "getBukkitEntity").invoke(entityPlayer);
         } catch (Exception e) {
