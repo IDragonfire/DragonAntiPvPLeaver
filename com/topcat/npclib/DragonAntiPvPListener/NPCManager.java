@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_5_R2.Entity;
-import net.minecraft.server.v1_5_R2.PlayerInteractManager;
-import net.minecraft.server.v1_5_R2.WorldServer;
+import net.minecraft.server.v1_5_R3.Entity;
+import net.minecraft.server.v1_5_R3.PlayerInteractManager;
+import net.minecraft.server.v1_5_R3.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_5_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_5_R3.entity.CraftEntity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -87,7 +87,6 @@ public class NPCManager {
     }
 
     private class SL implements Listener {
-        @SuppressWarnings("unused")
         @EventHandler
         public void onPluginDisable(PluginDisableEvent event) {
             if (event.getPlugin() == plugin) {
@@ -99,7 +98,6 @@ public class NPCManager {
     }
 
     private class WL implements Listener {
-        @SuppressWarnings("unused")
         @EventHandler
         public void onChunkLoad(ChunkLoadEvent event) {
             for (NPC npc : NPCManager.this.npcs.values()) {
