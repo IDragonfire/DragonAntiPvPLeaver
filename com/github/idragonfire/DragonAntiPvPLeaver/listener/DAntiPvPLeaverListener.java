@@ -35,6 +35,7 @@ public class DAntiPvPLeaverListener implements Listener {
         return player.hasPermission("dragonantipvpleaver.bypass");
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
