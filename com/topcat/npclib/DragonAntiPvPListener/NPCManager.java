@@ -1,7 +1,6 @@
 package com.topcat.npclib.DragonAntiPvPListener;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,14 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_5_R3.Entity;
-import net.minecraft.server.v1_5_R3.PlayerInteractManager;
-import net.minecraft.server.v1_5_R3.WorldServer;
+import net.minecraft.server.v1_6_R2.Entity;
+import net.minecraft.server.v1_6_R2.PlayerInteractManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftEntity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -46,29 +44,29 @@ public class NPCManager {
     public static JavaPlugin plugin;
 
     public NPCManager(JavaPlugin plugin) {
-        this.server = BServer.getInstance();
+        server = BServer.getInstance();
 
         try {
-            this.npcNetworkManager = new NPCNetworkManager();
+            npcNetworkManager = new NPCNetworkManager();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         NPCManager.plugin = plugin;
-        this.taskid = Bukkit.getServer().getScheduler()
-                .scheduleSyncRepeatingTask(plugin, new Runnable() {
+        taskid = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(
+                plugin, new Runnable() {
                     @Override
                     public void run() {
                         HashSet<String> toRemove = new HashSet<String>();
-                        for (String i : NPCManager.this.npcs.keySet()) {
-                            Entity j = NPCManager.this.npcs.get(i).getEntity();
+                        for (String i : npcs.keySet()) {
+                            Entity j = npcs.get(i).getEntity();
                             j.x();
                             if (j.dead) {
                                 toRemove.add(i);
                             }
                         }
                         for (String n : toRemove) {
-                            NPCManager.this.npcs.remove(n);
+                            npcs.remove(n);
                         }
                     }
                 }, 1L, 1L);
@@ -77,12 +75,12 @@ public class NPCManager {
     }
 
     public BWorld getBWorld(World world) {
-        BWorld bworld = this.bworlds.get(world);
+        BWorld bworld = bworlds.get(world);
         if (bworld != null) {
             return bworld;
         }
         bworld = new BWorld(world);
-        this.bworlds.put(world, bworld);
+        bworlds.put(world, bworld);
         return bworld;
     }
 
@@ -91,8 +89,7 @@ public class NPCManager {
         public void onPluginDisable(PluginDisableEvent event) {
             if (event.getPlugin() == plugin) {
                 despawnAll();
-                Bukkit.getServer().getScheduler().cancelTask(
-                        NPCManager.this.taskid);
+                Bukkit.getServer().getScheduler().cancelTask(taskid);
             }
         }
     }
@@ -100,7 +97,7 @@ public class NPCManager {
     private class WL implements Listener {
         @EventHandler
         public void onChunkLoad(ChunkLoadEvent event) {
-            for (NPC npc : NPCManager.this.npcs.values()) {
+            for (NPC npc : npcs.values()) {
                 if (npc != null
                         && event.getChunk() == npc.getBukkitEntity()
                                 .getLocation().getBlock().getChunk()) {
@@ -114,7 +111,7 @@ public class NPCManager {
     public NPC spawnHumanNPC(String name, Location l) {
         int i = 0;
         String id = name;
-        while (this.npcs.containsKey(id)) {
+        while (npcs.containsKey(id)) {
             id = name + i;
             i++;
         }
@@ -122,16 +119,16 @@ public class NPCManager {
     }
 
     public NPC spawnHumanNPC(String name, Location l, String id) {
-        if (this.npcs.containsKey(id)) {
-            this.server.getLogger().log(Level.WARNING,
+        if (npcs.containsKey(id)) {
+            server.getLogger().log(Level.WARNING,
                     "NPC with that id already exists, existing NPC returned");
-            return this.npcs.get(id);
+            return npcs.get(id);
         } else {
             if (name.length() > 16) { // Check and nag if name is too long, spawn NPC anyway with shortened name.
                 String tmp = name.substring(0, 16);
-                this.server.getLogger().log(Level.WARNING,
+                server.getLogger().log(Level.WARNING,
                         "NPCs can't have names longer than 16 characters,");
-                this.server.getLogger().log(Level.WARNING,
+                server.getLogger().log(Level.WARNING,
                         name + " has been shortened to " + tmp);
                 name = tmp;
             }
@@ -142,15 +139,15 @@ public class NPCManager {
                     .getYaw(), l.getPitch());
             world.getWorldServer().addEntity(npcEntity); // the right way
             NPC npc = new HumanNPC(npcEntity);
-            this.npcs.put(id, npc);
+            npcs.put(id, npc);
             return npc;
         }
     }
 
     public void despawnById(String id) {
-        NPC npc = this.npcs.get(id);
+        NPC npc = npcs.get(id);
         if (npc != null) {
-            this.npcs.remove(id);
+            npcs.remove(id);
             npc.removeFromWorld();
         }
     }
@@ -160,8 +157,8 @@ public class NPCManager {
             npcName = npcName.substring(0, 16); // Ensure you can still despawn
         }
         HashSet<String> toRemove = new HashSet<String>();
-        for (String n : this.npcs.keySet()) {
-            NPC npc = this.npcs.get(n);
+        for (String n : npcs.keySet()) {
+            NPC npc = npcs.get(n);
             if (npc instanceof HumanNPC) {
                 if (npc != null && ((HumanNPC) npc).getName().equals(npcName)) {
                     toRemove.add(n);
@@ -170,21 +167,21 @@ public class NPCManager {
             }
         }
         for (String n : toRemove) {
-            this.npcs.remove(n);
+            npcs.remove(n);
         }
     }
 
     public void despawnAll() {
-        for (NPC npc : this.npcs.values()) {
+        for (NPC npc : npcs.values()) {
             if (npc != null) {
                 npc.removeFromWorld();
             }
         }
-        this.npcs.clear();
+        npcs.clear();
     }
 
     public NPC getNPC(String id) {
-        return this.npcs.get(id);
+        return npcs.get(id);
     }
 
     public boolean isNPC(org.bukkit.entity.Entity e) {
@@ -193,7 +190,7 @@ public class NPCManager {
 
     public List<NPC> getHumanNPCByName(String name) {
         List<NPC> ret = new ArrayList<NPC>();
-        Collection<NPC> i = this.npcs.values();
+        Collection<NPC> i = npcs.values();
         for (NPC e : i) {
             if (e instanceof HumanNPC) {
                 if (((HumanNPC) e).getName().equalsIgnoreCase(name)) {
@@ -205,13 +202,13 @@ public class NPCManager {
     }
 
     public List<NPC> getNPCs() {
-        return new ArrayList<NPC>(this.npcs.values());
+        return new ArrayList<NPC>(npcs.values());
     }
 
     public String getNPCIdFromEntity(org.bukkit.entity.Entity e) {
         if (e instanceof HumanEntity) {
-            for (String i : this.npcs.keySet()) {
-                if (this.npcs.get(i).getBukkitEntity().getEntityId() == ((HumanEntity) e)
+            for (String i : npcs.keySet()) {
+                if (npcs.get(i).getBukkitEntity().getEntityId() == ((HumanEntity) e)
                         .getEntityId()) {
                     return i;
                 }
@@ -220,40 +217,12 @@ public class NPCManager {
         return null;
     }
 
-    public void rename(String id, String name) {
-        if (name.length() > 16) { // Check and nag if name is too long, spawn NPC anyway with shortened name.
-            String tmp = name.substring(0, 16);
-            this.server.getLogger().log(Level.WARNING,
-                    "NPCs can't have names longer than 16 characters,");
-            this.server.getLogger().log(Level.WARNING,
-                    name + " has been shortened to " + tmp);
-            name = tmp;
-        }
-        HumanNPC npc = (HumanNPC) getNPC(id);
-        npc.setName(name);
-        BWorld b = getBWorld(npc.getBukkitEntity().getLocation().getWorld());
-        WorldServer s = b.getWorldServer();
-        try {
-            Method m = s.getClass().getDeclaredMethod("d",
-                    new Class[] { Entity.class });
-            m.setAccessible(true);
-            m.invoke(s, npc.getEntity());
-            m = s.getClass().getDeclaredMethod("c",
-                    new Class[] { Entity.class });
-            m.setAccessible(true);
-            m.invoke(s, npc.getEntity());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        s.everyoneSleeping();
-    }
-
     public BServer getServer() {
-        return this.server;
+        return server;
     }
 
     public NPCNetworkManager getNPCNetworkManager() {
-        return this.npcNetworkManager;
+        return npcNetworkManager;
     }
 
 }

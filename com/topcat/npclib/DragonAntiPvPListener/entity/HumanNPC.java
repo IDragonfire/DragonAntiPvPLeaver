@@ -2,10 +2,10 @@ package com.topcat.npclib.DragonAntiPvPListener.entity;
 
 import java.util.Arrays;
 
-import net.minecraft.server.v1_5_R3.EntityPlayer;
-import net.minecraft.server.v1_5_R3.Packet18ArmAnimation;
-import net.minecraft.server.v1_5_R3.Packet5EntityEquipment;
-import net.minecraft.server.v1_5_R3.WorldServer;
+import net.minecraft.server.v1_6_R2.EntityPlayer;
+import net.minecraft.server.v1_6_R2.Packet18ArmAnimation;
+import net.minecraft.server.v1_6_R2.Packet5EntityEquipment;
+import net.minecraft.server.v1_6_R2.WorldServer;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,18 +18,18 @@ import com.topcat.npclib.DragonAntiPvPListener.NPCUtils;
 import com.topcat.npclib.DragonAntiPvPListener.nms.NPCEntity;
 
 public class HumanNPC extends NPC {
-    private net.minecraft.server.v1_5_R3.ItemStack[] previousEquipment = { null,
-            null, null, null, null };
+    private net.minecraft.server.v1_6_R2.ItemStack[] previousEquipment = {
+            null, null, null, null, null };
 
     // TODO: refactor to new DragonNPC class
     private int _DroppedExp = 0;
 
     public int getDroppedExp() {
-        return this._DroppedExp;
+        return _DroppedExp;
     }
 
     public void setDroppedExp(int exp) {
-        this._DroppedExp = exp;
+        _DroppedExp = exp;
     }
 
     // END refactor
@@ -57,12 +57,8 @@ public class HumanNPC extends NPC {
                 .setItemInHand(new ItemStack(m, 1, damage));
     }
 
-    public void setName(String name) {
-        ((NPCEntity) getEntity()).name = name;
-    }
-
     public String getName() {
-        return ((NPCEntity) getEntity()).name;
+        return ((NPCEntity) getEntity()).getName();
     }
 
     public PlayerInventory getInventory() {
@@ -72,16 +68,16 @@ public class HumanNPC extends NPC {
     public void updateEquipment() {
         int changes = 0;
 
-        for (int i = 0; i < this.previousEquipment.length; i++) {
-            net.minecraft.server.v1_5_R3.ItemStack previous = this.previousEquipment[i];
-            net.minecraft.server.v1_5_R3.ItemStack current = ((EntityPlayer) getEntity())
+        for (int i = 0; i < previousEquipment.length; i++) {
+            net.minecraft.server.v1_6_R2.ItemStack previous = previousEquipment[i];
+            net.minecraft.server.v1_6_R2.ItemStack current = ((EntityPlayer) getEntity())
                     .getEquipment(i);
             if (current == null) {
                 continue;
             }
 
-            if (!net.minecraft.server.v1_5_R3.ItemStack
-                    .equals(previous, current)
+            if (!net.minecraft.server.v1_6_R2.ItemStack.equals(previous,
+                    current)
                     || (previous != null && !previous.equals(current))) {
                 NPCUtils.sendPacketNearby(getBukkitEntity().getLocation(),
                         new Packet5EntityEquipment(getEntity().id, i, current));
@@ -90,8 +86,8 @@ public class HumanNPC extends NPC {
         }
 
         if (changes > 0) {
-            this.previousEquipment = Arrays.copyOf(((EntityPlayer) getEntity())
-                    .getEquipment(), this.previousEquipment.length);
+            previousEquipment = Arrays.copyOf(((EntityPlayer) getEntity())
+                    .getEquipment(), previousEquipment.length);
         }
     }
 
@@ -126,6 +122,6 @@ public class HumanNPC extends NPC {
         }
         getEntity().yaw = (float) (newYaw - 90);
         getEntity().pitch = (float) newPitch;
-        ((EntityPlayer) getEntity()).bU = (float) (newYaw - 90);
+        ((EntityPlayer) getEntity()).bw = (float) (newYaw - 90);
     }
 }

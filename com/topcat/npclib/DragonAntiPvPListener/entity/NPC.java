@@ -3,12 +3,12 @@ package com.topcat.npclib.DragonAntiPvPListener.entity;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import net.minecraft.server.v1_5_R3.Entity;
-import net.minecraft.server.v1_5_R3.EntityPlayer;
+import net.minecraft.server.v1_6_R2.Entity;
+import net.minecraft.server.v1_6_R2.EntityPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftEntity;
 
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 import com.topcat.npclib.DragonAntiPvPListener.pathing.NPCPath;
@@ -31,19 +31,19 @@ public class NPC {
     }
 
     public Entity getEntity() {
-        return this.entity;
+        return entity;
     }
 
     public void removeFromWorld() {
         try {
-            this.entity.world.removeEntity(this.entity);
+            entity.world.removeEntity(entity);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public CraftEntity getBukkitEntity() {
-        return this.entity.getBukkitEntity();
+        return entity.getBukkitEntity();
     }
 
     public void moveTo(Location l) {
@@ -55,17 +55,17 @@ public class NPC {
     }
 
     public void pathFindTo(Location l, int maxIterations, PathReturn callback) {
-        if (this.path != null) {
-            this.path.cancel = true;
+        if (path != null) {
+            path.cancel = true;
         }
         if (l.getWorld() != getBukkitEntity().getWorld()) {
             ArrayList<Node> pathList = new ArrayList<Node>();
             pathList.add(new Node(l.getBlock()));
             callback.run(new NPCPath(null, pathList, l));
         } else {
-            this.path = new NPCPathFinder(getBukkitEntity().getLocation(), l,
+            path = new NPCPathFinder(getBukkitEntity().getLocation(), l,
                     maxIterations, callback);
-            this.path.start();
+            path.start();
         }
     }
 
@@ -91,14 +91,14 @@ public class NPC {
         usePath(path, new Runnable() {
             @Override
             public void run() {
-                walkTo(NPC.this.runningPath.getEnd(), 3000);
+                walkTo(runningPath.getEnd(), 3000);
             }
         });
     }
 
     public void usePath(NPCPath path, Runnable onFail) {
-        if (this.taskid == 0) {
-            this.taskid = Bukkit.getServer().getScheduler()
+        if (taskid == 0) {
+            taskid = Bukkit.getServer().getScheduler()
                     .scheduleSyncRepeatingTask(NPCManager.plugin,
                             new Runnable() {
                                 @Override
@@ -107,48 +107,43 @@ public class NPC {
                                 }
                             }, 6L, 6L);
         }
-        this.pathIterator = path.getPath().iterator();
-        this.runningPath = path;
+        pathIterator = path.getPath().iterator();
+        runningPath = path;
         this.onFail = onFail;
     }
 
     private void pathStep() {
-        if (this.pathIterator.hasNext()) {
-            Node n = this.pathIterator.next();
+        if (pathIterator.hasNext()) {
+            Node n = pathIterator.next();
             if (n.b.getWorld() != getBukkitEntity().getWorld()) {
                 getBukkitEntity().teleport(n.b.getLocation());
             } else {
                 float angle = getEntity().yaw;
                 float look = getEntity().pitch;
-                if (this.last == null
-                        || this.runningPath.checkPath(n, this.last, true)) {
-                    if (this.last != null) {
-                        angle = (float) Math.toDegrees(Math.atan2(this.last.b
-                                .getX()
-                                - n.b.getX(), n.b.getZ() - this.last.b.getZ()));
-                        look = (float) (Math.toDegrees(Math.asin(this.last.b
-                                .getY()
+                if (last == null || runningPath.checkPath(n, last, true)) {
+                    if (last != null) {
+                        angle = (float) Math.toDegrees(Math.atan2(last.b.getX()
+                                - n.b.getX(), n.b.getZ() - last.b.getZ()));
+                        look = (float) (Math.toDegrees(Math.asin(last.b.getY()
                                 - n.b.getY())) / 2);
                     }
                     getEntity().setPositionRotation(n.b.getX() + 0.5,
                             n.b.getY(), n.b.getZ() + 0.5, angle, look);
-                    ((EntityPlayer) getEntity()).bU = angle;
+                    ((EntityPlayer) getEntity()).bw = angle;
                 } else {
-                    this.onFail.run();
+                    onFail.run();
                 }
             }
-            this.last = n;
+            last = n;
         } else {
-            getEntity().setPositionRotation(this.runningPath.getEnd().getX(),
-                    this.runningPath.getEnd().getY(),
-                    this.runningPath.getEnd().getZ(),
-                    this.runningPath.getEnd().getYaw(),
-                    this.runningPath.getEnd().getPitch());
+            getEntity().setPositionRotation(runningPath.getEnd().getX(),
+                    runningPath.getEnd().getY(), runningPath.getEnd().getZ(),
+                    runningPath.getEnd().getYaw(),
+                    runningPath.getEnd().getPitch());
 
-            ((EntityPlayer) getEntity()).bU = this.runningPath.getEnd()
-                    .getYaw();
-            Bukkit.getServer().getScheduler().cancelTask(this.taskid);
-            this.taskid = 0;
+            ((EntityPlayer) getEntity()).bw = runningPath.getEnd().getYaw();
+            Bukkit.getServer().getScheduler().cancelTask(taskid);
+            taskid = 0;
         }
     }
 
