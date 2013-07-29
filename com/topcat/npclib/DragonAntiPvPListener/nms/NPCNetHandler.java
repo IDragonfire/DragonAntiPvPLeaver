@@ -94,11 +94,11 @@ public class NPCNetHandler extends PlayerConnection {
 
     @Override
     public void a(Packet7UseEntity packet7useentity) {
-    };
+    }
 
     @Override
     public void a(Packet9Respawn packet9respawn) {
-    };
+    }
 
     @Override
     public void handleContainerClose(Packet101CloseWindow packet101closewindow) {
