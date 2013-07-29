@@ -48,9 +48,9 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.deadPlayers = new ArrayList<String>();
-        this.taskMap = new HashMap<String, DeSpawnTask>();
-        this.lang = new HashMap<String, String>();
+        deadPlayers = new ArrayList<String>();
+        taskMap = new HashMap<String, DeSpawnTask>();
+        lang = new HashMap<String, String>();
         loadConfig();
         loadDeadPlayers();
 
@@ -68,10 +68,10 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(
                     new DAntiPvPLeaverListener(this), this);
         }
-        this.npcManager = new NPCManager(this);
+        npcManager = new NPCManager(this);
 
         enableMetrics(listenerMode);
-        enableAutoUpdate();
+        // enableAutoUpdate();
     }
 
     protected void enableMetrics(String listenerMode) {
@@ -176,29 +176,29 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     public void loadConfig() {
         Configuration config = getConfig();
-        this.printMessages = config.getBoolean("plugin.printMessages");
-        this.spawnOnlyIfPlayerNearby = config
+        printMessages = config.getBoolean("plugin.printMessages");
+        spawnOnlyIfPlayerNearby = config
                 .getBoolean("npc.spawn.onlyIfPlayerNearby");
-        this.distance = config.getInt("npc.spawn.distance");
-        this.time = config.getInt("npc.spawn.time");
+        distance = config.getInt("npc.spawn.distance");
+        time = config.getInt("npc.spawn.time");
 
-        this.additionalTimeIfUnderAttack = config
+        additionalTimeIfUnderAttack = config
                 .getInt("npc.spawn.additionalTimeIfUnderAttack");
-        this.broadcastMessageRadius = config
+        broadcastMessageRadius = config
                 .getInt("npc.spawn.broadcastMessageRadius");
-        this.vanillaExpDrop = config.getBoolean("npc.expdrop");
-        this.npcTagNameColor = config.getString("npc.nameTagColor");
+        vanillaExpDrop = config.getBoolean("npc.expdrop");
+        npcTagNameColor = config.getString("npc.nameTagColor");
         saveConfig();
     }
 
     public boolean hasVanillaExpDrop() {
-        return this.vanillaExpDrop;
+        return vanillaExpDrop;
     }
 
     public void saveDeadPlayers() {
         getLogger().log(Level.INFO,
-                "Saving " + this.deadPlayers.size() + " Dead Players.");
-        getDataFile().set("deadPlayers", this.deadPlayers);
+                "Saving " + deadPlayers.size() + " Dead Players.");
+        getDataFile().set("deadPlayers", deadPlayers);
         saveDataFile();
         getLogger().log(Level.INFO, "Saving Complete.");
     }
@@ -207,7 +207,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         File f = new File(getDataFolder().toString() + File.separator
                 + "data.yml");
         try {
-            this.dataFile.save(f);
+            dataFile.save(f);
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Could not save the data!");
             e.printStackTrace();
@@ -220,11 +220,11 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
             getLogger().log(Level.INFO, "Could not load any Dead Players.");
             return;
         }
-        this.deadPlayers = getDataFile().getStringList("deadPlayers");
+        deadPlayers = getDataFile().getStringList("deadPlayers");
         getDataFile().set("deadPlayers", null);
         saveDataFile();
         getLogger().log(Level.INFO,
-                "Loaded " + this.deadPlayers.size() + " Dead Players.");
+                "Loaded " + deadPlayers.size() + " Dead Players.");
     }
 
     public YamlConfiguration loadDataFile() {
@@ -239,26 +239,26 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
                 e.printStackTrace();
             }
         }
-        this.dataFile = YamlConfiguration.loadConfiguration(df);
-        return this.dataFile;
+        dataFile = YamlConfiguration.loadConfiguration(df);
+        return dataFile;
     }
 
     public String getLang(String key) {
-        String text = this.lang.get(key);
+        String text = lang.get(key);
         if (text != null) {
             return text;
         }
         text = getConfig().getString("language." + key);
-        this.lang.put(key, text);
+        lang.put(key, text);
         return text;
     }
 
     public boolean playersNearby(Player player) {
-        if (!this.spawnOnlyIfPlayerNearby) {
+        if (!spawnOnlyIfPlayerNearby) {
             return true;
         }
-        for (Entity entity : player.getNearbyEntities(this.distance,
-                this.distance, this.distance)) {
+        for (Entity entity : player.getNearbyEntities(distance, distance,
+                distance)) {
             if ((entity instanceof Player)) {
                 return true;
             }
@@ -267,13 +267,13 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
     }
 
     public void despawnHumanByName(String playerName) {
-        this.npcManager.despawnHumanByName(playerNameToNpcName(playerName));
+        npcManager.despawnHumanByName(playerNameToNpcName(playerName));
     }
 
     public NPC getOneHumanNPCByName(String name) {
         try {
-            return this.npcManager.getHumanNPCByName(playerNameToNpcName(name))
-                    .get(0);
+            return npcManager.getHumanNPCByName(playerNameToNpcName(name)).get(
+                    0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -287,7 +287,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     public HumanNPC spawnHumanNPC(Player player, Location loc, String name) {
         // TODO: ChatColor for NPC name?
-        HumanNPC npc = (HumanNPC) this.npcManager.spawnHumanNPC(
+        HumanNPC npc = (HumanNPC) npcManager.spawnHumanNPC(
                 playerNameToNpcName(name), loc);
         ItemStack[] invContents = player.getInventory().getContents();
         ItemStack[] armourContents = player.getInventory().getArmorContents();
@@ -301,16 +301,14 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         }
         npc.setDroppedExp(XP);
 
-        DeSpawnTask task = new DeSpawnTask(name, this.npcManager, this);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, task,
-                this.time * 20L);
-        this.taskMap.put(npc.getName(), task);
+        DeSpawnTask task = new DeSpawnTask(name, npcManager, this);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, task, time * 20L);
+        taskMap.put(npc.getName(), task);
         return npc;
     }
 
     public void npcFirstTimeAttacked(String name) {
-        this.taskMap.get(name).increaseTime(
-                this.additionalTimeIfUnderAttack * 20L);
+        taskMap.get(name).increaseTime(additionalTimeIfUnderAttack * 20L);
     }
 
     public void broadcastNearPlayer(Player playerForRadiusBroadcast,
@@ -318,34 +316,34 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         List<Player> players = playerForRadiusBroadcast.getWorld().getPlayers();
         Location loc = playerForRadiusBroadcast.getLocation();
         for (Player player : players) {
-            if (player.getLocation().distance(loc) < this.broadcastMessageRadius) {
+            if (player.getLocation().distance(loc) < broadcastMessageRadius) {
                 player.sendMessage(message);
             }
         }
     }
 
     public void addDead(String name) {
-        this.deadPlayers.add(name);
+        deadPlayers.add(name);
     }
 
     public void removeDead(String name) {
-        this.deadPlayers.remove(name);
+        deadPlayers.remove(name);
     }
 
     public boolean isDead(String name) {
-        return this.deadPlayers.contains(name);
+        return deadPlayers.contains(name);
     }
 
     public boolean isAntiPvpNPC(Entity entity) {
-        return this.npcManager.isNPC(entity);
+        return npcManager.isNPC(entity);
     }
 
     public YamlConfiguration getDataFile() {
-        return this.dataFile;
+        return dataFile;
     }
 
     public boolean printMessages() {
-        return this.printMessages;
+        return printMessages;
     }
 
     public static ItemStack setItemNameAndLore(ItemStack item, String name,
