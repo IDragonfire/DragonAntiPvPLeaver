@@ -11,20 +11,12 @@ public class DAPL_Config extends Config {
     public final String npc_spawn_bypass = "dragonantipvpleaver.bypass";
     public final String pvp_blockcommands_bypass = "dragonantipvpleaver.blockcommands.bypass";
 
-    public final String plugin_update_notify = "notify";
-    public final String plugin_update_automatic = "automaticDownload";
-    public final String plugin_update_none = "none";
-
     public final String npc_expdrop_vanilla = "vanilla";
     public final String npc_expdrop_none = "none";
 
     // plugin section
     public boolean plugin_debug = false;
     public boolean plugin_printMessages = true;
-
-    @Comment("options: " + plugin_update_notify + "," + plugin_update_automatic
-            + "," + plugin_update_none)
-    public String plugin_autoupdate = plugin_update_notify;
 
     @Comment("options: " + npc_expdrop_vanilla + "," + npc_expdrop_none)
     public String npc_expdrop = "vanilla";

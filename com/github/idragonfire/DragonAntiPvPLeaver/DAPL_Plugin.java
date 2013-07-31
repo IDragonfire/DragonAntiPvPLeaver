@@ -29,10 +29,8 @@ import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.NearBy;
 import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.UnderAttack;
 import com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker.WorldGuardSupport;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics;
-import com.github.idragonfire.DragonAntiPvPLeaver.util.Updater;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Graph;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Plotter;
-import com.github.idragonfire.DragonAntiPvPLeaver.util.Updater.UpdateResult;
 
 public class DAPL_Plugin extends JavaPlugin implements Listener {
     protected List<String> deadPlayers;
@@ -153,7 +151,7 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
             Bukkit.getPluginManager().registerEvents(cmdBlockListener, this);
         }
 
-        // set injection if nessecary
+        // set injection if necessary
         if (listenerHandler.hasRegisteredListeners()) {
             listener.setListenerInjection(listenerHandler);
         }
@@ -200,52 +198,6 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
 
             metrics.start();
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected void enableAutoUpdate() {
-        try {
-            String updateMode = config.plugin_autoupdate;
-            System.out.println(":" + updateMode + ":");
-            if (updateMode.equals(config.plugin_update_none)
-                    || updateMode.equals("false")) {
-                return;
-            }
-            Updater.UpdateType updateType = Updater.UpdateType.NO_DOWNLOAD;
-            if (updateMode.equals(config.plugin_update_automatic)) {
-                updateType = Updater.UpdateType.DEFAULT;
-            }
-            Updater updater = new Updater(this, "dragonantipvpleaver",
-                    getFile(), updateType, false);
-            UpdateResult result = updater.getResult();
-            switch (result) {
-            case UPDATE_AVAILABLE:
-                getLogger().log(Level.INFO, "#########################");
-                getLogger().log(Level.INFO, "New version available: ");
-                getLogger().log(Level.INFO, updater.getLatestVersionString());
-                getLogger().log(Level.INFO,
-                        "Your version: " + getDescription().getVersion());
-                getLogger().log(Level.INFO, "#########################");
-                break;
-            case SUCCESS:
-                getLogger().log(
-                        Level.INFO,
-                        "downloaded successfull "
-                                + updater.getLatestVersionString()
-                                + ". Updating plugin at next server restart!");
-                break;
-            case NO_UPDATE:
-                break;
-
-            default:
-                getLogger().log(Level.WARNING, " Updater has problems");
-                break;
-            }
-            if (result == UpdateResult.UPDATE_AVAILABLE) {
-
-            }
-        } catch (Exception e) {
             e.printStackTrace();
         }
     }
