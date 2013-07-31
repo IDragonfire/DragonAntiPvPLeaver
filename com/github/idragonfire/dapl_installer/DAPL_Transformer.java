@@ -3,6 +3,8 @@ package com.github.idragonfire.dapl_installer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.jar.JarFile;
@@ -11,7 +13,6 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
-import net.minecraft.server.DAPL_Injection;
 
 public class DAPL_Transformer {
     public static final String FIELD_DELAYED = "dragonfire_dapl_delay_disconnect";
@@ -160,12 +161,11 @@ public class DAPL_Transformer {
 
             // extract injection class from installer
             File daplInjectionClass = new File(dest, getDaplInjectionName());
-            Object o = DAPL_Injection.class.getResource(getDaplInjectionName());
-            // Object o = DAPL_Transformer.class.getClass().getClassLoader()
-            // .getResourceAsStream(getDaplInjectionJarName());
+            if (!daplInjectionClass.exists()) {
+                extractInjectionClass();
+            }
             DAPL_Utils.copy(new File(getDaplInjectionName()),
                     daplInjectionClass);
-            System.out.println(o);
 
             // pack all into new craftbukkit jar
             File newBukkitFile = new File(dest, "craftbukkit.jar");
@@ -179,6 +179,35 @@ public class DAPL_Transformer {
                     files);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void extractInjectionClass() {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            System.out.println("extract from: " + getDaplInjectionJarName());
+            in = this.getClass().getClassLoader().getResourceAsStream(
+                    getDaplInjectionJarName());
+            out = new FileOutputStream(getDaplInjectionName());
+            int read = 0;
+            byte[] bytes = new byte[1024];
+            while ((read = in.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                in.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
