@@ -182,12 +182,6 @@ public class DAPL_Transformer {
         }
     }
 
-    public static void main(String[] args) {
-        DAPL_Transformer transformer = new DAPL_Transformer();
-        transformer.injectBukkit(new File(
-                "D:\\Games\\Minecraft\\craftbukkit.jar"), new File("C:\\T"));
-    }
-
     public String getMcPackageVersion() {
         return mcPackageVersion;
     }
