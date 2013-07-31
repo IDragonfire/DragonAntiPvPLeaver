@@ -38,5 +38,4 @@ public class FactionSupport implements DSpawnChecker {
         }
         return true;
     }
-
 }

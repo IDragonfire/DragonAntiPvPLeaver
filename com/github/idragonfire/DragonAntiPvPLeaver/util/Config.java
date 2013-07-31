@@ -390,5 +390,4 @@ public abstract class Config {
     private File getFile(Plugin plugin) {
         return new File(plugin.getDataFolder(), "config.yml");
     }
-
 }
