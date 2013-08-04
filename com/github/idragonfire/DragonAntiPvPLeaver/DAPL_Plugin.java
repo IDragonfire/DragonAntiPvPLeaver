@@ -2,6 +2,7 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_Disconnection_Listener;
@@ -48,8 +50,25 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
         return super.getFile();
     }
 
+    public static boolean nmsDisconnectCall(Object playerConnection) {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(
+                "DragonAntiPvPLeaver");
+        if (plugin != null) {
+            try {
+                Method m = plugin.getClass().getDeclaredMethod(
+                        "nmsDisconnectCall2", Object.class);
+                return (Boolean) m.invoke(plugin, playerConnection);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+
     @Override
     public void onEnable() {
+        DAPL_Transformer trans = new DAPL_Transformer();
+        trans.transform();
         npcManager = new DAPL_Human_Manager(this);
         deadPlayers = new ArrayList<String>();
         loadConfig();
@@ -233,7 +252,7 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
      * @param playerConnection
      * @return true if player can normaly disconnect
      */
-    public boolean nmsDisconnectCall(Object playerConnection) {
+    public boolean nmsDisconnectCall2(Object playerConnection) {
         Player player = grabPlayer(playerConnection);
         System.out.println("DAPL injection: " + player.getName());
         return listener.onPlayerNmsDisconnect(player, playerConnection);
