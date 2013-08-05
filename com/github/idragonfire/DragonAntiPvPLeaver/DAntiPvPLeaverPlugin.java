@@ -28,7 +28,6 @@ import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Graph;
 import com.github.idragonfire.DragonAntiPvPLeaver.metrics.Metrics.Plotter;
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
-import com.topcat.npclib.DragonAntiPvPListener.entity.NPC;
 
 public class DAntiPvPLeaverPlugin extends JavaPlugin {
     protected List<String> deadPlayers;
@@ -270,7 +269,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         npcManager.despawnHumanByName(playerNameToNpcName(playerName));
     }
 
-    public NPC getOneHumanNPCByName(String name) {
+    public HumanNPC getOneHumanNPCByName(String name) {
         try {
             return npcManager.getHumanNPCByName(playerNameToNpcName(name)).get(
                     0);
@@ -287,8 +286,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
 
     public HumanNPC spawnHumanNPC(Player player, Location loc, String name) {
         // TODO: ChatColor for NPC name?
-        HumanNPC npc = (HumanNPC) npcManager.spawnHumanNPC(
-                playerNameToNpcName(name), loc);
+        HumanNPC npc = npcManager.spawnHumanNPC(playerNameToNpcName(name), loc);
         ItemStack[] invContents = player.getInventory().getContents();
         ItemStack[] armourContents = player.getInventory().getArmorContents();
         npc.getInventory().setContents(invContents);

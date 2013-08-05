@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftEntity;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -24,7 +23,6 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
-import com.topcat.npclib.DragonAntiPvPListener.entity.NPC;
 import com.topcat.npclib.DragonAntiPvPListener.nms.BServer;
 import com.topcat.npclib.DragonAntiPvPListener.nms.BWorld;
 import com.topcat.npclib.DragonAntiPvPListener.nms.NPCEntity;
@@ -36,7 +34,7 @@ import com.topcat.npclib.DragonAntiPvPListener.nms.NPCNetworkManager;
  */
 public class NPCManager {
 
-    private HashMap<String, NPC> npcs = new HashMap<String, NPC>();
+    private HashMap<String, HumanNPC> npcs = new HashMap<String, HumanNPC>();
     private BServer server;
     private int taskid;
     private Map<World, BWorld> bworlds = new HashMap<World, BWorld>();
@@ -97,7 +95,7 @@ public class NPCManager {
     private class WL implements Listener {
         @EventHandler
         public void onChunkLoad(ChunkLoadEvent event) {
-            for (NPC npc : npcs.values()) {
+            for (HumanNPC npc : npcs.values()) {
                 if (npc != null
                         && event.getChunk() == npc.getBukkitEntity()
                                 .getLocation().getBlock().getChunk()) {
@@ -108,7 +106,7 @@ public class NPCManager {
         }
     }
 
-    public NPC spawnHumanNPC(String name, Location l) {
+    public HumanNPC spawnHumanNPC(String name, Location l) {
         int i = 0;
         String id = name;
         while (npcs.containsKey(id)) {
@@ -118,7 +116,7 @@ public class NPCManager {
         return spawnHumanNPC(name, l, id);
     }
 
-    public NPC spawnHumanNPC(String name, Location l, String id) {
+    public HumanNPC spawnHumanNPC(String name, Location l, String id) {
         if (npcs.containsKey(id)) {
             server.getLogger().log(Level.WARNING,
                     "NPC with that id already exists, existing NPC returned");
@@ -138,14 +136,14 @@ public class NPCManager {
             npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l
                     .getYaw(), l.getPitch());
             world.getWorldServer().addEntity(npcEntity); // the right way
-            NPC npc = new HumanNPC(npcEntity);
+            HumanNPC npc = new HumanNPC(npcEntity);
             npcs.put(id, npc);
             return npc;
         }
     }
 
     public void despawnById(String id) {
-        NPC npc = npcs.get(id);
+        HumanNPC npc = npcs.get(id);
         if (npc != null) {
             npcs.remove(id);
             npc.removeFromWorld();
@@ -158,9 +156,9 @@ public class NPCManager {
         }
         HashSet<String> toRemove = new HashSet<String>();
         for (String n : npcs.keySet()) {
-            NPC npc = npcs.get(n);
+            HumanNPC npc = npcs.get(n);
             if (npc instanceof HumanNPC) {
-                if (npc != null && ((HumanNPC) npc).getName().equals(npcName)) {
+                if (npc != null && (npc).getName().equals(npcName)) {
                     toRemove.add(n);
                     npc.removeFromWorld();
                 }
@@ -172,7 +170,7 @@ public class NPCManager {
     }
 
     public void despawnAll() {
-        for (NPC npc : npcs.values()) {
+        for (HumanNPC npc : npcs.values()) {
             if (npc != null) {
                 npc.removeFromWorld();
             }
@@ -180,7 +178,7 @@ public class NPCManager {
         npcs.clear();
     }
 
-    public NPC getNPC(String id) {
+    public HumanNPC getNPC(String id) {
         return npcs.get(id);
     }
 
@@ -188,33 +186,17 @@ public class NPCManager {
         return ((CraftEntity) e).getHandle() instanceof NPCEntity;
     }
 
-    public List<NPC> getHumanNPCByName(String name) {
-        List<NPC> ret = new ArrayList<NPC>();
-        Collection<NPC> i = npcs.values();
-        for (NPC e : i) {
+    public List<HumanNPC> getHumanNPCByName(String name) {
+        List<HumanNPC> ret = new ArrayList<HumanNPC>();
+        Collection<HumanNPC> i = npcs.values();
+        for (HumanNPC e : i) {
             if (e instanceof HumanNPC) {
-                if (((HumanNPC) e).getName().equalsIgnoreCase(name)) {
+                if ((e).getName().equalsIgnoreCase(name)) {
                     ret.add(e);
                 }
             }
         }
         return ret;
-    }
-
-    public List<NPC> getNPCs() {
-        return new ArrayList<NPC>(npcs.values());
-    }
-
-    public String getNPCIdFromEntity(org.bukkit.entity.Entity e) {
-        if (e instanceof HumanEntity) {
-            for (String i : npcs.keySet()) {
-                if (npcs.get(i).getBukkitEntity().getEntityId() == ((HumanEntity) e)
-                        .getEntityId()) {
-                    return i;
-                }
-            }
-        }
-        return null;
     }
 
     public BServer getServer() {
