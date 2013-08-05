@@ -2,6 +2,8 @@ package com.topcat.npclib.DragonAntiPvPListener.nms;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 import net.minecraft.server.v1_6_R2.Connection;
 import net.minecraft.server.v1_6_R2.MinecraftServer;
@@ -15,13 +17,14 @@ import net.minecraft.server.v1_6_R2.Packet;
 public class NPCNetworkManager extends NetworkManager {
 
     public NPCNetworkManager() throws IOException {
-        super(MinecraftServer.getServer().getLogger(), new NullSocket(), "NPC Manager", new Connection() {
+        super(MinecraftServer.getServer().getLogger(), new NullSocket(),
+                "NPC Manager", new Connection() {
 
-            @Override
-            public boolean a() {
-                return true;
-            }
-        }, null);
+                    @Override
+                    public boolean a() {
+                        return true;
+                    }
+                }, null);
         try {
             Field f = NetworkManager.class.getDeclaredField("n");
             f.setAccessible(true);
@@ -40,11 +43,15 @@ public class NPCNetworkManager extends NetworkManager {
     }
 
     @Override
+    public void a() {
+    }
+
+    @Override
     public void a(String s, Object... aobject) {
     }
 
     @Override
-    public void a() {
+    public SocketAddress getSocketAddress() {
+        return new InetSocketAddress(1);
     }
-
 }
