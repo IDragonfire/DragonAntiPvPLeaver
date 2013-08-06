@@ -99,9 +99,9 @@ public class DAPL_Plugin extends JavaPlugin implements Listener, DPlugin {
     }
 
     private void initDeathFeatures() {
-        if (config.factions_extra_losepower_active) {
+        if (config.factions_extraLosePowerActive) {
             FactionsLosePower factionsDeathFeatures = new FactionsLosePower(
-                    config.factions_losepower_delta);
+                    config.factions_losePowerDelta);
             if (factionsDeathFeatures.validDeathListener()) {
                 addDaplPlayerListener(factionsDeathFeatures);
             }
