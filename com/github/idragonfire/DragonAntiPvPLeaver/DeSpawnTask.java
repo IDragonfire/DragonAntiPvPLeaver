@@ -3,19 +3,19 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_FakePlayer_Manager;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DFakePlayerManager;
 
 public class DeSpawnTask implements Runnable {
     private Plugin plugin;
     private String npcID;
-    private DAPL_FakePlayer_Manager nm;
+    private DFakePlayerManager nm;
     private long increase;
 
     public void increaseTime(long time) {
         increase = time;
     }
 
-    public DeSpawnTask(String npcID, DAPL_FakePlayer_Manager nm, Plugin plugin) {
+    public DeSpawnTask(String npcID, DFakePlayerManager nm, Plugin plugin) {
         this.plugin = plugin;
         this.npcID = npcID;
         this.nm = nm;

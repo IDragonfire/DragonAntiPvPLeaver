@@ -10,9 +10,10 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DDamagerListenerHandler;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DAttackerVictimEventListener;
 
-public class DamageListenerHandler {
+public class DamageListenerHandler implements DDamagerListenerHandler {
     protected ArrayList<DAttackerVictimEventListener> listeners;
 
     public DamageListenerHandler() {

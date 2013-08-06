@@ -18,8 +18,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_Disconnection_Listener;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_FakePlayer_Manager;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlugin;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DDamagerListenerHandler;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DDisconnectionListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DFakePlayerManager;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlayerListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.CommandDamageListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DamageListenerHandler;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
@@ -34,20 +38,18 @@ import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Graph;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Plotter;
 
-public class DAPL_Plugin extends JavaPlugin implements Listener {
+public class DAPL_Plugin extends JavaPlugin implements Listener,
+        DPlugin {
     protected List<String> deadPlayers;
     protected YamlConfiguration dataFile;
-    protected DAPL_FakePlayer_Manager npcManager;
-    protected DAPL_Disconnection_Listener listener;
+    protected DFakePlayerManager npcManager;
+    protected DDisconnectionListener listener;
+    protected SpawnCheckerManager manager;
+    protected DamageListenerHandler damagerListenerHandler;
     public DAPL_Config config;
 
     public enum DAMAGE_MODE {
         MONSTER, HUMANS
-    }
-
-    @Override
-    public File getFile() {
-        return super.getFile();
     }
 
     public static boolean nmsDisconnectCall(Object playerConnection) {
@@ -121,9 +123,9 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
                     config.npc_spawn_underattackfromPlayers_lifetime,
                     config.npc_spawn_underattackfromPlayers_cooldown));
         }
-        DamageListenerHandler listenerHandler = new DamageListenerHandler();
+        damagerListenerHandler = new DamageListenerHandler();
         // init spawn modes
-        SpawnCheckerManager manager = new SpawnCheckerManager(config);
+        manager = new SpawnCheckerManager(config);
         if (config.npc_spawn_always_active) {
             manager.addWhiteListChecker(new Always(config));
             getLogger().log(Level.INFO, "spawn mode: always");
@@ -144,14 +146,14 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
                     || config.npc_spawn_underattackfromPlayers_active) {
                 UnderAttack underAttackListener = new UnderAttack(takerConfig);
                 manager.addWhiteListChecker(underAttackListener);
-                listenerHandler.addAttackVictionListener(underAttackListener);
+                damagerListenerHandler.addAttackVictionListener(underAttackListener);
             }
 
             if (config.npc_spawn_ifhitMonster_active
                     || config.npc_spawn_ifhitPlayer_active) {
                 IfHit ifHitListener = new IfHit(dealerConfig);
                 manager.addWhiteListChecker(ifHitListener);
-                listenerHandler.addAttackVictionListener(ifHitListener);
+                damagerListenerHandler.addAttackVictionListener(ifHitListener);
             }
         }
         if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
@@ -166,13 +168,13 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
         if (config.pvp_blockcommands_active) {
             CommandDamageListener cmdBlockListener = new CommandDamageListener(
                     config, getLogger());
-            listenerHandler.addAttackVictionListener(cmdBlockListener);
+            damagerListenerHandler.addAttackVictionListener(cmdBlockListener);
             Bukkit.getPluginManager().registerEvents(cmdBlockListener, this);
         }
 
         // set injection if necessary
-        if (listenerHandler.hasRegisteredListeners()) {
-            listener.setListenerInjection(listenerHandler);
+        if (damagerListenerHandler.hasRegisteredListeners()) {
+            listener.setListenerInjection(damagerListenerHandler);
         }
 
         listener.setSpawnChecker(manager);
@@ -337,5 +339,25 @@ public class DAPL_Plugin extends JavaPlugin implements Listener {
         public int getValue() {
             return 1;
         }
+    }
+
+    @Override
+    public void addDaplPlayerListener(DPlayerListener listener) {
+        npcManager.addDaplPlayerListener(listener);
+    }
+
+    @Override
+    public void removeDaplPlayerListener(DPlayerListener listener) {
+        npcManager.removeDaplPlayerListener(listener);
+    }
+
+    @Override
+    public DSpawnCheckerManager getSpawnChecker() {
+        return manager;
+    }
+
+    @Override
+    public DDamagerListenerHandler getDamagerListenerHandler() {
+        return damagerListenerHandler;
     }
 }

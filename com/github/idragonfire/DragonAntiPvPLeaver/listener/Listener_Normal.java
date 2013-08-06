@@ -11,17 +11,17 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Config;
 import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Plugin;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_Disconnection_Listener;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DAPL_FakePlayer_Manager;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DDisconnectionListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DFakePlayerManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
 
-public class Listener_Normal implements Listener, DAPL_Disconnection_Listener {
+public class Listener_Normal implements Listener, DDisconnectionListener {
     protected DAPL_Config config;
-    protected DAPL_FakePlayer_Manager npcManager;
+    protected DFakePlayerManager npcManager;
     protected DSpawnCheckerManager spawnModeChecker;
     protected DamageListenerHandler listenerInjectionHandler;
 
-    public void init(DAPL_Config config, DAPL_FakePlayer_Manager npcManager) {
+    public void init(DAPL_Config config, DFakePlayerManager npcManager) {
         this.config = config;
         this.npcManager = npcManager;
     }
