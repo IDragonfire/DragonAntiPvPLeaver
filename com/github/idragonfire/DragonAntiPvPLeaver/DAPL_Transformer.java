@@ -1,7 +1,5 @@
 package com.github.idragonfire.DragonAntiPvPLeaver;
 
-import java.lang.reflect.Field;
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -116,15 +114,13 @@ public class DAPL_Transformer {
             CtClass cc = cp
                     .get("net.minecraft.server.v1_6_R2.PlayerConnection");
             // check if class already injectsion, e.g. if server reloaded
-            Class<?> currentClass = Class
-                    .forName("net.minecraft.server.v1_6_R2.PlayerConnection");
-            if (currentClass != null) {
-                for (Field field : currentClass.getDeclaredFields()) {
-                    if (field.getName().contains(FIELD_DELAYED)) {
-                        System.out.println("already injected");
-                        return;
-                    }
-                }
+            try {
+                Class.forName("net.minecraft.server.DAPL_Injection");
+                // if loaded -> no exception -> injected
+                System.out.println("already injected");
+                return;
+            } catch (ClassNotFoundException e) {
+                // if exception, class not loaded, all is k
             }
             transform(cc);
             System.out.println("pushed");
