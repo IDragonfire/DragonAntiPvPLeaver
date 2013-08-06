@@ -1,5 +1,9 @@
 package com.github.idragonfire.DragonAntiPvPLeaver;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -21,8 +25,14 @@ public class DAPL_Transformer {
     }
 
     public String getRunningJarPath() {
-        return this.getClass().getProtectionDomain().getCodeSource()
-                .getLocation().getPath();
+        URL url = this.getClass().getProtectionDomain().getCodeSource()
+                .getLocation();
+        try {
+            return new File(url.toURI()).getAbsolutePath();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return url.getPath().replaceAll("%20", " ");
     }
 
     public void transform(CtClass cc) throws CannotCompileException,
