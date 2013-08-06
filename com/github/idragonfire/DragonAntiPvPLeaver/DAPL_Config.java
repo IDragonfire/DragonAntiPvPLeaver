@@ -59,8 +59,10 @@ public class DAPL_Config extends Config {
     public int lossmoney_percentage = 75;
 
     // factions options
-    public boolean factions_losepower_active = false;
-    public int factions_losepower_percentage = 100;
+    @Comment("Player use normal power on death, you can activate extra power lose")
+    public boolean factions_extraLosepowerActive = false;
+    @Comment("a value between -10 to 10")
+    public double factions_losepowerDelta = -3.0;
 
     // mcmmo options
     public boolean mcmmo_loselevel_active = false;

@@ -18,12 +18,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlugin;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DDamagerListenerHandler;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DDisconnectionListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DFakePlayerManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlayerListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlugin;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
+import com.github.idragonfire.DragonAntiPvPLeaver.deathfeatures.FactionsLosePower;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.CommandDamageListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DamageListenerHandler;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
@@ -38,8 +39,7 @@ import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Graph;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Plotter;
 
-public class DAPL_Plugin extends JavaPlugin implements Listener,
-        DPlugin {
+public class DAPL_Plugin extends JavaPlugin implements Listener, DPlugin {
     protected List<String> deadPlayers;
     protected YamlConfiguration dataFile;
     protected DFakePlayerManager npcManager;
@@ -89,12 +89,24 @@ public class DAPL_Plugin extends JavaPlugin implements Listener,
 
         listener.init(config, npcManager);
         initListener(listener);
+        initDeathFeatures();
         Bukkit.getPluginManager().registerEvents(listener, this);
 
         enableMetrics(listenerMode);
         // enableAutoUpdate();
 
         Bukkit.getPluginManager().registerEvents(this, this);
+    }
+
+    private void initDeathFeatures() {
+        if (config.factions_extra_losepower_active) {
+            FactionsLosePower factionsDeathFeatures = new FactionsLosePower(
+                    config.factions_losepower_delta);
+            if (factionsDeathFeatures.validDeathListener()) {
+                addDaplPlayerListener(factionsDeathFeatures);
+            }
+        }
+
     }
 
     private void initListener(Listener_Normal listener) {
@@ -146,7 +158,8 @@ public class DAPL_Plugin extends JavaPlugin implements Listener,
                     || config.npc_spawn_underattackfromPlayers_active) {
                 UnderAttack underAttackListener = new UnderAttack(takerConfig);
                 manager.addWhiteListChecker(underAttackListener);
-                damagerListenerHandler.addAttackVictionListener(underAttackListener);
+                damagerListenerHandler
+                        .addAttackVictionListener(underAttackListener);
             }
 
             if (config.npc_spawn_ifhitMonster_active
