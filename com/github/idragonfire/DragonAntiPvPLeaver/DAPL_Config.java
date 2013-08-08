@@ -19,8 +19,8 @@ public class DAPL_Config extends Config {
     public boolean plugin_printMessages = true;
 
     @Comment("options: " + npc_expdrop_vanilla + "," + npc_expdrop_none)
-    public String npc_expdrop = "vanilla";
-    public boolean npc_weararmor = true;
+    // public String npc_expdrop = "vanilla";
+    // public boolean npc_weararmor = true;
     public int npc_broadcastMessageRadius = 32;
     public int npc_additionalTimeIfUnderAttack = 15;
 
@@ -65,13 +65,13 @@ public class DAPL_Config extends Config {
     public double factions_losePowerDelta = -3.0;
 
     // mcmmo options
-    public boolean mcmmo_loselevel_active = false;
-    public int mcmmo_loselevel_percentage = 100;
+    // public boolean mcmmo_loselevel_active = false;
+    // public int mcmmo_loselevel_percentage = 100;
 
     // Jobs options
-    public boolean jobs_loselevel_active = false;
-    public boolean jobs_loselevel_fromAllJobs = true;
-    public int jobs_loselevel_value = 1;
+    // public boolean jobs_loselevel_active = false;
+    // public boolean jobs_loselevel_fromAllJobs = true;
+    // public int jobs_loselevel_value = 1;
 
     // Command blocker
     public boolean pvp_blockcommands_active = true;

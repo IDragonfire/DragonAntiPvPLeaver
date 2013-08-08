@@ -25,6 +25,7 @@ import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlayerListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlugin;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DSpawnCheckerManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.deathfeatures.FactionsLosePower;
+import com.github.idragonfire.DragonAntiPvPLeaver.deathfeatures.MoneyLose;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.CommandDamageListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.DamageListenerHandler;
 import com.github.idragonfire.DragonAntiPvPLeaver.listener.Listener_Debug;
@@ -104,6 +105,12 @@ public class DAPL_Plugin extends JavaPlugin implements Listener, DPlugin {
                     config.factions_losePowerDelta);
             if (factionsDeathFeatures.validDeathListener()) {
                 addDaplPlayerListener(factionsDeathFeatures);
+            }
+        }
+        if (config.lossmoney_active) {
+            MoneyLose moneyLoseFeature = new MoneyLose(config.lossmoney_value);
+            if (moneyLoseFeature.validDeathListener()) {
+                addDaplPlayerListener(moneyLoseFeature);
             }
         }
 
