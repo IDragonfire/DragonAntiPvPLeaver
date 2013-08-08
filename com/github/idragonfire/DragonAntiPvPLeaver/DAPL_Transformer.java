@@ -64,11 +64,12 @@ public class DAPL_Transformer {
                         + FIELD_DELAYED
                         + ")"
                         // process entity baseTick
-                        + "{ this.player."
+                        + "{ this.c." // this.player
                         + getEntityBaseTickMethod()
                         // if FakePlayer is dead, continue normal disconnect
                         // TODO: use API method
-                        + "(); if(this.player.dead) { this."
+                        // this.player.dead
+                        + "(); if(this.c.M) { this."
                         + FIELD_CONTINUE
                         + "=true;} "
                         + "return; }"
@@ -88,13 +89,13 @@ public class DAPL_Transformer {
     // TODO: implement dynamic way
     @Deprecated
     public static String findEntityBaseTickMethod() {
-        return "x";
+        return "x"; // "onEntityUpdate"
     }
 
     // TODO: implement dynamic way
     @Deprecated
     public static String findPlayerConnectionDisconnectMethodName() {
-        return "a";
+        return "a"; // "handleErrorMessage"
     }
 
     // TODO: implement dynamic way
@@ -121,8 +122,7 @@ public class DAPL_Transformer {
         try {
             ClassPool cp = ClassPool.getDefault();
             // TODO: implement dynmaic way
-            CtClass cc = cp
-                    .get("net.minecraft.server.v1_6_R2.PlayerConnection");
+            CtClass cc = cp.get("jz");
             // check if class already injectsion, e.g. if server reloaded
             try {
                 Class.forName("net.minecraft.server.DAPL_Injection");
