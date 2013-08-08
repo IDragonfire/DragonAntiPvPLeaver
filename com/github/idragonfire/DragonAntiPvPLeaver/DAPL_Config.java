@@ -55,8 +55,8 @@ public class DAPL_Config extends Config {
 
     // money options
     public boolean lossmoney_active = false;
-    public int lossmoney_value = 0;
-    public int lossmoney_percentage = 75;
+    public double lossmoney_value = 0;
+    // public int lossmoney_percentage = 75;
 
     // factions options
     @Comment("Player lose normal power on death, you can activate extra power lose")
