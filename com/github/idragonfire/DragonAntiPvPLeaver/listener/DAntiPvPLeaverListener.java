@@ -11,6 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import java.util.UUID;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin;
 import com.massivecraft.factions.entity.BoardColls;
@@ -72,7 +73,7 @@ public class DAntiPvPLeaverListener implements Listener {
 		if (!antiPvP.playersNearby(player)) {
 			return;
 		}
-		antiPvP.spawnHumanNPC(player, player.getLocation(), name);
+		antiPvP.spawnHumanNPC(player, player.getLocation(), player.getUniqueId());
 		if (antiPvP.printMessages()) {
 			String npcSpawned = antiPvP.getLang("npcSpawned");
 			antiPvP.broadcastNearPlayer(player,

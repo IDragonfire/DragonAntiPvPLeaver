@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import net.h31ix.updater.DragonAntiPvpLeaver.Updater;
@@ -266,12 +267,12 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
     }
 
     public void despawnHumanByName(String playerName) {
-        npcManager.despawnHumanByName(playerNameToNpcName(playerName));
+        npcManager.despawnHumanByName(playerName);
     }
 
     public HumanNPC getOneHumanNPCByName(String name) {
         try {
-            return npcManager.getHumanNPCByName(playerNameToNpcName(name)).get(
+            return npcManager.getHumanNPCByName(name).get(
                     0);
         } catch (Exception e) {
             e.printStackTrace();
@@ -279,14 +280,9 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         return null;
     }
 
-    public String playerNameToNpcName(String playername) {
-        return playername;
-        // return Joiner.on("").join("\u00A7", this.npcTagNameColor, playername);
-    }
-
-    public HumanNPC spawnHumanNPC(Player player, Location loc, String name) {
+    public HumanNPC spawnHumanNPC(Player player, Location loc, UUID uuid) {
         // TODO: ChatColor for NPC name?
-        HumanNPC npc = npcManager.spawnHumanNPC(playerNameToNpcName(name), loc);
+        HumanNPC npc = npcManager.spawnHumanNPC(uuid, loc);
         ItemStack[] invContents = player.getInventory().getContents();
         ItemStack[] armourContents = player.getInventory().getArmorContents();
         npc.getInventory().setContents(invContents);
@@ -299,7 +295,7 @@ public class DAntiPvPLeaverPlugin extends JavaPlugin {
         }
         npc.setDroppedExp(XP);
 
-        DeSpawnTask task = new DeSpawnTask(name, npcManager, this);
+        DeSpawnTask task = new DeSpawnTask(player.getName(), npcManager, this);
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, task, time * 20L);
         taskMap.put(npc.getName(), task);
         return npc;

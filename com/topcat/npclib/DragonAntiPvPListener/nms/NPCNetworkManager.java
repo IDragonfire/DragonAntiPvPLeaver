@@ -5,10 +5,16 @@ import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-import net.minecraft.server.v1_6_R2.Connection;
-import net.minecraft.server.v1_6_R2.MinecraftServer;
-import net.minecraft.server.v1_6_R2.NetworkManager;
-import net.minecraft.server.v1_6_R2.Packet;
+import javax.crypto.SecretKey;
+
+import net.minecraft.server.v1_7_R3.EnumProtocol;
+import net.minecraft.server.v1_7_R3.IChatBaseComponent;
+import net.minecraft.server.v1_7_R3.MinecraftServer;
+import net.minecraft.server.v1_7_R3.NetworkManager;
+import net.minecraft.server.v1_7_R3.Packet;
+import net.minecraft.server.v1_7_R3.PacketListener;
+import net.minecraft.util.io.netty.channel.ChannelHandlerContext;
+import net.minecraft.util.io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * 
@@ -17,41 +23,55 @@ import net.minecraft.server.v1_6_R2.Packet;
 public class NPCNetworkManager extends NetworkManager {
 
     public NPCNetworkManager() throws IOException {
-        super(MinecraftServer.getServer().getLogger(), new NullSocket(),
-                "NPC Manager", new Connection() {
-
-                    @Override
-                    public boolean a() {
-                        return true;
-                    }
-                }, null);
-        try {
-            Field f = NetworkManager.class.getDeclaredField("n");
-            f.setAccessible(true);
-            f.set(this, false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        super(false);
     }
+    
+	@Override
+	public void a() {
+	}
 
-    @Override
-    public void a(Connection connection) {
-    }
+	@Override
+	protected void a(ChannelHandlerContext channelhandlercontext, Packet packet) {
+	}
 
-    @Override
-    public void queue(Packet packet) {
-    }
+	@Override
+	public void a(EnumProtocol enumprotocol) {
+	}
 
-    @Override
-    public void a() {
-    }
+	@Override
+	public void a(PacketListener packetlistener) {
+	}
 
-    @Override
-    public void a(String s, Object... aobject) {
-    }
+	@Override
+	public void a(SecretKey secretkey) {
+	}
 
-    @Override
-    public SocketAddress getSocketAddress() {
-        return new InetSocketAddress(1);
-    }
+	@Override
+	public void channelActive(ChannelHandlerContext channelhandlercontext)
+			throws Exception {
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext channelhandlercontext) {
+	}
+
+	@Override
+	protected void channelRead0(ChannelHandlerContext channelhandlercontext,
+			Object object) {
+	}
+
+	@Override
+	public void close(IChatBaseComponent ichatbasecomponent) {
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext arg0, Throwable arg1) {
+	}
+	@Override
+	public void g() {
+	}
+	@Override
+	public void handle(Packet packet,
+			GenericFutureListener... agenericfuturelistener) {
+	}
 }
