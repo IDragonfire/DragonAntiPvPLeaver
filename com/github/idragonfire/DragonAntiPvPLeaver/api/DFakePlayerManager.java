@@ -4,23 +4,22 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 public interface DFakePlayerManager {
-    public void spawnHumanNPC(Player player, int lifetime,
-            Object playerConnection);
+	public void spawnHumanNPC(Player player, int lifetime);
 
-    public void despawnHumanByName(String name);
+	public void despawnHumanByName(String name);
 
-    public void addKillStatus(String name);
+	public void addKillStatus(String name);
 
-    public boolean wasKilled(String name);
+	public boolean wasKilled(String name);
 
-    public void removeKilledStatus(String name);
+	public void removeKilledStatus(String name);
 
-    public boolean isMyNpc(Entity entity);
+	public boolean isMyNpc(Entity entity);
 
-    public void npcAttackEvent(String name);
+	public void npcAttackEvent(String name);
 
-    public void addDaplPlayerListener(DPlayerListener listener);
+	public void addDaplPlayerListener(DPlayerListener listener);
 
-    public void removeDaplPlayerListener(DPlayerListener listener);
+	public void removeDaplPlayerListener(DPlayerListener listener);
 
 }

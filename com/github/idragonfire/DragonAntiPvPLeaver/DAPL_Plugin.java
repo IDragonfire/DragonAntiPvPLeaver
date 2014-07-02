@@ -2,7 +2,6 @@ package com.github.idragonfire.DragonAntiPvPLeaver;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +14,9 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DDamagerListenerHandler;
-import com.github.idragonfire.DragonAntiPvPLeaver.api.DDisconnectionListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DFakePlayerManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlayerListener;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlugin;
@@ -41,343 +38,294 @@ import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Graph;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Plotter;
 
 public class DAPL_Plugin extends JavaPlugin implements Listener, DPlugin {
-    protected List<String> deadPlayers;
-    protected YamlConfiguration dataFile;
-    protected DFakePlayerManager npcManager;
-    protected DDisconnectionListener listener;
-    protected SpawnCheckerManager manager;
-    protected DamageListenerHandler damagerListenerHandler;
-    public DAPL_Config config;
+	protected List<String> deadPlayers;
+	protected YamlConfiguration dataFile;
+	protected DFakePlayerManager npcManager;
+	protected SpawnCheckerManager manager;
+	protected DamageListenerHandler damagerListenerHandler;
+	protected Listener_Normal listener;
+	public DAPL_Config config;
 
-    public enum DAMAGE_MODE {
-        MONSTER, HUMANS
-    }
+	public enum DAMAGE_MODE {
+		MONSTER, HUMANS
+	}
 
-    public static boolean nmsDisconnectCall(Object playerConnection) {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin(
-                "DragonAntiPvPLeaver");
-        if (plugin != null) {
-            try {
-                Method m = plugin.getClass().getDeclaredMethod(
-                        "nmsDisconnectCall2", Object.class);
-                return (Boolean) m.invoke(plugin, playerConnection);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return true;
-    }
+	@Override
+	public void onEnable() {
+		npcManager = new DAPL_Human_Manager(this);
+		deadPlayers = new ArrayList<String>();
+		loadConfig();
+		loadDeadPlayers();
 
-    @Override
-    public void onEnable() {
-        DAPL_Transformer trans = new DAPL_Transformer();
-        trans.transform();
-        npcManager = new DAPL_Human_Manager(this);
-        deadPlayers = new ArrayList<String>();
-        loadConfig();
-        loadDeadPlayers();
+		// set listener mode
+		String listenerMode = "normal";
+		Listener_Normal listener = null;
+		if (getConfig().getBoolean("plugin.debug")) {
+			listener = new Listener_Debug(getLogger());
+			listenerMode = "debug";
+		} else {
+			listener = new Listener_Normal();
+		}
+		this.listener = listener;
 
-        // set listener mode
-        String listenerMode = "normal";
-        Listener_Normal listener = null;
-        if (getConfig().getBoolean("plugin.debug")) {
-            listener = new Listener_Debug(getLogger());
-            listenerMode = "debug";
-        } else {
-            listener = new Listener_Normal();
-        }
-        this.listener = listener;
+		listener.init(config, npcManager);
+		initListener(listener);
+		initDeathFeatures();
+		Bukkit.getPluginManager().registerEvents(listener, this);
 
-        listener.init(config, npcManager);
-        initListener(listener);
-        initDeathFeatures();
-        Bukkit.getPluginManager().registerEvents(listener, this);
+		enableMetrics(listenerMode);
+		// enableAutoUpdate();
 
-        enableMetrics(listenerMode);
-        // enableAutoUpdate();
+		Bukkit.getPluginManager().registerEvents(this, this);
+	}
 
-        Bukkit.getPluginManager().registerEvents(this, this);
-    }
+	private void initDeathFeatures() {
+		if (config.factions_extraLosePowerActive) {
+			FactionsLosePower factionsDeathFeatures = new FactionsLosePower(
+					config.factions_losePowerDelta);
+			if (factionsDeathFeatures.validDeathListener()) {
+				addDaplPlayerListener(factionsDeathFeatures);
+			}
+		}
+		if (config.lossmoney_active) {
+			MoneyLose moneyLoseFeature = new MoneyLose(config.lossmoney_value);
+			if (moneyLoseFeature.validDeathListener()) {
+				addDaplPlayerListener(moneyLoseFeature);
+			}
+		}
+	}
 
-    private void initDeathFeatures() {
-        if (config.factions_extraLosePowerActive) {
-            FactionsLosePower factionsDeathFeatures = new FactionsLosePower(
-                    config.factions_losePowerDelta);
-            if (factionsDeathFeatures.validDeathListener()) {
-                addDaplPlayerListener(factionsDeathFeatures);
-            }
-        }
-        if (config.lossmoney_active) {
-            MoneyLose moneyLoseFeature = new MoneyLose(config.lossmoney_value);
-            if (moneyLoseFeature.validDeathListener()) {
-                addDaplPlayerListener(moneyLoseFeature);
-            }
-        }
+	private void initListener(Listener_Normal listener) {
+		// Deal Damage Listener
+		HashMap<DAMAGE_MODE, DamageTrackerConfig> dealerConfig = new HashMap<DAMAGE_MODE, DamageTrackerConfig>();
+		if (config.npc_spawn_ifhitMonster_active) {
+			dealerConfig.put(DAMAGE_MODE.MONSTER, new DamageTrackerConfig(
+					config.npc_spawn_ifhitMonster_lifetime,
+					config.npc_spawn_ifhitMonster_cooldown));
+		}
+		if (config.npc_spawn_ifhitPlayer_active) {
+			dealerConfig.put(DAMAGE_MODE.HUMANS, new DamageTrackerConfig(
+					config.npc_spawn_ifhitPlayer_lifetime,
+					config.npc_spawn_ifhitPlayer_cooldown));
+		}
 
-    }
+		// Take Damage Listener
+		HashMap<DAMAGE_MODE, DamageTrackerConfig> takerConfig = new HashMap<DAMAGE_MODE, DamageTrackerConfig>();
+		if (config.npc_spawn_underattackfromMonsters_active) {
+			takerConfig.put(DAMAGE_MODE.MONSTER, new DamageTrackerConfig(
+					config.npc_spawn_underattackfromMonsters_lifetime,
+					config.npc_spawn_underattackfromMonsters_cooldown));
+		}
+		if (config.npc_spawn_underattackfromPlayers_active) {
+			takerConfig.put(DAMAGE_MODE.HUMANS, new DamageTrackerConfig(
+					config.npc_spawn_underattackfromPlayers_lifetime,
+					config.npc_spawn_underattackfromPlayers_cooldown));
+		}
+		damagerListenerHandler = new DamageListenerHandler();
+		// init spawn modes
+		manager = new SpawnCheckerManager(config);
+		if (config.npc_spawn_always_active) {
+			manager.addWhiteListChecker(new Always(config));
+			getLogger().log(Level.INFO, "spawn mode: always");
+		} else {
+			if (config.npc_spawn_playernearby_active) {
+				manager.addWhiteListChecker(new NearBy(
+						config.npc_spawn_playernearby_distance,
+						HumanEntity.class,
+						config.npc_spawn_playernearby_lifetime));
+			}
+			if (config.npc_spawn_monsternearby_active) {
+				manager.addWhiteListChecker(new NearBy(
+						config.npc_spawn_monsternearby_distance, Monster.class,
+						config.npc_spawn_monsternearby_lifetime));
+			}
 
-    private void initListener(Listener_Normal listener) {
-        // Deal Damage Listener
-        HashMap<DAMAGE_MODE, DamageTrackerConfig> dealerConfig = new HashMap<DAMAGE_MODE, DamageTrackerConfig>();
-        if (config.npc_spawn_ifhitMonster_active) {
-            dealerConfig.put(DAMAGE_MODE.MONSTER, new DamageTrackerConfig(
-                    config.npc_spawn_ifhitMonster_lifetime,
-                    config.npc_spawn_ifhitMonster_cooldown));
-        }
-        if (config.npc_spawn_ifhitPlayer_active) {
-            dealerConfig.put(DAMAGE_MODE.HUMANS, new DamageTrackerConfig(
-                    config.npc_spawn_ifhitPlayer_lifetime,
-                    config.npc_spawn_ifhitPlayer_cooldown));
-        }
+			if (config.npc_spawn_underattackfromMonsters_active
+					|| config.npc_spawn_underattackfromPlayers_active) {
+				UnderAttack underAttackListener = new UnderAttack(takerConfig);
+				manager.addWhiteListChecker(underAttackListener);
+				damagerListenerHandler
+						.addAttackVictionListener(underAttackListener);
+			}
 
-        // Take Damage Listener
-        HashMap<DAMAGE_MODE, DamageTrackerConfig> takerConfig = new HashMap<DAMAGE_MODE, DamageTrackerConfig>();
-        if (config.npc_spawn_underattackfromMonsters_active) {
-            takerConfig.put(DAMAGE_MODE.MONSTER, new DamageTrackerConfig(
-                    config.npc_spawn_underattackfromMonsters_lifetime,
-                    config.npc_spawn_underattackfromMonsters_cooldown));
-        }
-        if (config.npc_spawn_underattackfromPlayers_active) {
-            takerConfig.put(DAMAGE_MODE.HUMANS, new DamageTrackerConfig(
-                    config.npc_spawn_underattackfromPlayers_lifetime,
-                    config.npc_spawn_underattackfromPlayers_cooldown));
-        }
-        damagerListenerHandler = new DamageListenerHandler();
-        // init spawn modes
-        manager = new SpawnCheckerManager(config);
-        if (config.npc_spawn_always_active) {
-            manager.addWhiteListChecker(new Always(config));
-            getLogger().log(Level.INFO, "spawn mode: always");
-        } else {
-            if (config.npc_spawn_playernearby_active) {
-                manager.addWhiteListChecker(new NearBy(
-                        config.npc_spawn_playernearby_distance,
-                        HumanEntity.class,
-                        config.npc_spawn_playernearby_lifetime));
-            }
-            if (config.npc_spawn_monsternearby_active) {
-                manager.addWhiteListChecker(new NearBy(
-                        config.npc_spawn_monsternearby_distance, Monster.class,
-                        config.npc_spawn_monsternearby_lifetime));
-            }
+			if (config.npc_spawn_ifhitMonster_active
+					|| config.npc_spawn_ifhitPlayer_active) {
+				IfHit ifHitListener = new IfHit(dealerConfig);
+				manager.addWhiteListChecker(ifHitListener);
+				damagerListenerHandler.addAttackVictionListener(ifHitListener);
+			}
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
+			manager.addBlacklistChecker(new FactionSupport());
+			getLogger().log(Level.INFO, "Factions support enabled.");
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+			manager.addBlacklistChecker(new WorldGuardSupport());
+			getLogger().log(Level.INFO, "WorldGuard support enabled.");
+		}
+		// set block commands listener
+		if (config.pvp_blockcommands_active) {
+			CommandDamageListener cmdBlockListener = new CommandDamageListener(
+					config, getLogger());
+			damagerListenerHandler.addAttackVictionListener(cmdBlockListener);
+			Bukkit.getPluginManager().registerEvents(cmdBlockListener, this);
+		}
 
-            if (config.npc_spawn_underattackfromMonsters_active
-                    || config.npc_spawn_underattackfromPlayers_active) {
-                UnderAttack underAttackListener = new UnderAttack(takerConfig);
-                manager.addWhiteListChecker(underAttackListener);
-                damagerListenerHandler
-                        .addAttackVictionListener(underAttackListener);
-            }
+		// set injection if necessary
+		if (damagerListenerHandler.hasRegisteredListeners()) {
+			listener.setListenerInjection(damagerListenerHandler);
+		}
 
-            if (config.npc_spawn_ifhitMonster_active
-                    || config.npc_spawn_ifhitPlayer_active) {
-                IfHit ifHitListener = new IfHit(dealerConfig);
-                manager.addWhiteListChecker(ifHitListener);
-                damagerListenerHandler.addAttackVictionListener(ifHitListener);
-            }
-        }
-        if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
-            manager.addBlacklistChecker(new FactionSupport());
-            getLogger().log(Level.INFO, "Factions support enabled.");
-        }
-        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-            manager.addBlacklistChecker(new WorldGuardSupport());
-            getLogger().log(Level.INFO, "WorldGuard support enabled.");
-        }
-        // set block commands listener
-        if (config.pvp_blockcommands_active) {
-            CommandDamageListener cmdBlockListener = new CommandDamageListener(
-                    config, getLogger());
-            damagerListenerHandler.addAttackVictionListener(cmdBlockListener);
-            Bukkit.getPluginManager().registerEvents(cmdBlockListener, this);
-        }
+		listener.setSpawnChecker(manager);
+	}
 
-        // set injection if necessary
-        if (damagerListenerHandler.hasRegisteredListeners()) {
-            listener.setListenerInjection(damagerListenerHandler);
-        }
+	protected void enableMetrics(String listenerMode) {
+		try {
+			Metrics metrics = new Metrics(this);
 
-        listener.setSpawnChecker(manager);
-    }
+			if (config.metrics_listenerMode) {
+				// custom graph #1 - Listener Mode
+				final Graph listenerGraph = metrics
+						.createGraph("Listener Mode");
+				listenerGraph.addPlotter(new SimplePlotter(listenerMode));
+			}
 
-    protected void enableMetrics(String listenerMode) {
-        try {
-            Metrics metrics = new Metrics(this);
+			if (config.metrics_worldGuardUsage) {
+				// custom graph #2 - WorldGuard Usage
+				final Graph worldGuardGraph = metrics
+						.createGraph("WorldGuard Usage");
+				if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+					worldGuardGraph.addPlotter(new SimplePlotter(Bukkit
+							.getPluginManager().getPlugin("WorldGuard")
+							.getDescription().getVersion()));
+				} else {
+					worldGuardGraph.addPlotter(new SimplePlotter("no"));
+				}
+			}
 
-            if (config.metrics_listenerMode) {
-                // custom graph #1 - Listener Mode
-                final Graph listenerGraph = metrics
-                        .createGraph("Listener Mode");
-                listenerGraph.addPlotter(new SimplePlotter(listenerMode));
-            }
+			if (config.metrics_factionsUsage) {
+				// custom graph #3 - Factions Usage
+				final Graph factionsGraph = metrics
+						.createGraph("Factions Usage");
+				if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
+					factionsGraph.addPlotter(new SimplePlotter(Bukkit
+							.getPluginManager().getPlugin("Factions")
+							.getDescription().getVersion()));
+				} else {
+					factionsGraph.addPlotter(new SimplePlotter("no"));
+				}
+			}
 
-            if (config.metrics_worldGuardUsage) {
-                // custom graph #2 - WorldGuard Usage
-                final Graph worldGuardGraph = metrics
-                        .createGraph("WorldGuard Usage");
-                if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-                    worldGuardGraph.addPlotter(new SimplePlotter(Bukkit
-                            .getPluginManager().getPlugin("WorldGuard")
-                            .getDescription().getVersion()));
-                } else {
-                    worldGuardGraph.addPlotter(new SimplePlotter("no"));
-                }
-            }
+			metrics.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-            if (config.metrics_factionsUsage) {
-                // custom graph #3 - Factions Usage
-                final Graph factionsGraph = metrics
-                        .createGraph("Factions Usage");
-                if (Bukkit.getPluginManager().isPluginEnabled("Factions")) {
-                    factionsGraph.addPlotter(new SimplePlotter(Bukkit
-                            .getPluginManager().getPlugin("Factions")
-                            .getDescription().getVersion()));
-                } else {
-                    factionsGraph.addPlotter(new SimplePlotter("no"));
-                }
-            }
+	@Override
+	public void onDisable() {
+		saveConfig();
+		saveDeadPlayers();
+	}
 
-            metrics.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public void saveConfig() {
+		config.save();
+	}
 
-    @Override
-    public void onDisable() {
-        saveConfig();
-        saveDeadPlayers();
-    }
+	public void loadConfig() {
+		config = new DAPL_Config(this);
+		config.load();
+		config.save();
+	}
 
-    @Override
-    public void saveConfig() {
-        config.save();
-    }
+	public void saveDeadPlayers() {
+		getLogger().log(Level.INFO,
+				"Saving " + deadPlayers.size() + " dead players.");
+		dataFile.set("deadPlayers", deadPlayers);
+		saveDataFile();
+		getLogger().log(Level.INFO, "Saving dead players complete.");
+	}
 
-    public void loadConfig() {
-        config = new DAPL_Config(this);
-        config.load();
-        config.save();
-    }
+	public void saveDataFile() {
+		File f = new File(getDataFolder().toString() + File.separator
+				+ "data.yml");
+		try {
+			dataFile.save(f);
+		} catch (IOException e) {
+			getLogger().log(Level.SEVERE, "Could not save the dead players!");
+			e.printStackTrace();
+		}
+	}
 
-    public void saveDeadPlayers() {
-        getLogger().log(Level.INFO,
-                "Saving " + deadPlayers.size() + " dead players.");
-        dataFile.set("deadPlayers", deadPlayers);
-        saveDataFile();
-        getLogger().log(Level.INFO, "Saving dead players complete.");
-    }
+	public void loadDeadPlayers() {
+		loadDataFile();
+		if (dataFile.getList("deadPlayers") == null) {
+			getLogger().log(Level.INFO, "Could not load any dead player.");
+			return;
+		}
+		deadPlayers = dataFile.getStringList("deadPlayers");
+		dataFile.set("deadPlayers", null);
+		saveDataFile();
+		getLogger().log(Level.INFO,
+				"Loaded " + deadPlayers.size() + " dead players.");
+	}
 
-    /**
-     * If time expires, set DAPL_Transformer.FIELD_CONTINUE to true
-     * 
-     * @param playerConnection
-     * @return true if player can normaly disconnect
-     */
-    public boolean nmsDisconnectCall2(Object playerConnection) {
-        Player player = grabPlayer(playerConnection);
-        System.out.println("DAPL injection: " + player.getName());
-        return listener.onPlayerNmsDisconnect(player, playerConnection);
-    }
+	public YamlConfiguration loadDataFile() {
+		File df = new File(getDataFolder().toString() + File.separator
+				+ "data.yml");
+		if (!df.exists()) {
+			try {
+				df.createNewFile();
+			} catch (IOException e) {
+				getLogger()
+						.log(Level.SEVERE, "Could not create the data file!");
+				e.printStackTrace();
+			}
+		}
+		dataFile = YamlConfiguration.loadConfiguration(df);
+		return dataFile;
+	}
 
-    /**
-     * Grab Bukkit Player object over reflection to prevent nms code
-     * 
-     * @param playerConnection
-     * @return
-     */
-    private Player grabPlayer(Object playerConnection) {
-        Player player = null;
-        try {
-            Object entityPlayer = playerConnection.getClass()
-                    .getField("player").get(playerConnection);
-            player = (Player) entityPlayer.getClass().getDeclaredMethod(
-                    "getBukkitEntity").invoke(entityPlayer);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return player;
-    }
+	public static void broadcastNearPlayer(Player playerForRadiusBroadcast,
+			String message, int radius) {
+		List<Player> players = playerForRadiusBroadcast.getWorld().getPlayers();
+		Location loc = playerForRadiusBroadcast.getLocation();
+		for (Player player : players) {
+			if (player.getLocation().distance(loc) < radius) {
+				player.sendMessage(message);
+			}
+		}
+	}
 
-    public void saveDataFile() {
-        File f = new File(getDataFolder().toString() + File.separator
-                + "data.yml");
-        try {
-            dataFile.save(f);
-        } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Could not save the dead players!");
-            e.printStackTrace();
-        }
-    }
+	private class SimplePlotter extends Plotter {
+		public SimplePlotter(final String name) {
+			super(name);
+		}
 
-    public void loadDeadPlayers() {
-        loadDataFile();
-        if (dataFile.getList("deadPlayers") == null) {
-            getLogger().log(Level.INFO, "Could not load any dead player.");
-            return;
-        }
-        deadPlayers = dataFile.getStringList("deadPlayers");
-        dataFile.set("deadPlayers", null);
-        saveDataFile();
-        getLogger().log(Level.INFO,
-                "Loaded " + deadPlayers.size() + " dead players.");
-    }
+		@Override
+		public int getValue() {
+			return 1;
+		}
+	}
 
-    public YamlConfiguration loadDataFile() {
-        File df = new File(getDataFolder().toString() + File.separator
-                + "data.yml");
-        if (!df.exists()) {
-            try {
-                df.createNewFile();
-            } catch (IOException e) {
-                getLogger()
-                        .log(Level.SEVERE, "Could not create the data file!");
-                e.printStackTrace();
-            }
-        }
-        dataFile = YamlConfiguration.loadConfiguration(df);
-        return dataFile;
-    }
+	@Override
+	public void addDaplPlayerListener(DPlayerListener listener) {
+		npcManager.addDaplPlayerListener(listener);
+	}
 
-    public static void broadcastNearPlayer(Player playerForRadiusBroadcast,
-            String message, int radius) {
-        List<Player> players = playerForRadiusBroadcast.getWorld().getPlayers();
-        Location loc = playerForRadiusBroadcast.getLocation();
-        for (Player player : players) {
-            if (player.getLocation().distance(loc) < radius) {
-                player.sendMessage(message);
-            }
-        }
-    }
+	@Override
+	public void removeDaplPlayerListener(DPlayerListener listener) {
+		npcManager.removeDaplPlayerListener(listener);
+	}
 
-    private class SimplePlotter extends Plotter {
-        public SimplePlotter(final String name) {
-            super(name);
-        }
+	@Override
+	public DSpawnCheckerManager getSpawnChecker() {
+		return manager;
+	}
 
-        @Override
-        public int getValue() {
-            return 1;
-        }
-    }
-
-    @Override
-    public void addDaplPlayerListener(DPlayerListener listener) {
-        npcManager.addDaplPlayerListener(listener);
-    }
-
-    @Override
-    public void removeDaplPlayerListener(DPlayerListener listener) {
-        npcManager.removeDaplPlayerListener(listener);
-    }
-
-    @Override
-    public DSpawnCheckerManager getSpawnChecker() {
-        return manager;
-    }
-
-    @Override
-    public DDamagerListenerHandler getDamagerListenerHandler() {
-        return damagerListenerHandler;
-    }
+	@Override
+	public DDamagerListenerHandler getDamagerListenerHandler() {
+		return damagerListenerHandler;
+	}
 }
