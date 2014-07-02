@@ -142,7 +142,7 @@ public class DAPL_Utils {
 
     public static String getMcPackageVersion(JarFile craftbukkitJar)
             throws IOException {
-        String nmsPackagePath = "net/minecraft/v";
+        String nmsPackagePath = "org/bukkit/craftbukkit/v";
         Enumeration<JarEntry> jareEntries = craftbukkitJar.entries();
         while (jareEntries.hasMoreElements()) {
             JarEntry je = jareEntries.nextElement();

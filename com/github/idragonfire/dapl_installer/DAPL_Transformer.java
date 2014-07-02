@@ -67,11 +67,11 @@ public class DAPL_Transformer {
         return null;
     }
 
-    // atm 1.5.1
+    // atm 1.7.9
     // TODO: implement dynamic way
     @Deprecated
     public static String findEntityBaseTickMethod() {
-        return "x";
+        return "B";
     }
 
     // TODO: implement dynamic way
@@ -80,17 +80,18 @@ public class DAPL_Transformer {
         return "a";
     }
 
-    // TODO: implement dynamic way
-    public static CtClass[] findPlayerConnectionDisconnectMethodParams() {
-        ClassPool pool = ClassPool.getDefault();
-        try {
-            return new CtClass[] { pool.get(String.class.getName()),
-                    pool.get(Object[].class.getName()) };
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+ // TODO: implement dynamic way
+ 	public static CtClass[] findPlayerConnectionDisconnectMethodParams() {
+ 		ClassPool pool = ClassPool.getDefault();
+ 		try {
+ 			CtClass cc = pool
+ 					.get("net.minecraft.server.v1_7_R3.IChatBaseComponent");
+ 			return new CtClass[] { cc };
+ 		} catch (Exception e) {
+ 			e.printStackTrace();
+ 		}
+ 		return null;
+ 	}
 
     public static String getDaplInjectionJarName() {
         return "net/minecraft/server/" + getDaplInjectionName();
@@ -152,6 +153,7 @@ public class DAPL_Transformer {
             String nmsClassJarName = DAPL_Utils.getNmsPath(
                     getMcPackageVersion(), nmsClassName);
             File baseNmsClass = new File(dest, nmsClassName + ".bak");
+            System.out.println(baseNmsClass);
             DAPL_Utils.deleteIfExists(baseNmsClass);
             DAPL_Utils.extractFromJar(bukkitJar, nmsClassJarName, baseNmsClass);
 
