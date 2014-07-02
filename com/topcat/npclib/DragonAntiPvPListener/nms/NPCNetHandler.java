@@ -35,69 +35,69 @@ import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 
 import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 
-/**
- * 
- * @author martin
- */
 public class NPCNetHandler extends PlayerConnection {
 
-    public NPCNetHandler(NPCManager npcManager, EntityPlayer entityplayer) {
-        super(npcManager.getServer().getMCServer(), npcManager
-                .getNPCNetworkManager(), entityplayer);
-    }
+	public NPCNetHandler(NPCManager npcManager, EntityPlayer entityplayer) {
+		super(npcManager.getServer().getMCServer(), npcManager
+				.getNPCNetworkManager(), entityplayer);
+	}
 
-    @Override
-    public CraftPlayer getPlayer() {
-        return new CraftPlayer((CraftServer) Bukkit.getServer(), player); // Fake player prevents spout NPEs
-    }
+	@Override
+	public CraftPlayer getPlayer() {
+		return new CraftPlayer((CraftServer) Bukkit.getServer(), player); // Fake
+																			// player
+																			// prevents
+																			// spout
+																			// NPEs
+	}
 
-    @Override
-    public void a() {
-    }
-    
-    @Override
-    public void a(double d0, double d1, double d2, float f, float f1) {
-    }
-    
-    @Override
-    public void a(EnumProtocol enumprotocol, EnumProtocol enumprotocol1) {
-    }
-    
-    @Override
-    public void a(IChatBaseComponent ichatbasecomponent) {
-    }
-    
-    @Override
-    public void a(PacketPlayInAbilities arg0) {
-    }
-    
-    @Override
-    public void a(PacketPlayInArmAnimation arg0) {
-    }
-    
-    @Override
-    public void a(PacketPlayInBlockDig arg0) {
-    }
-    
-    @Override
-    public void a(PacketPlayInBlockPlace arg0) {
-    }
-    
-    @Override
-    public void a(PacketPlayInChat arg0) {
-    }
-    
-    @Override
-    public void a(PacketPlayInClientCommand arg0) {
-    }
-    
-    @Override
-    public void a(PacketPlayInCloseWindow packetplayinclosewindow) {
-    }
-    
-    @Override
-    public void a(PacketPlayInCustomPayload arg0) {
-    }
+	@Override
+	public void a() {
+	}
+
+	@Override
+	public void a(double d0, double d1, double d2, float f, float f1) {
+	}
+
+	@Override
+	public void a(EnumProtocol enumprotocol, EnumProtocol enumprotocol1) {
+	}
+
+	@Override
+	public void a(IChatBaseComponent ichatbasecomponent) {
+	}
+
+	@Override
+	public void a(PacketPlayInAbilities arg0) {
+	}
+
+	@Override
+	public void a(PacketPlayInArmAnimation arg0) {
+	}
+
+	@Override
+	public void a(PacketPlayInBlockDig arg0) {
+	}
+
+	@Override
+	public void a(PacketPlayInBlockPlace arg0) {
+	}
+
+	@Override
+	public void a(PacketPlayInChat arg0) {
+	}
+
+	@Override
+	public void a(PacketPlayInClientCommand arg0) {
+	}
+
+	@Override
+	public void a(PacketPlayInCloseWindow packetplayinclosewindow) {
+	}
+
+	@Override
+	public void a(PacketPlayInCustomPayload arg0) {
+	}
 
 	@Override
 	public void a(PacketPlayInEnchantItem packetplayinenchantitem) {

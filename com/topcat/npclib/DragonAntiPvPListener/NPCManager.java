@@ -30,10 +30,6 @@ import com.topcat.npclib.DragonAntiPvPListener.nms.BWorld;
 import com.topcat.npclib.DragonAntiPvPListener.nms.NPCEntity;
 import com.topcat.npclib.DragonAntiPvPListener.nms.NPCNetworkManager;
 
-/**
- * 
- * @author martin
- */
 public class NPCManager {
 
 	private HashMap<UUID, HumanNPC> npcs = new HashMap<UUID, HumanNPC>();
@@ -111,8 +107,9 @@ public class NPCManager {
 
 	public HumanNPC spawnHumanNPC(UUID uuid, Location l) {
 		while (npcs.containsKey(uuid)) {
-			server.getLogger().log(Level.WARNING,
-					"NPC with that id already exists");
+			server.getLogger()
+					.log(Level.WARNING,
+							"HumanNPC with that uuid already exists, existing NPC returned");
 			return npcs.get(uuid);
 		}
 		return spawnHumanNPC(Bukkit.getOfflinePlayer(uuid).getName(), l, uuid);
@@ -120,8 +117,9 @@ public class NPCManager {
 
 	public HumanNPC spawnHumanNPC(String name, Location l, UUID uuid) {
 		if (npcs.containsKey(uuid)) {
-			server.getLogger().log(Level.WARNING,
-					"NPC with that id already exists, existing NPC returned");
+			server.getLogger()
+					.log(Level.WARNING,
+							"HumanNPC with that uuid already exists, existing NPC returned");
 			return npcs.get(uuid);
 		} else {
 			if (name.length() > 16) { // Check and nag if name is too long,
