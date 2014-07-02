@@ -50,7 +50,7 @@ public class DamageListenerHandler implements DDamagerListenerHandler {
             if ((damager instanceof Projectile)) {
                 Projectile projectile = (Projectile) damager;
                 if ((projectile.getShooter() instanceof Player)) {
-                    return projectile.getShooter();
+                    return (LivingEntity) projectile.getShooter();
                 }
             } else if ((damager instanceof Tameable)) {
                 Tameable tamed = (Tameable) damager;
