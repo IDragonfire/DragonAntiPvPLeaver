@@ -1,6 +1,6 @@
 name: DragonAntiPvPLeaver
 author: IDragonfire, Serilum, DylanHolmes
-version: 1.9.6.2.2882.2
+version: 1.9.7.9
 main: com.github.idragonfire.DragonAntiPvPLeaver.DAntiPvPLeaverPlugin
 soft-depend: [WorldGuard, Factions]
     
