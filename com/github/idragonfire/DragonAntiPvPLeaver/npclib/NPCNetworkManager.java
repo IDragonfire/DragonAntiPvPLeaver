@@ -12,6 +12,20 @@ import net.minecraft.server.v1_7_R3.PacketListener;
 import net.minecraft.util.io.netty.channel.ChannelHandlerContext;
 import net.minecraft.util.io.netty.util.concurrent.GenericFutureListener;
 
+/**
+ * Bukkit:
+ * "https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/NetworkManager.java"
+ * caliog:
+ * "https://github.com/caliog/NPCLib/blob/master/com/sharesc/caliog/npclib/NPCNetworkManager.java"
+ * Citiziens:
+ * "https://github.com/CitizensDev/Citizens2/blob/master/src/main/java/net/citizensnpcs/npc/network/EmptyNetworkManager.java"
+ * Combat-Tag:
+ * "https://github.com/cheddar262/Combat-Tag/blob/master/CombatTag/com/topcat/npclib/nms/NPCNetworkManager.java"
+ * Top-Cat:
+ * "https://github.com/Top-Cat/NPCLib/blob/master/src/main/java/com/topcat/npclib/nms/NPCNetworkManager.java"
+ * lennis0012:
+ * "https://github.com/lenis0012/NPCFactory/blob/master/src/main/java/com/lenis0012/bukkit/npc/NPCNetworkManager.java"
+ */
 public class NPCNetworkManager extends NetworkManager {
 
 	public NPCNetworkManager() throws IOException {

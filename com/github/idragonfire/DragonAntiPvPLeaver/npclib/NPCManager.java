@@ -51,6 +51,7 @@ public class NPCManager {
 						for (UUID i : npcs.keySet()) {
 							Entity j = npcs.get(i).getEntity();
 							// EntityBaseTickMethod
+							// https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/Entity.java#L244
 							j.B();
 							if (j.dead) {
 								toRemove.add(i);

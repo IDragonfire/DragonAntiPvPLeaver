@@ -37,6 +37,7 @@ public class NPCEntity extends EntityPlayer {
 		this.bukkitEntity = entity;
 	}
 
+	// https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/EntityPlayer.java#L457
 	@Override
 	public boolean a(EntityHuman entity) {
 		EntityTargetEvent event = new NpcEntityTargetEvent(getBukkitEntity(),
@@ -48,6 +49,7 @@ public class NPCEntity extends EntityPlayer {
 		return super.a(entity);
 	}
 
+	// https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/Entity.java#L996
 	public void b_(EntityHuman entity) {
 		if ((this.lastBounceId != entity.getId() || System.currentTimeMillis()
 				- this.lastBounceTick > 1000)
@@ -75,6 +77,7 @@ public class NPCEntity extends EntityPlayer {
 		super.i(entity);
 	}
 
+	// https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/EntityPlayer.java#L926
 	@Override
 	public void c(Entity entity) {
 		if (this.lastBounceId != entity.getId()
