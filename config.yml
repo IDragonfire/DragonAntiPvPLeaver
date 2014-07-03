@@ -1,0 +1,80 @@
+plugin:
+  debug: false
+  overwriteAllNpcDamageListener: false
+  printMessages: true
+  autoupdate: notify
+npc:
+  nameTagColor: f
+  expdrop: vanilla
+  spawn:
+    onlyIfPlayerNearby: true
+    distance: 8
+    time: 10
+    additionalTimeIfUnderAttack: 15
+    broadcastMessageRadius: 32
+    always:
+      active: false
+      time: 10
+    playernearby:
+      active: true
+      distance: 8
+      lifetime: 10
+    monsternearby:
+      active: true
+      distance: 8
+      lifetime: 10
+      cooldown: 20
+    underattackfromMonsters:
+      active: true
+      lifetime: 10
+      cooldown: 20
+    underattackfromPlayers:
+      active: true
+      lifetime: 10
+      cooldown: 10
+    ifhitPlayer:
+      active: true
+      lifetime: 20
+      cooldown: 20
+    ifhitMonster:
+      active: true
+      lifetime: 30
+      cooldown: 30
+# options: vanilla,none
+  broadcastMessageRadius: 32
+  additionalTimeIfUnderAttack: 15
+language:
+  npcSpawned: NPC spawned
+  npcKilled: <Player>s NPC has been killed while combat logged
+  yourNPCKilled: Your NPC has been killed while combat logged
+  yourNpcKilled: Your NPC has beend killed while combat logged
+  commandBlocked: 'DAPL: These command has been blocked.'
+metrics:
+# activate/deactivate metrics graphs opt-out
+  listenerMode: true
+  worldGuardUsage: true
+  factionsUsage: true
+lossmoney:
+  active: false
+  value: 0.0
+factions:
+# Player lose normal power on death, you can activate extra power lose
+  extraLosePowerActive: false
+# a value between -10 to 10
+  losePowerDelta: -3.0
+pvp:
+  blockcommands:
+    active: true
+    cooldown:
+      underattack: 20
+      ifhit: 20
+    whitelist:
+# Allows only commands in whitelist, you MUST set blacklist.active = false
+      active: true
+      cmds:
+      - help
+    blacklist:
+# Allows all commands expect in the blacklist, you MUST set whitelist.active = false
+      active: false
+      cmds:
+      - set home
