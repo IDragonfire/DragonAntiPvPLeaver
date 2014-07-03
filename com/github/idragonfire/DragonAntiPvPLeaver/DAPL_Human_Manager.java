@@ -7,9 +7,11 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DFakePlayerManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlayerListener;
+import com.github.idragonfire.DragonAntiPvPLeaver.npclib.HumanNPC;
 import com.github.idragonfire.DragonAntiPvPLeaver.npclib.NPCManager;
 
 public class DAPL_Human_Manager extends NPCManager implements
@@ -58,7 +60,20 @@ public class DAPL_Human_Manager extends NPCManager implements
 	@Override
 	public void spawnHumanNPC(Player player, int lifetime) {
 		String playerName = player.getName();
-		this.spawnHumanNPC(player.getName(), player.getLocation());
+		HumanNPC npc = this.spawnHumanNPC(playerName, player.getLocation());
+
+		ItemStack[] invContents = player.getInventory().getContents();
+		ItemStack[] armourContents = player.getInventory().getArmorContents();
+		npc.getInventory().setContents(invContents);
+		npc.getInventory().setArmorContents(armourContents);
+
+		// Formula for calculating dropped XP
+		int XP = player.getLevel() * 7;
+		if (XP > 100) {
+			XP = 100;
+		}
+		npc.setDroppedExp(XP);
+
 		DeSpawnTask task = new DeSpawnTask(playerName, this, plugin);
 		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, task,
 				lifetime * 20L);
