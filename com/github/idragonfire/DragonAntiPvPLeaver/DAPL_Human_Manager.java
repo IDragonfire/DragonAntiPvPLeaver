@@ -1,16 +1,23 @@
 package com.github.idragonfire.DragonAntiPvPLeaver;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import net.minecraft.server.v1_7_R3.PacketPlayOutNamedEntitySpawn;
+
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.entity.Bat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DFakePlayerManager;
 import com.github.idragonfire.DragonAntiPvPLeaver.api.DPlayerListener;
-import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
+import com.github.idragonfire.DragonAntiPvPLeaver.npclib.NPCManager;
 
 public class DAPL_Human_Manager extends NPCManager implements
 		DFakePlayerManager {
@@ -57,15 +64,42 @@ public class DAPL_Human_Manager extends NPCManager implements
 
 	@Override
 	public void spawnHumanNPC(Player player, int lifetime) {
-		String playerName = player.getName();
-		this.spawnHumanNPC(player.getUniqueId(), player.getLocation());
-		DeSpawnTask task = new DeSpawnTask(playerName, this, plugin);
-		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, task,
-				lifetime * 20L);
-		taskMap.put(playerName, task);
-		for (DPlayerListener listener : listeners) {
-			listener.playerNpcSpawned(playerName);
+
+		CraftPlayer p = (CraftPlayer) player;
+		PacketPlayOutNamedEntitySpawn npc = new PacketPlayOutNamedEntitySpawn(
+				p.getHandle());
+
+		// the a field used to be public, we'll need to use reflection to
+		// access:
+		try {
+			Field field = npc.getClass().getDeclaredField("a");
+			field.setAccessible(true);// allows us to access the field
+
+			field.setInt(npc, 123);// sets the field to an integer
+			field.setAccessible(!field.isAccessible());// we want to stop
+														// accessing this now
+		} catch (Exception x) {
+			x.printStackTrace();
 		}
+		Entity e = player.getWorld().spawnEntity(player.getLocation(),
+				EntityType.BAT);
+		e.setVelocity(new Vector(-10, -10, -10));
+		Bat b = (Bat) e;
+
+		for (Player bukkitplayer : Bukkit.getOnlinePlayers()) {
+			p = (CraftPlayer) bukkitplayer;
+			// now comes the sending
+			p.getHandle().playerConnection.sendPacket(npc);
+		}
+		// String playerName = player.getName();
+		// this.spawnHumanNPC(player.getUniqueId(), player.getLocation());
+		// DeSpawnTask task = new DeSpawnTask(playerName, this, plugin);
+		// Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, task,
+		// lifetime * 20L);
+		// taskMap.put(playerName, task);
+		// for (DPlayerListener listener : listeners) {
+		// listener.playerNpcSpawned(playerName);
+		// }
 	}
 
 	public void addDaplPlayerListener(DPlayerListener listener) {

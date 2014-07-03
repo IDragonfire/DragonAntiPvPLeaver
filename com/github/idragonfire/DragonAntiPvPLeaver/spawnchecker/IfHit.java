@@ -1,4 +1,4 @@
-package com.github.idragonfire.DragonAntiPvPLeaver.spawn.checker;
+package com.github.idragonfire.DragonAntiPvPLeaver.spawnchecker;
 
 import java.util.HashMap;
 

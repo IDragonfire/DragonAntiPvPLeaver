@@ -1,4 +1,4 @@
-package com.topcat.npclib.DragonAntiPvPListener.nms;
+package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
 import net.minecraft.server.v1_7_R3.EntityPlayer;
 import net.minecraft.server.v1_7_R3.EnumProtocol;
@@ -32,8 +32,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
-
-import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 
 public class NPCNetHandler extends PlayerConnection {
 

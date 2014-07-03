@@ -1,4 +1,4 @@
-package com.topcat.npclib.DragonAntiPvPListener.nms;
+package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

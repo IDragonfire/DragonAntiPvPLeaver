@@ -1,4 +1,4 @@
-package com.topcat.npclib.DragonAntiPvPListener.nms;
+package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
 import net.minecraft.server.v1_7_R3.Entity;
 import net.minecraft.server.v1_7_R3.EntityHuman;
@@ -11,8 +11,6 @@ import net.minecraft.util.com.mojang.authlib.GameProfile;
 import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R3.entity.CraftEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
-
-import com.topcat.npclib.DragonAntiPvPListener.NPCManager;
 
 public class NPCEntity extends EntityPlayer {
 

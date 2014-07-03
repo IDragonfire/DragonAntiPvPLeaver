@@ -1,4 +1,4 @@
-package com.topcat.npclib.DragonAntiPvPListener.nms;
+package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityTargetEvent;

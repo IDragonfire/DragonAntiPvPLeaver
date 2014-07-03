@@ -1,4 +1,4 @@
-package com.topcat.npclib.DragonAntiPvPListener;
+package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,12 +23,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.topcat.npclib.DragonAntiPvPListener.entity.HumanNPC;
-import com.topcat.npclib.DragonAntiPvPListener.nms.BServer;
-import com.topcat.npclib.DragonAntiPvPListener.nms.BWorld;
-import com.topcat.npclib.DragonAntiPvPListener.nms.NPCEntity;
-import com.topcat.npclib.DragonAntiPvPListener.nms.NPCNetworkManager;
 
 public class NPCManager {
 
