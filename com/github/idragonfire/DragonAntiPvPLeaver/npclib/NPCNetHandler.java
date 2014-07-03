@@ -1,38 +1,41 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
-import net.minecraft.server.v1_7_R3.EntityPlayer;
-import net.minecraft.server.v1_7_R3.EnumProtocol;
-import net.minecraft.server.v1_7_R3.IChatBaseComponent;
-import net.minecraft.server.v1_7_R3.NetworkManager;
-import net.minecraft.server.v1_7_R3.Packet;
-import net.minecraft.server.v1_7_R3.PacketPlayInAbilities;
-import net.minecraft.server.v1_7_R3.PacketPlayInArmAnimation;
-import net.minecraft.server.v1_7_R3.PacketPlayInBlockDig;
-import net.minecraft.server.v1_7_R3.PacketPlayInBlockPlace;
-import net.minecraft.server.v1_7_R3.PacketPlayInChat;
-import net.minecraft.server.v1_7_R3.PacketPlayInClientCommand;
-import net.minecraft.server.v1_7_R3.PacketPlayInCloseWindow;
-import net.minecraft.server.v1_7_R3.PacketPlayInCustomPayload;
-import net.minecraft.server.v1_7_R3.PacketPlayInEnchantItem;
-import net.minecraft.server.v1_7_R3.PacketPlayInEntityAction;
-import net.minecraft.server.v1_7_R3.PacketPlayInFlying;
-import net.minecraft.server.v1_7_R3.PacketPlayInHeldItemSlot;
-import net.minecraft.server.v1_7_R3.PacketPlayInKeepAlive;
-import net.minecraft.server.v1_7_R3.PacketPlayInSetCreativeSlot;
-import net.minecraft.server.v1_7_R3.PacketPlayInSettings;
-import net.minecraft.server.v1_7_R3.PacketPlayInSteerVehicle;
-import net.minecraft.server.v1_7_R3.PacketPlayInTabComplete;
-import net.minecraft.server.v1_7_R3.PacketPlayInTransaction;
-import net.minecraft.server.v1_7_R3.PacketPlayInUpdateSign;
-import net.minecraft.server.v1_7_R3.PacketPlayInUseEntity;
-import net.minecraft.server.v1_7_R3.PacketPlayInWindowClick;
-import net.minecraft.server.v1_7_R3.PlayerConnection;
+import net.minecraft.server.v1_6_R3.EntityPlayer;
+import net.minecraft.server.v1_6_R3.Packet;
+import net.minecraft.server.v1_6_R3.Packet101CloseWindow;
+import net.minecraft.server.v1_6_R3.Packet102WindowClick;
+import net.minecraft.server.v1_6_R3.Packet106Transaction;
+import net.minecraft.server.v1_6_R3.Packet10Flying;
+import net.minecraft.server.v1_6_R3.Packet130UpdateSign;
+import net.minecraft.server.v1_6_R3.Packet14BlockDig;
+import net.minecraft.server.v1_6_R3.Packet15Place;
+import net.minecraft.server.v1_6_R3.Packet16BlockItemSwitch;
+import net.minecraft.server.v1_6_R3.Packet18ArmAnimation;
+import net.minecraft.server.v1_6_R3.Packet19EntityAction;
+import net.minecraft.server.v1_6_R3.Packet255KickDisconnect;
+import net.minecraft.server.v1_6_R3.Packet3Chat;
+import net.minecraft.server.v1_6_R3.Packet7UseEntity;
+import net.minecraft.server.v1_6_R3.Packet9Respawn;
+import net.minecraft.server.v1_6_R3.PlayerConnection;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_6_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
 
+/**
+ * Bukkit:
+ * "https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/PlayerConnection.java"
+ * caliog:
+ * "https://github.com/caliog/NPCLib/blob/master/com/sharesc/caliog/npclib/NPCPlayerConnection.java"
+ * Citiziens:
+ * "https://github.com/CitizensDev/Citizens2/blob/master/src/main/java/net/citizensnpcs/npc/network/EmptyNetHandler.java"
+ * Combat-Tag:
+ * "https://github.com/cheddar262/Combat-Tag/blob/master/CombatTag/com/topcat/npclib/nms/NPCNetHandler.java"
+ * Top-Cat:
+ * "https://github.com/Top-Cat/NPCLib/blob/master/src/main/java/com/topcat/npclib/nms/NPCPlayerConnection.java"
+ * lennis0012:
+ * "https://github.com/lenis0012/NPCFactory/blob/master/src/main/java/com/lenis0012/bukkit/npc/NPCPlayerConnection.java"
+ */
 public class NPCNetHandler extends PlayerConnection {
 
 	public NPCNetHandler(NPCManager npcManager, EntityPlayer entityplayer) {
@@ -42,15 +45,12 @@ public class NPCNetHandler extends PlayerConnection {
 
 	@Override
 	public CraftPlayer getPlayer() {
-		return new CraftPlayer((CraftServer) Bukkit.getServer(), player); // Fake
-																			// player
-																			// prevents
-																			// spout
-																			// NPEs
+		return new CraftPlayer((CraftServer) Bukkit.getServer(), player);
+		// Fake player prevents spout NPEs
 	}
 
 	@Override
-	public void a() {
+	public void a(Packet10Flying packet10flying) {
 	}
 
 	@Override
@@ -58,115 +58,72 @@ public class NPCNetHandler extends PlayerConnection {
 	}
 
 	@Override
-	public void a(EnumProtocol enumprotocol, EnumProtocol enumprotocol1) {
+	public void a(Packet14BlockDig packet14blockdig) {
 	}
 
 	@Override
-	public void a(IChatBaseComponent ichatbasecomponent) {
+	public void a(Packet15Place packet15place) {
 	}
 
 	@Override
-	public void a(PacketPlayInAbilities arg0) {
+	public void a(String s, Object[] aobject) {
 	}
 
 	@Override
-	public void a(PacketPlayInArmAnimation arg0) {
+	public void onUnhandledPacket(Packet packet) {
 	}
 
 	@Override
-	public void a(PacketPlayInBlockDig arg0) {
+	public void a(Packet16BlockItemSwitch packet16blockitemswitch) {
 	}
 
 	@Override
-	public void a(PacketPlayInBlockPlace arg0) {
+	public void a(Packet3Chat packet3chat) {
 	}
 
 	@Override
-	public void a(PacketPlayInChat arg0) {
+	public void a(Packet18ArmAnimation packet18armanimation) {
 	}
 
 	@Override
-	public void a(PacketPlayInClientCommand arg0) {
+	public void a(Packet19EntityAction packet19entityaction) {
 	}
 
 	@Override
-	public void a(PacketPlayInCloseWindow packetplayinclosewindow) {
+	public void a(Packet255KickDisconnect packet255kickdisconnect) {
 	}
 
 	@Override
-	public void a(PacketPlayInCustomPayload arg0) {
+	public void sendPacket(Packet packet) {
 	}
 
 	@Override
-	public void a(PacketPlayInEnchantItem packetplayinenchantitem) {
+	public void a(Packet7UseEntity packet7useentity) {
 	}
 
 	@Override
-	public void a(PacketPlayInEntityAction arg0) {
+	public void a(Packet9Respawn packet9respawn) {
 	}
 
 	@Override
-	public void a(PacketPlayInFlying arg0) {
+	public void handleContainerClose(Packet101CloseWindow packet101closewindow) {
 	}
 
 	@Override
-	public void a(PacketPlayInHeldItemSlot arg0) {
+	public void a(Packet102WindowClick packet102windowclick) {
 	}
 
 	@Override
-	public void a(PacketPlayInKeepAlive arg0) {
+	public void a(Packet106Transaction packet106transaction) {
 	}
 
 	@Override
-	public void a(PacketPlayInSetCreativeSlot arg0) {
+	public int lowPriorityCount() {
+		return super.lowPriorityCount();
 	}
 
 	@Override
-	public void a(PacketPlayInSettings packetplayinsettings) {
+	public void a(Packet130UpdateSign packet130updatesign) {
 	}
 
-	@Override
-	public void a(PacketPlayInSteerVehicle packetplayinsteervehicle) {
-	}
-
-	@Override
-	public void a(PacketPlayInTabComplete arg0) {
-	}
-
-	@Override
-	public void a(PacketPlayInTransaction packetplayintransaction) {
-	}
-
-	@Override
-	public void a(PacketPlayInUpdateSign arg0) {
-	}
-
-	@Override
-	public void a(PacketPlayInUseEntity arg0) {
-	}
-
-	@Override
-	public void a(PacketPlayInWindowClick arg0) {
-	}
-
-	@Override
-	public NetworkManager b() {
-		return null;
-	}
-
-	@Override
-	public void chat(String arg0, boolean arg1) {
-	}
-
-	@Override
-	public void disconnect(String s) {
-	}
-
-	@Override
-	public void sendPacket(Packet arg0) {
-	}
-
-	@Override
-	public void teleport(Location dest) {
-	}
 }

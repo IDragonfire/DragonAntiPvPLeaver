@@ -27,13 +27,6 @@
  */
 package com.github.idragonfire.DragonAntiPvPLeaver.util;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.scheduler.BukkitTask;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -53,6 +46,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.zip.GZIPOutputStream;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.scheduler.BukkitTask;
 
 public class Metrics {
 
@@ -362,7 +362,7 @@ public class Metrics {
 																	// enabled
 		String pluginVersion = description.getVersion();
 		String serverVersion = Bukkit.getVersion();
-		int playersOnline = Bukkit.getServer().getOnlinePlayers().size();
+		int playersOnline = Bukkit.getServer().getOnlinePlayers().length;
 
 		// END server software specific section -- all code below does not use
 		// any code outside of this class / Java
