@@ -60,7 +60,7 @@ public class DAPL_Plugin extends JavaPlugin implements Listener, DPlugin {
 		// set listener mode
 		String listenerMode = "normal";
 		Listener_Normal listener = null;
-		if (getConfig().getBoolean("plugin.debug")) {
+		if (config.plugin_debug) {
 			listener = new Listener_Debug(getLogger());
 			listenerMode = "debug";
 		} else {
