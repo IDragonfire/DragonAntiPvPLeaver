@@ -12,7 +12,7 @@ npc:
     playernearby:
       active: true
       distance: 8
-      lifetime: 10a
+      lifetime: 10
     monsternearby:
       active: true
       distance: 8
