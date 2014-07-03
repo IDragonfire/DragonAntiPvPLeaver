@@ -1,24 +1,18 @@
 plugin:
   debug: false
-  overwriteAllNpcDamageListener: false
   printMessages: true
-  autoupdate: notify
 npc:
-  nameTagColor: f
-  expdrop: vanilla
+# options: vanilla,none
+  broadcastMessageRadius: 32
+  additionalTimeIfUnderAttack: 15
   spawn:
-    onlyIfPlayerNearby: true
-    distance: 8
-    time: 10
-    additionalTimeIfUnderAttack: 15
-    broadcastMessageRadius: 32
     always:
       active: false
       time: 10
     playernearby:
       active: true
       distance: 8
-      lifetime: 10
+      lifetime: 10a
     monsternearby:
       active: true
       distance: 8
@@ -40,20 +34,6 @@ npc:
       active: true
       lifetime: 30
       cooldown: 30
-# options: vanilla,none
-  broadcastMessageRadius: 32
-  additionalTimeIfUnderAttack: 15
-language:
-  npcSpawned: NPC spawned
-  npcKilled: <Player>s NPC has been killed while combat logged
-  yourNPCKilled: Your NPC has been killed while combat logged
-  yourNpcKilled: Your NPC has beend killed while combat logged
-  commandBlocked: 'DAPL: These command has been blocked.'
-metrics:
-# activate/deactivate metrics graphs opt-out
-  listenerMode: true
-  worldGuardUsage: true
-  factionsUsage: true
 lossmoney:
   active: false
   value: 0.0
@@ -78,3 +58,13 @@ pvp:
       active: false
       cmds:
       - set home
+language:
+  npcSpawned: NPC spawned
+  npcKilled: <Player>s NPC has been killed while combat logged
+  yourNpcKilled: Your NPC has beend killed while combat logged
+  commandBlocked: 'DAPL: These command has been blocked.'
+metrics:
+# activate/deactivate metrics graphs opt-out
+  listenerMode: true
+  worldGuardUsage: true
+  factionsUsage: true
