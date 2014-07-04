@@ -1,5 +1,8 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.listener;
 
+import java.util.HashSet;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Config;
@@ -20,10 +24,12 @@ public class Listener_Normal implements Listener {
 	protected DFakePlayerManager npcManager;
 	protected DSpawnCheckerManager spawnModeChecker;
 	protected DamageListenerHandler listenerInjectionHandler;
+	public HashSet<UUID> kickedPlayer;
 
 	public void init(DAPL_Config config, DFakePlayerManager npcManager) {
 		this.config = config;
 		this.npcManager = npcManager;
+		this.kickedPlayer = new HashSet<UUID>();
 	}
 
 	public void setSpawnChecker(DSpawnCheckerManager spawnModeChecker) {
@@ -34,9 +40,18 @@ public class Listener_Normal implements Listener {
 		listenerInjectionHandler = listener;
 	}
 
+	@EventHandler
+	public void onPlayerKickEvent(PlayerKickEvent event) {
+		this.kickedPlayer.add(event.getPlayer().getUniqueId());
+	}
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
+		if (this.kickedPlayer.contains(player.getUniqueId())) {
+			this.kickedPlayer.remove(player.getUniqueId());
+			return;
+		}
 		int lifetime = spawnModeChecker.dragonNpcSpawnTime(player);
 		if (lifetime == DSpawnCheckerManager.NO_SPAWN) {
 		}
