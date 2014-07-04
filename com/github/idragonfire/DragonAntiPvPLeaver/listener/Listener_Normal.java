@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -64,9 +65,16 @@ public class Listener_Normal implements Listener {
 		}
 	}
 
+	// faster npc despawn to avoid item duplication
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
+		npcManager.despawnHumanByName(event.getName());
+	}
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+		npcManager.despawnHumanByName(player.getName());
 		if (!npcManager.wasKilled(player.getName())) {
 			return;
 		}
