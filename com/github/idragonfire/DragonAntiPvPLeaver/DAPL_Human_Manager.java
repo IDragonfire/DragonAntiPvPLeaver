@@ -61,6 +61,7 @@ public class DAPL_Human_Manager extends NPCManager implements
 	public void spawnHumanNPC(Player player, int lifetime) {
 		String playerName = player.getName();
 		HumanNPC npc = this.spawnHumanNPC(playerName, player.getLocation());
+		npc.setItemInHand(player.getItemInHand().getType());
 
 		ItemStack[] invContents = player.getInventory().getContents();
 		ItemStack[] armourContents = player.getInventory().getArmorContents();

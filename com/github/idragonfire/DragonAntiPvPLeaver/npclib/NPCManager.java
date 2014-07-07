@@ -5,16 +5,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_6_R3.Entity;
-import net.minecraft.server.v1_6_R3.PlayerInteractManager;
-import net.minecraft.server.v1_6_R3.World;
+import net.minecraft.server.v1_7_R3.Entity;
+import net.minecraft.server.v1_7_R3.PlayerInteractManager;
+import net.minecraft.server.v1_7_R3.World;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -46,9 +48,10 @@ public class NPCManager {
 						final HashSet<String> toRemove = new HashSet<>();
 						for (final String i : npcs.keySet()) {
 							final Entity j = npcs.get(i).getEntity();
+							// TODO: nms manual update
 							// EntityBaseTickMethod
 							// https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/Entity.java#L244
-							j.y();
+							j.B();
 							if (j.dead) {
 								toRemove.add(i);
 							}
@@ -102,38 +105,12 @@ public class NPCManager {
 		}
 		CraftWorld cworld = (CraftWorld) l.getWorld();
 		World world = cworld.getHandle();
-		final NPCEntity npcEntity = new NPCEntity(world, name,
+		GameProfile g = new GameProfile(UUID.randomUUID(), name);
+		final NPCEntity npcEntity = new NPCEntity(world, g,
 				new PlayerInteractManager(world));
 		npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l.getYaw(),
 				l.getPitch());
 		world.addEntity(npcEntity); // the right way
-		final HumanNPC npc = new HumanNPC(npcEntity);
-		npcs.put(id, npc);
-		return npc;
-	}
-
-	public HumanNPC addHumanNPC(String name, Location l, String id) {
-		if (npcs.containsKey(id)) {
-			Bukkit.getLogger().log(Level.WARNING,
-					"NPC with that id already exists, existing NPC returned");
-			return npcs.get(id);
-		}
-		if (name.length() > 16) { // Check and nag if name is too long, spawn
-									// NPC anyway with shortened name.
-			final String tmp = name.substring(0, 16);
-			Bukkit.getLogger().log(Level.WARNING,
-					"NPCs can't have names longer than 16 characters,");
-			Bukkit.getLogger().log(Level.WARNING,
-					name + " has been shortened to " + tmp);
-			name = tmp;
-		}
-
-		CraftWorld cworld = (CraftWorld) l.getWorld();
-		World world = cworld.getHandle();
-		final NPCEntity npcEntity = new NPCEntity(world, name,
-				new PlayerInteractManager(world));
-		npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l.getYaw(),
-				l.getPitch());
 		final HumanNPC npc = new HumanNPC(npcEntity);
 		npcs.put(id, npc);
 		return npc;
