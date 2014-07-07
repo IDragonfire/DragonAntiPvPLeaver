@@ -1,6 +1,8 @@
 plugin:
   debug: false
   printMessages: true
+# options: on,off,notify
+  autoupdate: notify
 npc:
 # options: vanilla,none
   broadcastMessageRadius: 32

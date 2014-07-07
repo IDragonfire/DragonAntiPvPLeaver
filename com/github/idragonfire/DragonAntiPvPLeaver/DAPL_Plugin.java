@@ -36,6 +36,7 @@ import com.github.idragonfire.DragonAntiPvPLeaver.spawnchecker.WorldGuardSupport
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Graph;
 import com.github.idragonfire.DragonAntiPvPLeaver.util.Metrics.Plotter;
+import com.github.idragonfire.DragonAntiPvPLeaver.util.Updater;
 
 public class DAPL_Plugin extends JavaPlugin implements Listener, DPlugin {
 	protected List<String> deadPlayers;
@@ -74,9 +75,47 @@ public class DAPL_Plugin extends JavaPlugin implements Listener, DPlugin {
 		Bukkit.getPluginManager().registerEvents(listener, this);
 
 		enableMetrics(listenerMode);
-		// enableAutoUpdate();
+		enableAutoUpdate();
 
 		Bukkit.getPluginManager().registerEvents(this, this);
+	}
+
+	protected void enableAutoUpdate() {
+		try {
+			String updateMode = this.config.plugin_autoupdate;
+			if (updateMode.equals(this.config.plugin_autoupdate_off)) {
+				return;
+			}
+			Updater.UpdateType updateType = Updater.UpdateType.NO_DOWNLOAD;
+			if (updateMode.equals(this.config.plugin_autoupdate_on)) {
+				updateType = Updater.UpdateType.DEFAULT;
+			}
+			Updater updater = new Updater(this, 44933, this.getFile(),
+					updateType, false);
+			Updater.UpdateResult result = updater.getResult();
+			switch (result) {
+			case UPDATE_AVAILABLE:
+				getLogger().log(Level.INFO, "#########################");
+				getLogger().log(Level.INFO, "New version available: ");
+				getLogger().log(Level.INFO, updater.getLatestName());
+				getLogger().log(Level.INFO,
+						"for: " + updater.getLatestGameVersion());
+				getLogger().log(Level.INFO,
+						"Your version: " + getDescription().getVersion());
+				getLogger().log(Level.INFO, "#########################");
+				break;
+			case SUCCESS:
+				getLogger().log(
+						Level.INFO,
+						"downloaded successfull " + updater.getLatestName()
+								+ ". Updating plugin at next server restart!");
+				break;
+			default:
+				getLogger().log(Level.WARNING, " Updater has problems");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void initDeathFeatures() {
