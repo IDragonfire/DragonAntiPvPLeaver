@@ -1,6 +1,5 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,15 +34,9 @@ public class NPCManager {
 
 	private final HashMap<String, HumanNPC> npcs = new HashMap<>();
 	private final int taskid;
-	private NPCNetworkManager npcNetworkManager;
 	public static JavaPlugin plugin;
 
 	public NPCManager(JavaPlugin plugin) {
-		try {
-			npcNetworkManager = new NPCNetworkManager();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
 
 		NPCManager.plugin = plugin;
 		taskid = Bukkit.getServer().getScheduler()
