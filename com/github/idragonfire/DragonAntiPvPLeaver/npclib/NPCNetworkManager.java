@@ -2,11 +2,10 @@ package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
 import javax.crypto.SecretKey;
 
-import net.minecraft.server.v1_7_R3.EnumProtocol;
-import net.minecraft.server.v1_7_R3.IChatBaseComponent;
-import net.minecraft.server.v1_7_R3.NetworkManager;
-import net.minecraft.server.v1_7_R3.Packet;
-import net.minecraft.server.v1_7_R3.PacketListener;
+import net.minecraft.server.v1_7_R1.EnumProtocol;
+import net.minecraft.server.v1_7_R1.NetworkManager;
+import net.minecraft.server.v1_7_R1.Packet;
+import net.minecraft.server.v1_7_R1.PacketListener;
 import net.minecraft.util.io.netty.channel.ChannelHandlerContext;
 import net.minecraft.util.io.netty.util.concurrent.GenericFutureListener;
 
@@ -64,11 +63,6 @@ public class NPCNetworkManager extends NetworkManager {
 	}
 
 	@Override
-	public void close(IChatBaseComponent ichatbasecomponent) {
-		// nothing
-	}
-
-	@Override
 	public void exceptionCaught(ChannelHandlerContext arg0, Throwable arg1) {
 		// nothing
 	}
@@ -82,11 +76,6 @@ public class NPCNetworkManager extends NetworkManager {
 	public void handle(Packet packet,
 			GenericFutureListener... agenericfuturelistener) {
 		// nothing
-	}
-
-	@Override
-	public boolean isConnected() {
-		return false;
 	}
 
 	@Override
