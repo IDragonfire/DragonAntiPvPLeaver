@@ -1,6 +1,11 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
+import java.net.SocketAddress;
+
+import net.minecraft.server.v1_6_R3.Connection;
 import net.minecraft.server.v1_6_R3.EntityPlayer;
+import net.minecraft.server.v1_6_R3.INetworkManager;
+import net.minecraft.server.v1_6_R3.MinecraftServer;
 import net.minecraft.server.v1_6_R3.Packet;
 import net.minecraft.server.v1_6_R3.Packet101CloseWindow;
 import net.minecraft.server.v1_6_R3.Packet102WindowClick;
@@ -38,9 +43,57 @@ import org.bukkit.craftbukkit.v1_6_R3.entity.CraftPlayer;
  */
 public class NPCNetHandler extends PlayerConnection {
 
-	public NPCNetHandler(NPCManager npcManager, EntityPlayer entityplayer) {
-		super(npcManager.getServer().getMCServer(), npcManager
-				.getNPCNetworkManager(), entityplayer);
+	public NPCNetHandler(MinecraftServer mk_server, EntityPlayer entityplayer) {
+		super(mk_server, new INetworkManager() {
+
+			@Override
+			public void a() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void a(Connection arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void a(String arg0, Object... arg1) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void b() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void d() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public int e() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public SocketAddress getSocketAddress() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void queue(Packet arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		}, entityplayer);
 	}
 
 	@Override
