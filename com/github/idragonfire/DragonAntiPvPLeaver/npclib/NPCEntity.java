@@ -49,6 +49,7 @@ public class NPCEntity extends EntityPlayer {
 	}
 
 	// https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/EntityPlayer.java#L457
+	// func_96122_a - Can parameter entity hurt this
 	@Override
 	public boolean a(EntityHuman entity) {
 		final EntityTargetEvent event = new NpcEntityTargetEvent(
@@ -60,6 +61,7 @@ public class NPCEntity extends EntityPlayer {
 	}
 
 	// https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/Entity.java#L996
+	// onCollideWithPlayer - Entity
 	public void b_(EntityHuman entity) {
 		if ((lastBounceId != entity.id || System.currentTimeMillis()
 				- lastBounceTick > 1000)
@@ -86,6 +88,7 @@ public class NPCEntity extends EntityPlayer {
 	}
 
 	// https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/EntityPlayer.java#L926
+	// onEnchantmentCritical
 	@Override
 	public void c(Entity entity) {
 		if (lastBounceId != entity.id
