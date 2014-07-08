@@ -1,6 +1,6 @@
 name: DragonAntiPvPLeaver
 author: IDragonfire, Serilum
-version: 2.1.7.2
+version: 2.1.5.2
 main: com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Plugin
 soft-depend: [WorldGuard, Factions, Vault]
     
