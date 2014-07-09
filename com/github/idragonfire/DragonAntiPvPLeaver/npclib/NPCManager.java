@@ -5,16 +5,17 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_5_R3.Entity;
-import net.minecraft.server.v1_5_R3.PlayerInteractManager;
-import net.minecraft.server.v1_5_R3.World;
+import net.minecraft.server.v1_7_R3.PlayerInteractManager;
+import net.minecraft.server.v1_7_R3.World;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -34,31 +35,11 @@ public class NPCManager {
 
 	private final HashMap<String, HumanNPC> npcs = new HashMap<>();
 	public static JavaPlugin plugin;
-	private final int taskid;
 
 	public NPCManager(JavaPlugin plugin) {
 
 		NPCManager.plugin = plugin;
-		taskid = Bukkit.getServer().getScheduler()
-				.scheduleSyncRepeatingTask(plugin, new Runnable() {
-					@Override
-					public void run() {
-						final HashSet<String> toRemove = new HashSet<>();
-						for (final String i : npcs.keySet()) {
-							final Entity j = npcs.get(i).getEntity();
-							// TODO: nms manual update
-							// EntityBaseTickMethod
-							// https://github.com/Bukkit/CraftBukkit/blob/master/src/main/java/net/minecraft/server/Entity.java#L244
-							j.x();
-							if (j.dead) {
-								toRemove.add(i);
-							}
-						}
-						for (final String n : toRemove) {
-							npcs.remove(n);
-						}
-					}
-				}, 1L, 1L);
+
 		Bukkit.getServer().getPluginManager().registerEvents(new SL(), plugin);
 	}
 
@@ -67,7 +48,6 @@ public class NPCManager {
 		public void onPluginDisable(PluginDisableEvent event) {
 			if (event.getPlugin() == plugin) {
 				despawnAll();
-				Bukkit.getServer().getScheduler().cancelTask(taskid);
 			}
 		}
 	}
@@ -103,7 +83,8 @@ public class NPCManager {
 		}
 		CraftWorld cworld = (CraftWorld) l.getWorld();
 		World world = cworld.getHandle();
-		final NPCEntity npcEntity = new NPCEntity(world, name,
+		GameProfile g = new GameProfile(UUID.randomUUID(), name);
+		final NPCEntity npcEntity = new NPCEntity(world, g,
 				new PlayerInteractManager(world));
 		npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l.getYaw(),
 				l.getPitch());
