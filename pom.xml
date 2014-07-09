@@ -22,7 +22,7 @@
 		<!-- Resources -->
 		<resources>
 			<resource>
-				<directory>src</directory>
+				<directory>.</directory>
 				<excludes>
 					<exclude>**/*.java</exclude>
 				</excludes>
@@ -55,7 +55,7 @@
 						<configuration>
 							<tasks>
 								<copy file="${project.build.directory}\${project.name}.jar"
-									tofile="D:\mc\latest\plugins\${project.name}.jar" />
+									tofile="D:\mc\mcpc\plugins\${project.name}.jar" />
 							</tasks>
 						</configuration>
 					</execution>
@@ -118,7 +118,7 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>craftbukkit</artifactId>
-			<version>LATEST</version>
+			<version>1.5.1-R0.2</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
