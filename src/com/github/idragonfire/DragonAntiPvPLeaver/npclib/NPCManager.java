@@ -7,14 +7,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
-import net.minecraft.server.v1_5_R3.Entity;
-import net.minecraft.server.v1_5_R3.PlayerInteractManager;
-import net.minecraft.server.v1_5_R3.World;
+import net.minecraft.server.v1_5_R2.Entity;
+import net.minecraft.server.v1_5_R2.PlayerInteractManager;
+import net.minecraft.server.v1_5_R2.World;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_5_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R2.entity.CraftEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -105,12 +105,8 @@ public class NPCManager {
 		World world = cworld.getHandle();
 		final NPCEntity npcEntity = new NPCEntity(world, name,
 				new PlayerInteractManager(world));
-		try {
-			npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(),
-					l.getYaw(), l.getPitch());
-		} catch (Exception e) {
-			// MCPC fix
-		}
+		npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l.getYaw(),
+				l.getPitch());
 		world.addEntity(npcEntity); // the right way
 		final HumanNPC npc = new HumanNPC(npcEntity);
 		npcs.put(id, npc);
