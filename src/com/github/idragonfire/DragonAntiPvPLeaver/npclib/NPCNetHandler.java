@@ -2,12 +2,12 @@ package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
 import java.net.SocketAddress;
 
-import net.minecraft.server.v1_5_R2.Connection;
-import net.minecraft.server.v1_5_R2.EntityPlayer;
-import net.minecraft.server.v1_5_R2.INetworkManager;
-import net.minecraft.server.v1_5_R2.MinecraftServer;
-import net.minecraft.server.v1_5_R2.Packet;
-import net.minecraft.server.v1_5_R2.PlayerConnection;
+import net.minecraft.server.v1_5_R3.Connection;
+import net.minecraft.server.v1_5_R3.EntityPlayer;
+import net.minecraft.server.v1_5_R3.INetworkManager;
+import net.minecraft.server.v1_5_R3.MinecraftServer;
+import net.minecraft.server.v1_5_R3.Packet;
+import net.minecraft.server.v1_5_R3.PlayerConnection;
 
 /**
  * Bukkit:
