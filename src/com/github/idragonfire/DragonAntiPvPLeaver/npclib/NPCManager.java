@@ -105,8 +105,12 @@ public class NPCManager {
 		World world = cworld.getHandle();
 		final NPCEntity npcEntity = new NPCEntity(world, name,
 				new PlayerInteractManager(world));
-		npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(), l.getYaw(),
-				l.getPitch());
+		try {
+			npcEntity.setPositionRotation(l.getX(), l.getY(), l.getZ(),
+					l.getYaw(), l.getPitch());
+		} catch (Exception e) {
+			// MCPC fix
+		}
 		world.addEntity(npcEntity); // the right way
 		final HumanNPC npc = new HumanNPC(npcEntity);
 		npcs.put(id, npc);
