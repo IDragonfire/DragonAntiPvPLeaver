@@ -1,6 +1,6 @@
 name: DragonAntiPvPLeaver
 author: IDragonfire
-version: 2.1.5.1-MCPC
+version: 2.1.7.10
 main: com.github.idragonfire.DragonAntiPvPLeaver.DAPL_Plugin
 soft-depend: [WorldGuard, Factions, Vault]
     

@@ -1,12 +1,13 @@
 package com.github.idragonfire.DragonAntiPvPLeaver.npclib;
 
-import net.minecraft.server.v1_5_R2.EntityPlayer;
-import net.minecraft.server.v1_5_R2.EnumGamemode;
-import net.minecraft.server.v1_5_R2.PlayerInteractManager;
-import net.minecraft.server.v1_5_R2.World;
-import net.minecraft.server.v1_5_R2.WorldServer;
+import net.minecraft.server.v1_7_R4.EntityPlayer;
+import net.minecraft.server.v1_7_R4.EnumGamemode;
+import net.minecraft.server.v1_7_R4.PlayerInteractManager;
+import net.minecraft.server.v1_7_R4.World;
+import net.minecraft.server.v1_7_R4.WorldServer;
+import net.minecraft.util.com.mojang.authlib.GameProfile;
 
-import org.bukkit.craftbukkit.v1_5_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftEntity;
 
 /**
  * Bukkit:
@@ -23,9 +24,9 @@ import org.bukkit.craftbukkit.v1_5_R2.entity.CraftEntity;
  * "https://github.com/lenis0012/NPCFactory/blob/master/src/main/java/com/lenis0012/bukkit/npc/NPCEntity.java"
  */
 public class NPCEntity extends EntityPlayer {
-	public NPCEntity(World world, String s,
+	public NPCEntity(World world, GameProfile g,
 			PlayerInteractManager itemInWorldManager) {
-		super(world.getServer().getServer(), (WorldServer) world, s,
+		super(world.getServer().getServer(), (WorldServer) world, g,
 				itemInWorldManager);
 
 		itemInWorldManager.b(EnumGamemode.SURVIVAL);
